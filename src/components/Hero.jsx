@@ -4,6 +4,10 @@ import { ArrowRight, Download, ChevronDown, ArrowUp, ArrowDown } from 'lucide-re
 import { GithubIcon, LinkedinIcon } from './SocialIcons';
 import { personalInfo } from '../data/portfolio';
 import { useTheme } from '../context/ThemeContext';
+import ParticleNetwork from './ParticleNetwork';
+import HoloGlobe from './HoloGlobe';
+import DataPackets from './DataPackets';
+import MagneticButton from './MagneticButton';
 
 const TITLES = [
   'Backend Engineer',
@@ -182,11 +186,49 @@ export default function Hero() {
   const glowY    = useTransform(scrollYProgress, [0, 1], [0, -60]);
 
   return (
-    <section ref={heroRef} id="hero" className="relative min-h-screen flex flex-col overflow-hidden">
+    <section ref={heroRef} id="hero" className="relative min-h-screen flex flex-col" style={{ overflowX: 'clip' }}>
+      {/* Particle network — full background layer */}
+      <div className="absolute inset-0 pointer-events-none" style={{ opacity: isDark ? 0.6 : 0.25 }}>
+        <ParticleNetwork opacity={1} />
+      </div>
+
       {/* Ticker at very top */}
       <div className="pt-16">
         <TickerTape />
       </div>
+
+      {/* Holographic globe — middle-left, behind content */}
+      <div
+        className="absolute left-0 z-[3] pointer-events-none"
+        style={{
+          top: '50%',
+          transform: 'translateY(-50%)',
+          opacity: isDark ? 0.82 : 0.45,
+        }}
+      >
+        {/* Ambient glow halo — bleeds behind the globe */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            inset: '-40%',
+            background: 'radial-gradient(circle, rgba(99,102,241,0.28) 0%, rgba(6,182,212,0.12) 45%, transparent 70%)',
+            filter: 'blur(28px)',
+          }}
+        />
+        {/* Mobile: 180px, sm+: 240px, lg+: 300px */}
+        <div className="sm:hidden">
+          <HoloGlobe size={180} />
+        </div>
+        <div className="hidden sm:block lg:hidden">
+          <HoloGlobe size={240} />
+        </div>
+        <div className="hidden lg:block">
+          <HoloGlobe size={300} />
+        </div>
+      </div>
+
+      {/* Floating data packet labels */}
+      <DataPackets />
 
       {/* Candlestick chart background — scroll-parallax layers */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -356,30 +398,36 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.4 }}
           >
-            <a
-              href="#projects"
-              className="group flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-white transition-all duration-300 hover:scale-105"
-              style={{
-                background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
-                boxShadow: '0 0 30px rgba(124,58,237,0.5)',
-              }}
-            >
-              View Projects
-              <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
-            </a>
-            <a
-              href="#contact"
-              className="group flex items-center gap-2 px-7 py-3.5 rounded-xl border border-white/10 text-white font-semibold bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105"
-            >
-              Contact Me
-            </a>
-            <a
-              href={personalInfo.resumeUrl}
-              className="flex items-center gap-2 px-7 py-3.5 rounded-xl text-slate-400 font-semibold hover:text-white transition-all duration-300"
-            >
-              <Download size={15} />
-              Resume
-            </a>
+            <MagneticButton>
+              <a
+                href="#projects"
+                className="group flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-white transition-all duration-300"
+                style={{
+                  background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+                  boxShadow: '0 0 30px rgba(124,58,237,0.5)',
+                }}
+              >
+                View Projects
+                <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
+              </a>
+            </MagneticButton>
+            <MagneticButton>
+              <a
+                href="#contact"
+                className="group flex items-center gap-2 px-7 py-3.5 rounded-xl border border-white/10 text-white font-semibold bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+              >
+                Contact Me
+              </a>
+            </MagneticButton>
+            <MagneticButton strength={0.2}>
+              <a
+                href={personalInfo.resumeUrl}
+                className="flex items-center gap-2 px-7 py-3.5 rounded-xl text-slate-400 font-semibold hover:text-white transition-all duration-300"
+              >
+                <Download size={15} />
+                Resume
+              </a>
+            </MagneticButton>
           </motion.div>
 
           {/* Social links */}

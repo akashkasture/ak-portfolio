@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
 import CareerJourney from './components/CareerJourney';
 import Projects from './components/Projects';
-import Skills from './components/Skills';
+import SkillsConstellation from './components/SkillsConstellation';
 import Experience from './components/Experience';
+import Trading from './components/Trading';
 import Terminal from './components/Terminal';
 import GitHubHeatmap from './components/GitHubHeatmap';
 import Testimonials from './components/Testimonials';
@@ -21,32 +23,40 @@ function AppInner() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 2200);
+    // Give enough time for all boot lines to appear + brief pause
+    const timer = setTimeout(() => setLoading(false), 3200);
     return () => clearTimeout(timer);
   }, []);
 
-  if (loading) return <LoadingScreen />;
-
   return (
-    <div className="relative min-h-screen overflow-x-hidden" style={{ color: 'var(--text-1)' }}>
-      <CursorGlow />
-      <GridBackground />
-      <Navbar />
-      <main className="relative z-10">
-        <Hero />
-        <About />
-        <Terminal />
-        <CareerJourney />
-        <Projects />
-        <Skills />
-        <Experience />
-        <GitHubHeatmap />
-        <Testimonials />
-        <Blog />
-        <Contact />
-      </main>
-      <Footer />
-    </div>
+    <>
+      <AnimatePresence>
+        {loading && <LoadingScreen key="loading" />}
+      </AnimatePresence>
+
+      {!loading && (
+        <div className="relative min-h-screen overflow-x-hidden" style={{ color: 'var(--text-1)' }}>
+          <CursorGlow />
+          <GridBackground />
+          <Navbar />
+          <main className="relative z-10">
+            <Hero />
+            <About />
+            <Terminal />
+            <CareerJourney />
+            <Projects />
+            <SkillsConstellation />
+            <Experience />
+            <Trading />
+            <GitHubHeatmap />
+            <Testimonials />
+            <Blog />
+            <Contact />
+          </main>
+          <Footer />
+        </div>
+      )}
+    </>
   );
 }
 
