@@ -68,10 +68,22 @@ export default function CareerJourney() {
               className="h-full w-full rounded-full"
               style={{ background: 'linear-gradient(to bottom, transparent 0%, rgba(99,102,241,0.2) 5%, rgba(99,102,241,0.35) 50%, rgba(168,85,247,0.25) 95%, transparent 100%)' }}
             />
-            {/* Travelling glow dot */}
             <motion.div
               className="absolute left-1/2 -translate-x-1/2 w-1.5 h-8 rounded-full"
               style={{ background: 'linear-gradient(180deg, transparent, #6366f1, transparent)' }}
+              animate={{ top: ['0%', '100%'] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
+            />
+          </div>
+
+          {/* Mobile left spine */}
+          <div
+            className="absolute md:hidden rounded-full"
+            style={{ left: 19, top: 0, bottom: 0, width: 2, background: 'linear-gradient(to bottom, transparent 0%, rgba(99,102,241,0.18) 5%, rgba(99,102,241,0.32) 50%, rgba(168,85,247,0.22) 95%, transparent 100%)' }}
+          >
+            <motion.div
+              className="absolute left-1/2 -translate-x-1/2 rounded-full"
+              style={{ width: 6, height: 32, background: 'linear-gradient(180deg, transparent, #6366f1, transparent)' }}
               animate={{ top: ['0%', '100%'] }}
               transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
             />
@@ -83,17 +95,16 @@ export default function CareerJourney() {
               const isActive = i === activeIdx;
               const status = getStatus(item);
               const Icon = ICON_MAP[item.icon] || Code;
-              const isFuture = status === 'future';
 
               return (
                 <motion.div
                   key={i}
                   ref={el => { itemRefs.current[i] = el; }}
                   className="relative flex items-center"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-60px' }}
-                  transition={{ duration: 0.5, delay: i * 0.07 }}
+                  initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }}
+                  whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ duration: 0.55, delay: 0.05 }}
                 >
                   {/* === DESKTOP === */}
 
@@ -108,7 +119,6 @@ export default function CareerJourney() {
                         onClick={() => setActiveIdx(i)}
                       />
                     ) : (
-                      /* Horizontal arm (right node → empty left) */
                       isActive && (
                         <motion.div
                           className="self-center h-px w-16 ml-auto"
@@ -154,14 +164,21 @@ export default function CareerJourney() {
                   </div>
 
                   {/* === MOBILE === */}
-                  <div className="flex md:hidden w-full gap-4 items-start py-3">
-                    <div className="flex flex-col items-center flex-shrink-0">
+                  <div className="flex md:hidden w-full gap-4 items-start py-3 pl-0">
+                    <div className="flex flex-col items-center flex-shrink-0" style={{ width: 40 }}>
                       <CheckpointNode item={item} isActive={isActive} status={status} Icon={Icon} small onClick={() => setActiveIdx(i)} />
                       {i < timeline.length - 1 && (
                         <div
-                          className="w-px mt-1"
-                          style={{ height: 28, background: `linear-gradient(to bottom, ${item.color}40, transparent)` }}
-                        />
+                          className="relative mt-1 rounded-full"
+                          style={{ width: 2, height: 36, background: `linear-gradient(to bottom, ${item.color}55, rgba(99,102,241,0.1))` }}
+                        >
+                          <motion.div
+                            className="absolute left-1/2 -translate-x-1/2 rounded-full"
+                            style={{ width: 4, height: 4, background: item.color, boxShadow: `0 0 6px ${item.color}`, top: 0 }}
+                            animate={{ top: ['0%', '100%'], opacity: [0.4, 1, 0.4] }}
+                            transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut', delay: i * 0.18 }}
+                          />
+                        </div>
                       )}
                     </div>
                     <RoadmapCard
@@ -266,7 +283,6 @@ function CheckpointNode({ item, isActive, status, Icon, small, onClick }) {
 
   return (
     <button onClick={onClick} className="relative flex items-center justify-center" style={{ width: small ? 40 : 52, height: small ? 40 : 52 }}>
-      {/* Pulse rings — active non-future */}
       {isActive && !isFuture && (
         <>
           <div className="absolute inset-0 rounded-xl ring-pulse" style={{ border: `2px solid ${item.color}70`, borderRadius: 12 }} />
@@ -274,7 +290,6 @@ function CheckpointNode({ item, isActive, status, Icon, small, onClick }) {
         </>
       )}
 
-      {/* Node body */}
       <motion.div
         className="relative w-full h-full rounded-xl flex items-center justify-center"
         style={{
@@ -300,7 +315,6 @@ function CheckpointNode({ item, isActive, status, Icon, small, onClick }) {
         )}
       </motion.div>
 
-      {/* Status badge — past */}
       {!small && status === 'past' && !isActive && (
         <div
           className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center"
@@ -309,7 +323,6 @@ function CheckpointNode({ item, isActive, status, Icon, small, onClick }) {
           <CheckCircle size={10} className="text-white" strokeWidth={3} />
         </div>
       )}
-      {/* Status badge — future */}
       {!small && isFuture && (
         <div
           className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center"
@@ -334,13 +347,14 @@ function RoadmapCard({ item, isActive, status, align, onClick, mobile }) {
         background: isActive ? `${item.color}0e` : 'var(--surface)',
         border: `1px solid ${isActive ? item.color + '40' : 'var(--surface-border)'}`,
         boxShadow: isActive ? `0 0 30px ${item.color}20, 0 4px 20px rgba(0,0,0,0.08)` : '0 2px 8px rgba(0,0,0,0.04)',
-        opacity: isFuture ? 0.55 : 1,
+        opacity: isFuture ? 0.5 : 1,
         transition: 'all 0.3s ease',
+        filter: isFuture ? 'blur(2px)' : 'none',
       }}
       whileHover={{ scale: mobile ? 1 : 1.02 }}
       whileTap={{ scale: 0.98 }}
     >
-      {/* Shimmer sweep on active */}
+      {/* Shimmer on active */}
       {isActive && (
         <motion.div
           className="absolute inset-0 pointer-events-none"
@@ -350,7 +364,7 @@ function RoadmapCard({ item, isActive, status, align, onClick, mobile }) {
         />
       )}
 
-      {/* Future overlay */}
+      {/* Future overlay — desktop only */}
       {isFuture && !mobile && (
         <div
           className="absolute inset-0 z-10 rounded-xl flex flex-col items-center justify-center gap-2"
@@ -373,9 +387,11 @@ function RoadmapCard({ item, isActive, status, align, onClick, mobile }) {
       >
         {item.title}
       </div>
-      {isActive && !mobile && (
+
+      {/* Description — show on both desktop and mobile when active */}
+      {isActive && (
         <motion.div
-          className={`text-[11px] leading-relaxed mt-2 ${align === 'right' ? 'text-right' : 'text-left'}`}
+          className={`text-[11px] leading-relaxed mt-2 ${align === 'right' && !mobile ? 'text-right' : 'text-left'}`}
           style={{ color: 'var(--text-3)' }}
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}

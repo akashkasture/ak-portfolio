@@ -412,49 +412,6 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          {/* Mobile-only mini candlestick bar — visible chart strip above stat cards */}
-          <motion.div
-            className="md:hidden mx-auto mb-6 w-full max-w-sm rounded-2xl overflow-hidden relative"
-            style={{
-              background: 'var(--surface)',
-              border: '1px solid rgba(99,102,241,0.2)',
-              boxShadow: '0 0 30px rgba(99,102,241,0.12)',
-              height: 72,
-            }}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-          >
-            <div className="absolute top-0 left-0 right-0 h-px"
-              style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.6), transparent)' }} />
-            <div className="absolute inset-0 flex items-center px-2">
-              <svg width="100%" height="60" viewBox="0 0 320 60" preserveAspectRatio="xMidYMid meet">
-                {CANDLES.slice(0, 16).map(([open, close, high, low, up], i) => {
-                  const x = 6 + i * 20;
-                  const fw = 7;
-                  const scale = 0.38;
-                  const bt = 60 - Math.max(open, close) * scale;
-                  const bh = Math.max(Math.abs(close - open) * scale, 2);
-                  const wt = 60 - high * scale;
-                  const wb = 60 - low * scale;
-                  const c = up ? '#10b981' : '#ef4444';
-                  return (
-                    <g key={i}>
-                      <line x1={x + fw / 2} y1={wt} x2={x + fw / 2} y2={bt} stroke={c} strokeWidth="1" opacity="0.5" />
-                      <line x1={x + fw / 2} y1={bt + bh} x2={x + fw / 2} y2={wb} stroke={c} strokeWidth="1" opacity="0.5" />
-                      <rect x={x} y={bt} width={fw} height={bh} fill={c} rx="1" opacity="0.85" />
-                    </g>
-                  );
-                })}
-                <polyline
-                  points={CANDLES.slice(0, 16).map(([o, c,,], i) => `${6 + i * 20 + 3.5},${60 - ((o + c) / 2) * 0.38}`).join(' ')}
-                  fill="none" stroke="#7c3aed" strokeWidth="1.5" strokeDasharray="3 2" opacity="0.6"
-                />
-              </svg>
-            </div>
-            <div className="absolute bottom-1.5 right-3 text-[9px] font-mono text-indigo-400 opacity-70">LIVE MARKET</div>
-          </motion.div>
-
           {/* Stat cards */}
           <motion.div
             className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto"

@@ -220,7 +220,7 @@ export default function Projects() {
       : FEATURED.filter((p) => p.category === activeCategory);
 
   return (
-    <section id="projects" className="section-padding">
+    <section id="projects" className="section-padding" style={{ overflowX: 'clip' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
           label="Featured Projects"

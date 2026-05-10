@@ -339,7 +339,7 @@ export default function Terminal() {
         <motion.div
           className="rounded-2xl overflow-hidden"
           style={{
-            background: '#070d1a',
+            background: '#000000',
             border: '1px solid rgba(99,102,241,0.15)',
             boxShadow: '0 0 60px rgba(99,102,241,0.08), 0 25px 60px rgba(0,0,0,0.5)',
           }}
@@ -351,7 +351,7 @@ export default function Terminal() {
           {/* Title bar */}
           <div
             className="flex items-center gap-3 px-5 py-3 border-b"
-            style={{ background: '#0a1120', borderColor: 'rgba(255,255,255,0.06)' }}
+            style={{ background: '#0a0a0a', borderColor: 'rgba(255,255,255,0.06)' }}
           >
             <div className="flex gap-1.5">
               <div className="w-3 h-3 rounded-full bg-red-500/70 hover:bg-red-500 transition-colors cursor-pointer" />
@@ -368,7 +368,7 @@ export default function Terminal() {
           {/* Output */}
           <div
             ref={outputRef}
-            className="p-5 h-96 overflow-y-auto font-mono text-sm terminal-scroll"
+            className="p-5 h-96 overflow-y-auto overflow-x-hidden font-mono text-sm terminal-scroll"
             onClick={() => inputRef.current?.focus()}
             style={{ letterSpacing: '0.01em' }}
           >
