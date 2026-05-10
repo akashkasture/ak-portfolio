@@ -5,15 +5,14 @@ import { GithubIcon, LinkedinIcon } from './SocialIcons';
 import { personalInfo } from '../data/portfolio';
 import { useTheme } from '../context/ThemeContext';
 import ParticleNetwork from './ParticleNetwork';
-import DataPackets from './DataPackets';
 import MagneticButton from './MagneticButton';
 
 const TITLES = [
   'Backend Engineer',
-  'Fintech Specialist',
+  'Trader',
   'System Architect',
-  'Kafka Specialist',
   'Distributed Systems',
+  'Open Source Builder',
 ];
 
 const TICKERS = [
@@ -197,8 +196,6 @@ export default function Hero() {
       </div>
 
 
-      {/* Floating data packet labels */}
-      <DataPackets />
 
       {/* Candlestick chart background — scroll-parallax layers */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">

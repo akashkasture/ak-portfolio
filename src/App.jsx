@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
@@ -8,7 +8,7 @@ import CareerJourney from './components/CareerJourney';
 import Projects from './components/Projects';
 import SkillsConstellation from './components/SkillsConstellation';
 import Experience from './components/Experience';
-import Trading from './components/Trading';
+const Trading = lazy(() => import('./components/Trading'));
 import Terminal from './components/Terminal';
 import GitHubHeatmap from './components/GitHubHeatmap';
 import Testimonials from './components/Testimonials';
@@ -47,7 +47,7 @@ function AppInner() {
             <Projects />
             <SkillsConstellation />
             <Experience />
-            <Trading />
+            <Suspense fallback={null}><Trading /></Suspense>
             <GitHubHeatmap />
             <Testimonials />
             <Blog />

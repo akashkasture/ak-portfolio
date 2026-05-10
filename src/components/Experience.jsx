@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState } from 'react'; // useRef/useState still used by useTilt
 import { motion } from 'framer-motion';
 import {
   Briefcase, Calendar, TrendingUp, Zap, DollarSign, Activity,
@@ -46,128 +46,34 @@ const ROLE_COLORS = ['#7c3aed', '#f59e0b'];
 
 function MetricCard({ metric, delay }) {
   const Icon = metric.icon;
-  const ref = useRef(null);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const [hovered, setHovered] = useState(false);
-
-  const onMove = (e) => {
-    const r = ref.current?.getBoundingClientRect();
-    if (!r) return;
-    setTilt({
-      x: ((e.clientY - r.top) / r.height - 0.5) * -14,
-      y: ((e.clientX - r.left) / r.width - 0.5) * 14,
-    });
-  };
-
   return (
     <motion.div
-      ref={ref}
-      className="relative rounded-2xl overflow-hidden cursor-default"
+      className="rounded-xl p-5 flex flex-col gap-3"
       style={{
-        background: `linear-gradient(140deg, ${metric.color}1a 0%, ${metric.color}07 55%, transparent 100%)`,
-        border: `1px solid ${metric.color}45`,
-        boxShadow: hovered
-          ? `0 0 80px ${metric.color}30, 0 30px 60px rgba(0,0,0,0.5), inset 0 1px 0 ${metric.color}25`
-          : `0 0 50px ${metric.color}14, 0 16px 40px rgba(0,0,0,0.35), inset 0 1px 0 ${metric.color}18`,
-        transform: hovered
-          ? `perspective(700px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale3d(1.05,1.05,1.05)`
-          : 'perspective(700px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)',
-        transition: hovered ? 'transform 0.12s ease, box-shadow 0.3s ease' : 'transform 0.6s ease, box-shadow 0.3s ease',
+        background: 'var(--surface)',
+        border: '1px solid var(--surface-border)',
+        borderLeft: `3px solid ${metric.color}`,
       }}
-      onMouseMove={onMove}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => { setHovered(false); setTilt({ x: 0, y: 0 }); }}
-      initial={{ opacity: 0, y: 40, scale: 0.92 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ delay, duration: 0.4 }}
+      whileHover={{ y: -2 }}
     >
-      {/* Bold gradient top bar */}
-      <div
-        className="absolute top-0 left-0 right-0"
-        style={{ height: 2, background: `linear-gradient(90deg, transparent, ${metric.color}dd, ${metric.color}, ${metric.color}dd, transparent)` }}
-      />
-
-      {/* Ambient corner glow ball */}
-      <div
-        className="absolute -top-10 -right-10 w-40 h-40 rounded-full pointer-events-none"
-        style={{ background: `radial-gradient(circle, ${metric.color}45 0%, transparent 68%)` }}
-      />
-      <div
-        className="absolute -bottom-8 -left-8 w-28 h-28 rounded-full pointer-events-none"
-        style={{ background: `radial-gradient(circle, ${metric.color}20 0%, transparent 65%)` }}
-      />
-
-      {/* Large ghost icon */}
-      <div className="absolute -bottom-2 -right-2 pointer-events-none" style={{ opacity: 0.06 }}>
-        <Icon size={96} style={{ color: metric.color }} />
+      <div className="flex items-center gap-2">
+        <Icon size={13} style={{ color: metric.color }} />
+        <span className="text-[10px] font-mono uppercase tracking-widest" style={{ color: 'var(--text-4)' }}>
+          {metric.label}
+        </span>
       </div>
-
-      {/* Animated shimmer sweep */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: `linear-gradient(110deg, transparent 25%, ${metric.color}22 50%, transparent 75%)` }}
-        animate={{ x: ['-130%', '230%'] }}
-        transition={{ duration: 2.6, repeat: Infinity, ease: 'linear', repeatDelay: 1.8 }}
-      />
-
-      <div className="relative z-10 p-5 sm:p-6">
-        {/* Icon with live dot */}
-        <div className="relative inline-block mb-5">
-          <div
-            className="w-12 h-12 rounded-2xl flex items-center justify-center"
-            style={{
-              background: `linear-gradient(135deg, ${metric.color}38, ${metric.color}12)`,
-              border: `1px solid ${metric.color}60`,
-              boxShadow: `0 0 28px ${metric.color}55, inset 0 1px 0 ${metric.color}35`,
-            }}
-          >
-            <Icon size={20} style={{ color: metric.color }} />
-          </div>
-          {/* Pulsing live dot */}
-          <motion.div
-            className="absolute -top-1 -right-1 w-3 h-3 rounded-full"
-            style={{ background: metric.color, border: '2px solid var(--bg)', boxShadow: `0 0 8px ${metric.color}` }}
-            animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          />
-        </div>
-
-        {/* Giant value */}
-        <div
-          className="text-4xl sm:text-5xl font-black tabular-nums leading-none mb-1"
-          style={{
-            color: metric.color,
-            textShadow: `0 0 40px ${metric.color}95, 0 0 80px ${metric.color}45`,
-            letterSpacing: '-0.03em',
-          }}
-        >
-          {metric.value}
-        </div>
-
-        {/* Unit */}
-        <div
-          className="text-[11px] font-mono font-bold uppercase tracking-widest mb-2.5"
-          style={{ color: `${metric.color}bb` }}
-        >
+      <div className="text-3xl font-bold tabular-nums leading-none" style={{ color: metric.color }}>
+        {metric.value}
+      </div>
+      <div>
+        <div className="text-[10px] font-mono uppercase tracking-wider mb-0.5" style={{ color: 'var(--text-4)' }}>
           {metric.unit}
         </div>
-
-        {/* Label */}
-        <div className="text-xs font-semibold mb-1" style={{ color: 'var(--text-2)' }}>
-          {metric.label}
-        </div>
-
-        {/* Description */}
-        <div className="text-[11px] leading-relaxed" style={{ color: 'var(--text-4)' }}>
-          {metric.desc}
-        </div>
-
-        {/* Bottom accent line */}
-        <div
-          className="absolute bottom-0 left-6 right-6 h-px"
-          style={{ background: `linear-gradient(90deg, transparent, ${metric.color}55, transparent)` }}
-        />
+        <div className="text-xs leading-relaxed" style={{ color: 'var(--text-3)' }}>{metric.desc}</div>
       </div>
     </motion.div>
   );
