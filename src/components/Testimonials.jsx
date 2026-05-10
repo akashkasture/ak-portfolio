@@ -5,7 +5,7 @@ import SectionHeader from './SectionHeader';
 function TestimonialCard({ t }) {
   return (
     <div
-      className="flex-shrink-0 w-[380px] rounded-2xl p-7 relative overflow-hidden"
+      className="flex-shrink-0 w-[300px] sm:w-[360px] md:w-[380px] rounded-2xl p-5 sm:p-7 relative overflow-hidden"
       style={{
         background: 'var(--surface)',
         border: '1px solid var(--surface-border)',

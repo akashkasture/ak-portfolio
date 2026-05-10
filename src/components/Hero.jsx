@@ -39,7 +39,7 @@ const CANDLES = [
   [113, 105, 118, 101, false], [103, 118, 122, 99, true], [115, 108, 120, 104, false],
 ];
 
-function CandlestickBg({ startIdx = 0, step = 1, showLine = false }) {
+function CandlestickBg({ startIdx = 0, step = 1, showLine = false, opacity = 0.22 }) {
   const ISO = 7;
   const subset = CANDLES.map((c, i) => ({ c, i })).filter(({ i }) => i % step === startIdx % step);
   return (
@@ -47,7 +47,7 @@ function CandlestickBg({ startIdx = 0, step = 1, showLine = false }) {
       className="absolute inset-0 w-full h-full"
       viewBox="0 0 720 260"
       preserveAspectRatio="xMidYMid slice"
-      style={{ opacity: 0.22 }}
+      style={{ opacity }}
     >
       {subset.map(({ c: [open, close, high, low, up], i }) => {
         const x = 14 + i * 40;
@@ -159,6 +159,13 @@ export default function Hero() {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const heroRef = useRef(null);
+  const [isNarrow, setIsNarrow] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const check = () => setIsNarrow(window.innerWidth < 768);
+    window.addEventListener('resize', check, { passive: true });
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -186,24 +193,48 @@ export default function Hero() {
         {/* Layer 1: back candles — slowest, drifts left */}
         <motion.div
           className="absolute bottom-0 left-0 right-0 h-64"
-          style={{ y: candleY2, x: candleX1, opacity: 0.5 }}
+          style={{ y: candleY2, x: isNarrow ? 0 : candleX1, opacity: 0.5 }}
         >
-          <CandlestickBg startIdx={0} step={3} />
+          <CandlestickBg startIdx={0} step={3} opacity={isNarrow ? 0.48 : 0.22} />
         </motion.div>
         {/* Layer 2: mid candles — medium, drifts right */}
         <motion.div
           className="absolute bottom-0 left-0 right-0 h-64"
-          style={{ y: candleY1, x: candleX2, opacity: 0.75 }}
+          style={{ y: candleY1, x: isNarrow ? 0 : candleX2, opacity: 0.75 }}
         >
-          <CandlestickBg startIdx={1} step={3} />
+          <CandlestickBg startIdx={1} step={3} opacity={isNarrow ? 0.48 : 0.22} />
         </motion.div>
         {/* Layer 3: front candles — fastest, drifts most left */}
         <motion.div
           className="absolute bottom-0 left-0 right-0 h-64"
-          style={{ y: candleY3, x: candleX3, opacity: 1 }}
+          style={{ y: candleY3, x: isNarrow ? 0 : candleX3, opacity: 1 }}
         >
-          <CandlestickBg startIdx={2} step={3} showLine />
+          <CandlestickBg startIdx={2} step={3} showLine opacity={isNarrow ? 0.5 : 0.22} />
         </motion.div>
+
+        {/* Mobile-only pulsing glow orbs in the candlestick zone */}
+        {isDark && (
+          <div className="absolute inset-0 md:hidden pointer-events-none">
+            <motion.div
+              className="absolute top-1/3 left-1/2 -translate-x-1/2 w-72 h-72 rounded-full"
+              style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.22) 0%, transparent 65%)' }}
+              animate={{ scale: [1, 1.22, 1], opacity: [0.45, 1, 0.45] }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <motion.div
+              className="absolute bottom-1/3 right-1/4 w-52 h-52 rounded-full"
+              style={{ background: 'radial-gradient(circle, rgba(6,182,212,0.18) 0%, transparent 65%)' }}
+              animate={{ scale: [1, 1.16, 1], opacity: [0.35, 0.85, 0.35] }}
+              transition={{ duration: 5, delay: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <motion.div
+              className="absolute top-1/4 left-1/4 w-40 h-40 rounded-full"
+              style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.18) 0%, transparent 65%)' }}
+              animate={{ scale: [1, 1.12, 1], opacity: [0.3, 0.8, 0.3] }}
+              transition={{ duration: 6, delay: 3, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          </div>
+        )}
 
         {/* Radial glows — hidden in light mode */}
         {isDark && (
@@ -228,7 +259,7 @@ export default function Hero() {
       {CODE_SNIPPETS.map((snip, i) => (
         <motion.div
           key={i}
-          className="absolute hidden lg:block z-20 pointer-events-none"
+          className="absolute hidden sm:block z-20 pointer-events-none"
           style={{ top: snip.top, bottom: snip.bottom, left: snip.left, right: snip.right }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -381,6 +412,49 @@ export default function Hero() {
             </div>
           </motion.div>
 
+          {/* Mobile-only mini candlestick bar — visible chart strip above stat cards */}
+          <motion.div
+            className="md:hidden mx-auto mb-6 w-full max-w-sm rounded-2xl overflow-hidden relative"
+            style={{
+              background: 'var(--surface)',
+              border: '1px solid rgba(99,102,241,0.2)',
+              boxShadow: '0 0 30px rgba(99,102,241,0.12)',
+              height: 72,
+            }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+          >
+            <div className="absolute top-0 left-0 right-0 h-px"
+              style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.6), transparent)' }} />
+            <div className="absolute inset-0 flex items-center px-2">
+              <svg width="100%" height="60" viewBox="0 0 320 60" preserveAspectRatio="xMidYMid meet">
+                {CANDLES.slice(0, 16).map(([open, close, high, low, up], i) => {
+                  const x = 6 + i * 20;
+                  const fw = 7;
+                  const scale = 0.38;
+                  const bt = 60 - Math.max(open, close) * scale;
+                  const bh = Math.max(Math.abs(close - open) * scale, 2);
+                  const wt = 60 - high * scale;
+                  const wb = 60 - low * scale;
+                  const c = up ? '#10b981' : '#ef4444';
+                  return (
+                    <g key={i}>
+                      <line x1={x + fw / 2} y1={wt} x2={x + fw / 2} y2={bt} stroke={c} strokeWidth="1" opacity="0.5" />
+                      <line x1={x + fw / 2} y1={bt + bh} x2={x + fw / 2} y2={wb} stroke={c} strokeWidth="1" opacity="0.5" />
+                      <rect x={x} y={bt} width={fw} height={bh} fill={c} rx="1" opacity="0.85" />
+                    </g>
+                  );
+                })}
+                <polyline
+                  points={CANDLES.slice(0, 16).map(([o, c,,], i) => `${6 + i * 20 + 3.5},${60 - ((o + c) / 2) * 0.38}`).join(' ')}
+                  fill="none" stroke="#7c3aed" strokeWidth="1.5" strokeDasharray="3 2" opacity="0.6"
+                />
+              </svg>
+            </div>
+            <div className="absolute bottom-1.5 right-3 text-[9px] font-mono text-indigo-400 opacity-70">LIVE MARKET</div>
+          </motion.div>
+
           {/* Stat cards */}
           <motion.div
             className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto"
@@ -395,7 +469,8 @@ export default function Hero() {
                 style={{
                   background: 'var(--surface)',
                   backdropFilter: 'blur(20px)',
-                  borderColor: `${card.color}20`,
+                  borderColor: `${card.color}30`,
+                  boxShadow: `0 0 18px ${card.color}12`,
                 }}
                 whileHover={{
                   borderColor: `${card.color}50`,

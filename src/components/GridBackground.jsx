@@ -5,7 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 const CELL = 36;
 const COLS = 40;
 const ROWS = 30;
-const GLOW_COUNT = 16;
+const GLOW_COUNT = 24;
 
 function seededRandom(seed) {
   let s = seed;
@@ -80,7 +80,7 @@ export default function GridBackground() {
               border: `1px solid ${c.color}38`,
               boxShadow: `0 0 20px ${c.color}28`,
             }}
-            animate={{ opacity: [0, 0.75, 0], scale: [0.8, 1.02, 0.8] }}
+            animate={{ opacity: [0, 0.9, 0], scale: [0.8, 1.04, 0.8] }}
             transition={{ duration: c.duration, delay: c.delay, repeat: Infinity, ease: 'easeInOut' }}
           />
         ))}
@@ -110,6 +110,28 @@ export default function GridBackground() {
           style={{ background: 'radial-gradient(ellipse 70% 80% at 50% 0%, rgba(99,102,241,0.04) 0%, transparent 100%)' }}
         />
       )}
+
+      {/* Mobile-only stronger atmospheric glows — ensure glow is always visible on small screens */}
+      <div className="absolute inset-0 pointer-events-none md:hidden">
+        <motion.div
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(124,58,237,0.18) 0%, transparent 65%)' }}
+          animate={{ scale: [1, 1.15, 1], opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute bottom-0 right-0 w-64 h-64 rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(6,182,212,0.14) 0%, transparent 65%)' }}
+          animate={{ scale: [1, 1.12, 1], opacity: [0.5, 0.95, 0.5] }}
+          transition={{ duration: 7, delay: 2, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-0 w-52 h-52 rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.14) 0%, transparent 65%)' }}
+          animate={{ scale: [1, 1.1, 1], opacity: [0.4, 0.85, 0.4] }}
+          transition={{ duration: 8, delay: 4, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      </div>
     </div>
   );
 }
