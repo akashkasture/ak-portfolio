@@ -5,7 +5,6 @@ import { GithubIcon, LinkedinIcon } from './SocialIcons';
 import { personalInfo } from '../data/portfolio';
 import { useTheme } from '../context/ThemeContext';
 import ParticleNetwork from './ParticleNetwork';
-import HoloGlobe from './HoloGlobe';
 import DataPackets from './DataPackets';
 import MagneticButton from './MagneticButton';
 
@@ -197,35 +196,6 @@ export default function Hero() {
         <TickerTape />
       </div>
 
-      {/* Holographic globe — middle-left, behind content */}
-      <div
-        className="absolute left-0 z-[3] pointer-events-none"
-        style={{
-          top: '50%',
-          transform: 'translateY(-50%)',
-          opacity: isDark ? 0.82 : 0.45,
-        }}
-      >
-        {/* Ambient glow halo — bleeds behind the globe */}
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            inset: '-40%',
-            background: 'radial-gradient(circle, rgba(99,102,241,0.28) 0%, rgba(6,182,212,0.12) 45%, transparent 70%)',
-            filter: 'blur(28px)',
-          }}
-        />
-        {/* Mobile: 180px, sm+: 240px, lg+: 300px */}
-        <div className="sm:hidden">
-          <HoloGlobe size={180} />
-        </div>
-        <div className="hidden sm:block lg:hidden">
-          <HoloGlobe size={240} />
-        </div>
-        <div className="hidden lg:block">
-          <HoloGlobe size={300} />
-        </div>
-      </div>
 
       {/* Floating data packet labels */}
       <DataPackets />
