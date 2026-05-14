@@ -74,13 +74,13 @@ export default function About() {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="relative w-full max-w-sm mx-auto" style={{ aspectRatio: '1/1', maxHeight: 340 }}>
+            <div className="relative w-full max-w-xs sm:max-w-sm lg:max-w-md mx-auto aspect-square">
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-indigo-600/25 to-cyan-600/15 blur-3xl" />
               <div className="relative h-full rounded-3xl glass border border-white/10 overflow-hidden flex items-center justify-center">
                 <div className="text-center p-8 w-full">
                   {/* Avatar */}
                   <div
-                    className="w-28 h-28 mx-auto mb-6 rounded-full flex items-center justify-center text-white text-4xl font-bold glow-pulse"
+                    className="w-20 h-20 sm:w-28 sm:h-28 mx-auto mb-4 sm:mb-6 rounded-full flex items-center justify-center text-white text-3xl sm:text-4xl font-bold glow-pulse"
                     style={{
                       background: 'linear-gradient(135deg, #6366f1, #06b6d4)',
                       boxShadow: '0 0 40px rgba(99,102,241,0.5), 0 0 80px rgba(99,102,241,0.2)',
@@ -88,29 +88,29 @@ export default function About() {
                   >
                     AK
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-1">{personalInfo.name}</h3>
-                  <p className="text-indigo-400 font-medium mb-4">{personalInfo.title}</p>
-                  <div className="flex items-center justify-center gap-1.5 text-slate-400 text-sm">
-                    <MapPin size={14} />
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-1">{personalInfo.name}</h3>
+                  <p className="text-indigo-400 font-medium text-sm sm:text-base mb-3 sm:mb-4">{personalInfo.title}</p>
+                  <div className="flex items-center justify-center gap-1.5 text-slate-400 text-xs sm:text-sm">
+                    <MapPin size={13} />
                     {personalInfo.location}
                   </div>
 
-                  <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-2 gap-4">
+                  <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-white/10 grid grid-cols-2 gap-3 sm:gap-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-white">2+</div>
+                      <div className="text-xl sm:text-2xl font-bold text-white">2+</div>
                       <div className="text-xs text-slate-500">Years</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-white">10+</div>
+                      <div className="text-xl sm:text-2xl font-bold text-white">10+</div>
                       <div className="text-xs text-slate-500">Projects</div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Floating badges — Lucide only */}
+              {/* Floating badges */}
               <motion.div
-                className="absolute -top-4 -right-4 w-20 h-20 rounded-2xl glass border border-white/10 flex flex-col items-center justify-center shadow-lg"
+                className="absolute -top-4 -right-4 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl glass border border-white/10 hidden xs:flex flex-col items-center justify-center shadow-lg"
                 animate={{ y: [0, -12, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
               >
@@ -118,7 +118,7 @@ export default function About() {
                 <span className="text-[10px] text-slate-500">Coffee++</span>
               </motion.div>
               <motion.div
-                className="absolute -bottom-4 -left-4 w-20 h-20 rounded-2xl glass border border-white/10 flex flex-col items-center justify-center shadow-lg"
+                className="absolute -bottom-4 -left-4 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl glass border border-white/10 hidden xs:flex flex-col items-center justify-center shadow-lg"
                 animate={{ y: [0, -12, 0] }}
                 transition={{ duration: 5, delay: 2, repeat: Infinity, ease: 'easeInOut' }}
               >
