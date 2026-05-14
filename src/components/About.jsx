@@ -74,7 +74,7 @@ export default function About() {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="relative w-full max-w-xs sm:max-w-sm lg:max-w-md mx-auto aspect-square">
+            <div className="relative w-full max-w-sm sm:max-w-md mx-auto aspect-square">
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-indigo-600/25 to-cyan-600/15 blur-3xl" />
               <div className="relative h-full rounded-3xl glass border border-white/10 overflow-hidden flex items-center justify-center">
                 <div className="text-center p-8 w-full">
@@ -110,19 +110,19 @@ export default function About() {
 
               {/* Floating badges */}
               <motion.div
-                className="absolute -top-4 -right-4 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl glass border border-white/10 hidden xs:flex flex-col items-center justify-center shadow-lg"
+                className="absolute -top-4 -right-4 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl glass border border-white/10 flex flex-col items-center justify-center shadow-lg"
                 animate={{ y: [0, -12, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
               >
-                <Coffee size={22} className="text-amber-400 mb-1" />
+                <Coffee size={20} className="text-amber-400 mb-1" />
                 <span className="text-[10px] text-slate-500">Coffee++</span>
               </motion.div>
               <motion.div
-                className="absolute -bottom-4 -left-4 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl glass border border-white/10 hidden xs:flex flex-col items-center justify-center shadow-lg"
+                className="absolute -bottom-4 -left-4 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl glass border border-white/10 flex flex-col items-center justify-center shadow-lg"
                 animate={{ y: [0, -12, 0] }}
                 transition={{ duration: 5, delay: 2, repeat: Infinity, ease: 'easeInOut' }}
               >
-                <GitBranch size={22} className="text-indigo-400 mb-1" />
+                <GitBranch size={20} className="text-indigo-400 mb-1" />
                 <span className="text-[10px] text-slate-500">Shipping</span>
               </motion.div>
             </div>
