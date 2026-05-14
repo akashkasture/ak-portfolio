@@ -65,16 +65,16 @@ export default function About() {
           description="Passionate about building distributed systems that handle real-world complexity with elegance and performance."
         />
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
+        <div className="grid lg:grid-cols-2 gap-8 items-center mb-16">
           {/* Profile card */}
           <motion.div
             className="relative"
-            initial={{ opacity: 0, x: -50 }}
+            initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="relative w-full max-w-md mx-auto aspect-square">
+            <div className="relative w-full max-w-sm mx-auto" style={{ aspectRatio: '1/1', maxHeight: 340 }}>
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-indigo-600/25 to-cyan-600/15 blur-3xl" />
               <div className="relative h-full rounded-3xl glass border border-white/10 overflow-hidden flex items-center justify-center">
                 <div className="text-center p-8 w-full">
@@ -130,12 +130,13 @@ export default function About() {
 
           {/* Bio text + hobbies */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            className="w-full min-w-0"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
-            <p className="text-slate-300 text-lg leading-relaxed mb-6">
+            <p className="text-slate-300 text-base sm:text-lg leading-relaxed mb-5" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
               I'm a{' '}
               <span className="text-white font-semibold">Software Engineer</span> at{' '}
               <span className="text-indigo-400 font-semibold">Newgen Software Technology</span> with a
@@ -143,12 +144,12 @@ export default function About() {
               <span className="text-indigo-400">distributed systems, microservices architecture</span>,
               and high-throughput backend engineering.
             </p>
-            <p className="text-slate-400 leading-relaxed mb-6">
+            <p className="text-slate-400 leading-relaxed mb-5" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
               My expertise spans the full backend stack — from designing{' '}
               <span className="text-cyan-400">event-driven pipelines</span> with Kafka &amp; IBM MQ to
               optimizing Oracle SQL and architecting resilient, cloud-native systems on AWS.
             </p>
-            <p className="text-slate-400 leading-relaxed mb-8">
+            <p className="text-slate-400 leading-relaxed mb-7" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
               I believe great engineering is about solving real problems elegantly. I love working on
               systems that need to be{' '}
               <span className="text-white font-medium">fast, reliable, and infinitely scalable</span>.

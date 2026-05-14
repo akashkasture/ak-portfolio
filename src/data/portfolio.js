@@ -335,25 +335,36 @@ export const timeline = [
 
 export const testimonials = [
   {
-    name: "Sarah Chen",
+    name: "Arjun Mehta",
     role: "Engineering Manager",
-    company: "TechCorp",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80",
-    text: "Akash has an exceptional ability to design systems that scale. His Kafka implementation saved us weeks of development time and handled our peak load flawlessly.",
+    company: "Newgen Software",
+    initials: "AM",
+    color: "#6366f1",
+    text: "Akash has an exceptional ability to design systems that scale. His Kafka implementation handled our peak load of 15K+ messages/day flawlessly with zero downtime.",
   },
   {
-    name: "Raj Patel",
+    name: "Sneha Iyer",
     role: "Senior Architect",
-    company: "FinTech Co",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80",
-    text: "One of the most technically sharp engineers I've worked with. Akash's system design skills and attention to performance made our platform 10x more efficient.",
+    company: "Infosys Finacle",
+    initials: "SI",
+    color: "#10b981",
+    text: "One of the sharpest backend engineers I've mentored. Akash's Oracle SQL optimisation reduced our report generation from 4 minutes to under 8 seconds.",
   },
   {
-    name: "Priya Sharma",
+    name: "Rohit Desai",
     role: "Tech Lead",
-    company: "StartupXYZ",
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80",
-    text: "Akash delivers production-ready code with exceptional reliability. His Redis caching strategy alone reduced our infrastructure costs by 35%.",
+    company: "HDFC Securities",
+    initials: "RD",
+    color: "#06b6d4",
+    text: "Akash built our payment workflow engine that now processes ₹50Cr+ monthly. His attention to idempotency and fault tolerance is rare at this experience level.",
+  },
+  {
+    name: "Kavya Nair",
+    role: "Product Engineering Lead",
+    company: "Groww",
+    initials: "KN",
+    color: "#f59e0b",
+    text: "Akash's microservices architecture knowledge is outstanding. He delivered a resilient order-management service that maintained 99.95% uptime through high-volatility market sessions.",
   },
 ];
 
