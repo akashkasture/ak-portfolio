@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
+import { ExternalLink, ChevronRight } from 'lucide-react';
 import { GithubIcon } from './SocialIcons';
 import { projects } from '../data/portfolio';
 import SectionHeader from './SectionHeader';
@@ -107,7 +107,26 @@ function ProjectCard({ project, index }) {
             />
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, var(--surface) 0%, transparent 60%)' }} />
 
-            {/* Hover overlay — category badge only, no misleading external links */}
+            {/* Hover overlay buttons */}
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center gap-3"
+              animate={{ opacity: imgHovered ? 1 : 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <span
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-xs font-semibold backdrop-blur-sm cursor-default"
+                style={{ background: color, boxShadow: `0 0 20px ${color}60` }}
+              >
+                <ExternalLink size={12} />
+                Live Demo
+              </span>
+              <span
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/15 text-white text-xs font-semibold backdrop-blur-sm cursor-default"
+              >
+                <GithubIcon size={12} />
+                Code
+              </span>
+            </motion.div>
 
             {/* Category badge */}
             <div className="absolute top-3 left-3">
@@ -242,11 +261,8 @@ export default function Projects() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          <a
-            href="https://github.com/akashkasture"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-200 text-sm"
+          <span
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-200 text-sm cursor-default"
             style={{ border: '1px solid var(--surface-border)', color: 'var(--text-3)', background: 'var(--surface)' }}
             onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.3)'; e.currentTarget.style.color = 'var(--text-1)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--surface-border)'; e.currentTarget.style.color = 'var(--text-3)'; }}
@@ -254,7 +270,7 @@ export default function Projects() {
             <GithubIcon size={15} />
             View All 10+ Projects on GitHub
             <ChevronRight size={13} />
-          </a>
+          </span>
         </motion.div>
       </div>
     </section>
