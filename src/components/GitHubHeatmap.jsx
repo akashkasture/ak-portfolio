@@ -33,13 +33,11 @@ const heatmapData = generateHeatmapData();
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export default function GitHubHeatmap() {
-  const totalContributions = heatmapData.flat().reduce((sum, v) => sum + v * 3, 0);
-
   return (
     <section className="section-padding">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          label="GitHub Activity"
+          label="Coding Activity"
           title="Contribution"
           highlight="Heatmap"
           description="Consistency is the hallmark of great engineering."
@@ -52,19 +50,8 @@ export default function GitHubHeatmap() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <span className="text-white font-bold text-lg">{totalContributions.toLocaleString()}</span>
-              <span className="text-slate-500 text-sm ml-2">contributions in the last year</span>
-            </div>
-            <a
-              href="https://github.com/akashkasture"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
-            >
-              View on GitHub →
-            </a>
+          <div className="mb-6">
+            <span className="text-slate-500 text-sm">Activity pattern over the last year</span>
           </div>
 
           <div className="overflow-x-auto">

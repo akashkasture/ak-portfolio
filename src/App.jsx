@@ -11,7 +11,6 @@ import Experience from './components/Experience';
 const Trading = lazy(() => import('./components/Trading'));
 import Terminal from './components/Terminal';
 import GitHubHeatmap from './components/GitHubHeatmap';
-import Testimonials from './components/Testimonials';
 import Blog from './components/Blog';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
@@ -49,7 +48,6 @@ function AppInner() {
             <Experience />
             <Suspense fallback={null}><Trading /></Suspense>
             <GitHubHeatmap />
-            <Testimonials />
             <Blog />
             <Contact />
           </main>

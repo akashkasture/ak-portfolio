@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, ArrowUpRight, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { GithubIcon } from './SocialIcons';
 import { projects } from '../data/portfolio';
 import SectionHeader from './SectionHeader';
@@ -107,34 +107,7 @@ function ProjectCard({ project, index }) {
             />
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, var(--surface) 0%, transparent 60%)' }} />
 
-            {/* Hover overlay buttons */}
-            <motion.div
-              className="absolute inset-0 flex items-center justify-center gap-3"
-              animate={{ opacity: imgHovered ? 1 : 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <a
-                href={project.live}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-xs font-semibold hover:scale-105 transition-transform backdrop-blur-sm"
-                style={{ background: color, boxShadow: `0 0 20px ${color}60` }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <ExternalLink size={12} />
-                Live Demo
-              </a>
-              <a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/15 text-white text-xs font-semibold hover:bg-white/25 transition-colors backdrop-blur-sm"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <GithubIcon size={12} />
-                Code
-              </a>
-            </motion.div>
+            {/* Hover overlay — category badge only, no misleading external links */}
 
             {/* Category badge */}
             <div className="absolute top-3 left-3">
@@ -155,20 +128,11 @@ function ProjectCard({ project, index }) {
           <div className="p-5 flex flex-col flex-1">
             <div className="flex items-start justify-between mb-2">
               <h3
-                className="font-bold text-base leading-snug flex-1 pr-2"
+                className="font-bold text-base leading-snug"
                 style={{ color: 'var(--text-1)' }}
               >
                 {project.title}
               </h3>
-              <a
-                href={project.live}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-shrink-0 p-1.5 rounded-lg transition-all ml-1"
-                style={{ color: 'var(--text-3)' }}
-              >
-                <ArrowUpRight size={14} />
-              </a>
             </div>
 
             <p className="text-sm leading-relaxed mb-4 flex-1 line-clamp-3" style={{ color: 'var(--text-3)' }}>
