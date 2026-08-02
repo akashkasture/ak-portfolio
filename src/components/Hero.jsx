@@ -6,6 +6,7 @@ import { personalInfo } from '../data/portfolio';
 import { useTheme } from '../context/ThemeContext';
 import ParticleNetwork from './ParticleNetwork';
 import MagneticButton from './MagneticButton';
+import { trackEvent } from '../utils/analytics';
 
 const TITLES = [
   'Backend Engineer',
@@ -389,6 +390,7 @@ export default function Hero() {
             <MagneticButton strength={0.2}>
               <a
                 href={personalInfo.resumeUrl}
+                onClick={() => trackEvent('resume_click', { location: 'hero' })}
                 className="flex items-center gap-2 px-7 py-3.5 rounded-xl text-slate-400 font-semibold hover:text-white transition-all duration-300"
               >
                 <Download size={15} />

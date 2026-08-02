@@ -5,6 +5,7 @@ import { GithubIcon } from './SocialIcons';
 import { projects } from '../data/portfolio';
 import SectionHeader from './SectionHeader';
 import { useTheme } from '../context/ThemeContext';
+import { trackEvent } from '../utils/analytics';
 
 const FEATURED = projects.slice(0, 4);
 const CATEGORIES = ['All', ...new Set(FEATURED.map((p) => p.category))];
@@ -114,6 +115,7 @@ function ProjectCard({ project, index }) {
               transition={{ duration: 0.2 }}
             >
               <span
+                onClick={() => trackEvent('project_demo_click', { project: project.title })}
                 className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-xs font-semibold backdrop-blur-sm cursor-default"
                 style={{ background: color, boxShadow: `0 0 20px ${color}60` }}
               >
@@ -121,6 +123,7 @@ function ProjectCard({ project, index }) {
                 Live Demo
               </span>
               <span
+                onClick={() => trackEvent('project_code_click', { project: project.title })}
                 className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/15 text-white text-xs font-semibold backdrop-blur-sm cursor-default"
               >
                 <GithubIcon size={12} />
@@ -225,7 +228,10 @@ export default function Projects() {
             return (
               <button
                 key={cat}
-                onClick={() => setActiveCategory(cat)}
+                onClick={() => {
+                  setActiveCategory(cat);
+                  trackEvent('project_filter_click', { category: cat });
+                }}
                 className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200"
                 style={{
                   background: isActive ? catColor : 'var(--surface)',
@@ -262,6 +268,7 @@ export default function Projects() {
           viewport={{ once: true }}
         >
           <span
+            onClick={() => trackEvent('project_github_cta_click')}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-200 text-sm cursor-default"
             style={{ border: '1px solid var(--surface-border)', color: 'var(--text-3)', background: 'var(--surface)' }}
             onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.3)'; e.currentTarget.style.color = 'var(--text-1)'; }}

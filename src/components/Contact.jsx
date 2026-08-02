@@ -4,6 +4,7 @@ import { Mail, Send, CheckCircle, MapPin, Clock } from 'lucide-react';
 import { GithubIcon, LinkedinIcon } from './SocialIcons';
 import { personalInfo } from '../data/portfolio';
 import SectionHeader from './SectionHeader';
+import { trackEvent } from '../utils/analytics';
 
 // Field MUST be outside Contact — defining it inside causes React to remount
 // the input on every keystroke (new component type = new DOM node = lost focus)
@@ -96,6 +97,7 @@ export default function Contact() {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
+    trackEvent('contact_form_submit');
     setStatus('sending');
     setTimeout(() => setStatus('success'), 1800);
   };
@@ -156,6 +158,7 @@ export default function Contact() {
                           href={href}
                           target={href.startsWith('http') ? '_blank' : undefined}
                           rel="noopener noreferrer"
+                          onClick={() => trackEvent('contact_link_click', { type: label })}
                           className="text-slate-300 text-sm hover:text-white transition-colors break-all"
                           style={{ '--hover-color': color }}
                         >
