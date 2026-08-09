@@ -105,7 +105,7 @@ export default function Window({ app, win, isActive }) {
       dragElastic={0}
       onDragEnd={() => updateWindowRect(app.id, { x: mx.get(), y: my.get(), width: win.width, height: win.height })}
       onPointerDownCapture={() => { if (!isActive && !win.minimized) focusApp(app.id); }}
-      className="absolute rounded-xl overflow-hidden flex flex-col glass-strong"
+      className="absolute rounded-[14px] overflow-hidden flex flex-col os-window"
       style={{
         top: 0,
         left: 0,
@@ -115,42 +115,69 @@ export default function Window({ app, win, isActive }) {
         height: maximized ? '100%' : height,
         zIndex: win.zIndex,
         boxShadow: isActive
-          ? '0 24px 70px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06)'
-          : '0 12px 40px rgba(0,0,0,0.4)',
+          ? [
+              'inset 0 1px 0 rgba(255,255,255,0.09)',
+              '0 0 0 1px rgba(255,255,255,0.09)',
+              '0 2px 10px rgba(0,0,0,0.35)',
+              '0 28px 90px rgba(0,0,0,0.65)',
+              '0 0 70px rgba(var(--os-accent-rgb), 0.10)',
+            ].join(', ')
+          : [
+              'inset 0 1px 0 rgba(255,255,255,0.05)',
+              '0 0 0 1px rgba(255,255,255,0.05)',
+              '0 14px 44px rgba(0,0,0,0.42)',
+            ].join(', '),
+        filter: isActive ? 'none' : 'brightness(0.94)',
+        transition: 'box-shadow 0.25s ease, filter 0.25s ease',
         ...minimizedStyle,
       }}
       aria-hidden={win.minimized}
-      initial={{ opacity: 0, scale: 0.92, y: (win.y ?? 0) + 20 }}
+      initial={{ opacity: 0, scale: 0.9, y: (win.y ?? 0) + 26 }}
       animate={{ opacity: win.minimized ? 0 : 1, scale: win.minimized ? 0.85 : 1 }}
-      exit={{ opacity: 0, scale: 0.92 }}
-      transition={{ duration: 0.2 }}
+      exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.16 } }}
+      transition={{ type: 'spring', stiffness: 380, damping: 32, mass: 0.9 }}
     >
       <div
-        className="flex items-center gap-2 px-3 py-2.5 flex-shrink-0 select-none"
-        style={{ borderBottom: '1px solid var(--surface-border)', cursor: maximized ? 'default' : 'grab', touchAction: 'none' }}
+        className="os-titlebar flex items-center gap-2 px-3.5 py-2.5 flex-shrink-0 select-none"
+        style={{ cursor: maximized ? 'default' : 'grab', touchAction: 'none' }}
         onPointerDown={(e) => { if (!maximized) dragControls.start(e); }}
         onDoubleClick={() => toggleMaximize(app.id)}
       >
-        <div className="flex items-center gap-1.5">
+        <div className="group/tl flex items-center gap-2">
           <button
             onClick={(e) => { e.stopPropagation(); closeApp(app.id); }}
             aria-label="Close"
-            className="w-3 h-3 rounded-full bg-[#ff5f57] hover:brightness-110 transition-all"
-          />
+            className="w-3 h-3 rounded-full flex items-center justify-center transition-all"
+            style={{ background: isActive ? '#ff5f57' : 'rgba(255,255,255,0.18)', boxShadow: isActive ? 'inset 0 0 0 0.5px rgba(0,0,0,0.2)' : 'none' }}
+          >
+            <svg width="6" height="6" viewBox="0 0 6 6" className="opacity-0 group-hover/tl:opacity-100 transition-opacity">
+              <path d="M1 1L5 5M5 1L1 5" stroke="rgba(0,0,0,0.55)" strokeWidth="1.1" strokeLinecap="round" />
+            </svg>
+          </button>
           <button
             onClick={(e) => { e.stopPropagation(); minimizeApp(app.id); }}
             aria-label="Minimize"
-            className="w-3 h-3 rounded-full bg-[#febc2e] hover:brightness-110 transition-all"
-          />
+            className="w-3 h-3 rounded-full flex items-center justify-center transition-all"
+            style={{ background: isActive ? '#febc2e' : 'rgba(255,255,255,0.18)', boxShadow: isActive ? 'inset 0 0 0 0.5px rgba(0,0,0,0.2)' : 'none' }}
+          >
+            <svg width="6" height="6" viewBox="0 0 6 6" className="opacity-0 group-hover/tl:opacity-100 transition-opacity">
+              <path d="M1 3H5" stroke="rgba(0,0,0,0.55)" strokeWidth="1.2" strokeLinecap="round" />
+            </svg>
+          </button>
           <button
             onClick={(e) => { e.stopPropagation(); toggleMaximize(app.id); }}
             aria-label="Maximize"
-            className="w-3 h-3 rounded-full bg-[#28c840] hover:brightness-110 transition-all"
-          />
+            className="w-3 h-3 rounded-full flex items-center justify-center transition-all"
+            style={{ background: isActive ? '#28c840' : 'rgba(255,255,255,0.18)', boxShadow: isActive ? 'inset 0 0 0 0.5px rgba(0,0,0,0.2)' : 'none' }}
+          >
+            <svg width="6" height="6" viewBox="0 0 6 6" className="opacity-0 group-hover/tl:opacity-100 transition-opacity">
+              <path d="M1.2 3.6V1.2H3.6M4.8 2.4V4.8H2.4" stroke="rgba(0,0,0,0.55)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
         </div>
-        <div className="flex items-center gap-1.5 mx-auto pr-12">
+        <div className="flex items-center gap-1.5 mx-auto pr-14" style={{ opacity: isActive ? 1 : 0.55, transition: 'opacity 0.25s' }}>
           <Icon size={12} style={{ color: 'var(--text-3)' }} />
-          <span className="text-xs font-mono" style={{ color: 'var(--text-3)' }}>{app.title}</span>
+          <span className="text-xs font-medium tracking-wide" style={{ color: 'var(--text-2)' }}>{app.title}</span>
         </div>
       </div>
 

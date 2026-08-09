@@ -5,6 +5,7 @@ import { GithubIcon } from '../components/SocialIcons';
 export const APPS = {
   about: {
     id: 'about',
+    tint: ['#6366f1', '#8b5cf6'],
     title: 'About Me',
     icon: User,
     component: lazy(() => import('../components/About')),
@@ -14,6 +15,7 @@ export const APPS = {
   },
   experience: {
     id: 'experience',
+    tint: ['#f59e0b', '#f97316'],
     title: 'Experience',
     icon: Briefcase,
     component: lazy(() => import('../components/Experience')),
@@ -23,6 +25,7 @@ export const APPS = {
   },
   projects: {
     id: 'projects',
+    tint: ['#06b6d4', '#3b82f6'],
     title: 'Projects',
     icon: FolderKanban,
     component: lazy(() => import('../components/Projects')),
@@ -32,6 +35,8 @@ export const APPS = {
   },
   terminal: {
     id: 'terminal',
+    tint: ['#1e293b', '#0f172a'],
+    iconColor: '#4ade80',
     title: 'Terminal',
     icon: TerminalSquare,
     component: lazy(() => import('../components/Terminal')),
@@ -41,6 +46,7 @@ export const APPS = {
   },
   skills: {
     id: 'skills',
+    tint: ['#a855f7', '#ec4899'],
     title: 'Skills',
     icon: Sparkles,
     component: lazy(() => import('../components/SkillsConstellation')),
@@ -50,6 +56,7 @@ export const APPS = {
   },
   contact: {
     id: 'contact',
+    tint: ['#3b82f6', '#0ea5e9'],
     title: 'Contact',
     icon: Mail,
     component: lazy(() => import('../components/Contact')),
@@ -59,6 +66,7 @@ export const APPS = {
   },
   monitor: {
     id: 'monitor',
+    tint: ['#10b981', '#059669'],
     title: 'System Monitor',
     icon: Activity,
     component: lazy(() => import('./SystemMonitor')),
@@ -68,6 +76,7 @@ export const APPS = {
   },
   github: {
     id: 'github',
+    tint: ['#3d434b', '#24292e'],
     title: 'GitHub',
     icon: GithubIcon,
     component: lazy(() => import('./GitHubApp')),
@@ -77,6 +86,7 @@ export const APPS = {
   },
   architecture: {
     id: 'architecture',
+    tint: ['#8b5cf6', '#6366f1'],
     title: 'Architecture Lab',
     icon: Network,
     component: lazy(() => import('./ArchitectureLab')),
@@ -86,6 +96,7 @@ export const APPS = {
   },
   settings: {
     id: 'settings',
+    tint: ['#64748b', '#475569'],
     title: 'Settings',
     icon: SettingsIcon,
     component: lazy(() => import('./Settings')),

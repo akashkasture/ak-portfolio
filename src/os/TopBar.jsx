@@ -19,7 +19,11 @@ export default function TopBar() {
   return (
     <div
       className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-3 sm:px-4 glass-strong"
-      style={{ height: 40, borderBottom: '1px solid var(--nav-border)' }}
+      style={{
+        height: 40,
+        borderBottom: '1px solid var(--nav-border)',
+        boxShadow: 'inset 0 -1px 0 rgba(255,255,255,0.03), 0 6px 24px rgba(0,0,0,0.25)',
+      }}
     >
       <div className="relative flex items-center gap-3">
         <button

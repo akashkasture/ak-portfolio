@@ -1,5 +1,6 @@
 import { AnimatePresence } from 'framer-motion';
-import GridBackground from '../components/GridBackground';
+import Wallpaper from './Wallpaper';
+import DesktopWidgets from './DesktopWidgets';
 import CursorGlow from '../components/CursorGlow';
 import TopBar from './TopBar';
 import Dock from './Dock';
@@ -16,14 +17,15 @@ export default function Desktop() {
 
   return (
     <div className="relative min-h-screen overflow-hidden" style={{ color: 'var(--text-1)' }}>
+      <Wallpaper />
       <CursorGlow />
-      <GridBackground />
       <TopBar />
 
       <div
         className="absolute left-0 right-0"
-        style={{ top: 40, bottom: isMobile ? 56 : 0 }}
+        style={{ top: 40, bottom: isMobile ? 60 : 0 }}
       >
+        <DesktopWidgets />
         <AnimatePresence>
           {recruiterMode && <RecruiterMode key="recruiter" />}
         </AnimatePresence>

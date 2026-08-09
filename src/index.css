@@ -180,6 +180,109 @@
     transition: background 0.4s ease, border-color 0.4s ease;
   }
 
+  /* ── AK OS chrome surfaces ─────────────────────────── */
+  .dock-glass {
+    background: rgba(18, 16, 28, 0.55);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 20px 50px rgba(0, 0, 0, 0.55),
+      0 4px 14px rgba(0, 0, 0, 0.35);
+  }
+
+  [data-theme="light"] .dock-glass {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      0 20px 50px rgba(15, 23, 42, 0.18),
+      0 4px 14px rgba(15, 23, 42, 0.08);
+  }
+
+  .os-window {
+    background: rgba(12, 10, 20, 0.82);
+    backdrop-filter: blur(50px) saturate(160%);
+    -webkit-backdrop-filter: blur(50px) saturate(160%);
+  }
+
+  [data-theme="light"] .os-window {
+    background: rgba(248, 250, 252, 0.86);
+  }
+
+  .os-titlebar {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015));
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  [data-theme="light"] .os-titlebar {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(240, 242, 248, 0.4));
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  }
+
+  /* ── AK OS wallpaper ───────────────────────────────── */
+  .wallpaper-aurora {
+    background:
+      radial-gradient(ellipse 70% 55% at 18% 8%, rgba(var(--os-accent-rgb), 0.16) 0%, transparent 62%),
+      radial-gradient(ellipse 60% 50% at 85% 88%, rgba(var(--os-accent-2-rgb), 0.13) 0%, transparent 60%),
+      radial-gradient(ellipse 45% 40% at 70% 25%, rgba(139, 92, 246, 0.08) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 45% at 30% 80%, rgba(var(--os-accent-rgb), 0.07) 0%, transparent 58%);
+  }
+
+  [data-theme="light"] .wallpaper-aurora {
+    background:
+      radial-gradient(ellipse 70% 55% at 18% 8%, rgba(var(--os-accent-rgb), 0.12) 0%, transparent 62%),
+      radial-gradient(ellipse 60% 50% at 85% 88%, rgba(var(--os-accent-2-rgb), 0.1) 0%, transparent 60%),
+      radial-gradient(ellipse 45% 40% at 70% 25%, rgba(139, 92, 246, 0.06) 0%, transparent 55%);
+  }
+
+  .wallpaper-noise {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+  }
+
+  .wallpaper-vignette {
+    background: radial-gradient(ellipse 110% 90% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.42) 100%);
+  }
+
+  [data-theme="light"] .wallpaper-vignette {
+    background: radial-gradient(ellipse 110% 90% at 50% 45%, transparent 60%, rgba(15, 23, 42, 0.1) 100%);
+  }
+
+  .wallpaper-dots {
+    background-image: radial-gradient(circle, var(--grid-dot) 1px, transparent 1px);
+    background-size: 34px 34px;
+    opacity: 0.5;
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 30%, transparent 90%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 30%, transparent 90%);
+  }
+
+  @keyframes aurora-drift-a {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    50%      { transform: translate3d(4%, 6%, 0) scale(1.12); }
+  }
+
+  @keyframes aurora-drift-b {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); }
+    50%      { transform: translate3d(-5%, -4%, 0) scale(1); }
+  }
+
+  .aurora-blob-a {
+    background: radial-gradient(circle, rgba(var(--os-accent-rgb), 0.14) 0%, transparent 65%);
+    filter: blur(60px);
+    animation: aurora-drift-a 26s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .aurora-blob-b {
+    background: radial-gradient(circle, rgba(var(--os-accent-2-rgb), 0.11) 0%, transparent 65%);
+    filter: blur(70px);
+    animation: aurora-drift-b 32s ease-in-out infinite;
+    will-change: transform;
+  }
+
   .glow-indigo {
     box-shadow: 0 0 20px rgba(124, 58, 237, 0.35), 0 0 60px rgba(124, 58, 237, 0.12);
   }
