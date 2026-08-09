@@ -132,6 +132,14 @@ export const IconTrash = makeIcon(
   </>
 );
 
+/* AK Chat — message bubble */
+export const IconChat = makeIcon(
+  <>
+    <path d="M4 5.6a2.2 2.2 0 0 1 2.2-2.2h11.6A2.2 2.2 0 0 1 20 5.6v8.4a2.2 2.2 0 0 1-2.2 2.2H9.6L5.4 20V16.2H6.2A2.2 2.2 0 0 1 4 14V5.6Z" />
+    <path d="M8 8.6h8M8 12h5" />
+  </>
+);
+
 /* Settings — gear */
 export const IconGear = makeIcon(
   <>

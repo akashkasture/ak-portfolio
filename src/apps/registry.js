@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 import {
   IconPerson, IconCareer, IconRocket, IconPrompt, IconConstellation, IconPlane,
-  IconPulse, IconTopology, IconCandles, IconFolder, IconNote, IconTrash, IconGear,
+  IconPulse, IconTopology, IconCandles, IconFolder, IconNote, IconTrash, IconGear, IconChat,
 } from '../os/icons';
 import { GithubIcon } from '../components/SocialIcons';
 
@@ -116,6 +116,16 @@ export const APPS = {
     defaultSize: { width: 820, height: 520 },
     defaultPosition: { x: 160, y: 100 },
     minSize: { width: 520, height: 400 },
+  },
+  chat: {
+    id: 'chat',
+    tint: ['#6366f1', '#818cf8'],
+    title: 'AK Chat',
+    icon: IconChat,
+    component: lazy(() => import('./ChatApp')),
+    defaultSize: { width: 640, height: 560 },
+    defaultPosition: { x: 230, y: 90 },
+    minSize: { width: 400, height: 420 },
   },
   trade: {
     id: 'trade',
