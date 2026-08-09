@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-import { User, Briefcase, FolderKanban, TerminalSquare } from 'lucide-react';
+import { User, Briefcase, FolderKanban, TerminalSquare, Sparkles, Mail, Activity, Settings as SettingsIcon } from 'lucide-react';
 
 export const APPS = {
   about: {
@@ -37,6 +37,42 @@ export const APPS = {
     defaultSize: { width: 760, height: 480 },
     defaultPosition: { x: 300, y: 160 },
     minSize: { width: 420, height: 320 },
+  },
+  skills: {
+    id: 'skills',
+    title: 'Skills',
+    icon: Sparkles,
+    component: lazy(() => import('../components/SkillsConstellation')),
+    defaultSize: { width: 820, height: 600 },
+    defaultPosition: { x: 160, y: 80 },
+    minSize: { width: 480, height: 400 },
+  },
+  contact: {
+    id: 'contact',
+    title: 'Contact',
+    icon: Mail,
+    component: lazy(() => import('../components/Contact')),
+    defaultSize: { width: 800, height: 620 },
+    defaultPosition: { x: 220, y: 100 },
+    minSize: { width: 460, height: 420 },
+  },
+  monitor: {
+    id: 'monitor',
+    title: 'System Monitor',
+    icon: Activity,
+    component: lazy(() => import('./SystemMonitor')),
+    defaultSize: { width: 680, height: 560 },
+    defaultPosition: { x: 260, y: 130 },
+    minSize: { width: 420, height: 380 },
+  },
+  settings: {
+    id: 'settings',
+    title: 'Settings',
+    icon: SettingsIcon,
+    component: lazy(() => import('./Settings')),
+    defaultSize: { width: 560, height: 560 },
+    defaultPosition: { x: 340, y: 110 },
+    minSize: { width: 400, height: 420 },
   },
 };
 

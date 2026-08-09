@@ -1,5 +1,33 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { skills } from '../data/portfolio';
+
+function skillLevel(category, name) {
+  const cat = skills.find((s) => s.category === category);
+  const item = cat?.items.find((i) => i.name === name);
+  return item?.level ?? 0;
+}
+
+function bar(level) {
+  const filled = Math.round(level / 10);
+  return '█'.repeat(filled) + '░'.repeat(10 - filled);
+}
+
+const NEOFETCH_SKILLS = [
+  ['Java', skillLevel('Backend', 'Java')],
+  ['Spring Boot', skillLevel('Backend', 'Spring Boot')],
+  ['Microservices', skillLevel('Backend', 'Microservices')],
+  ['Docker', skillLevel('DevOps', 'Docker')],
+  ['Kubernetes', skillLevel('DevOps', 'Kubernetes')],
+  ['Oracle SQL', skillLevel('Databases', 'Oracle SQL')],
+  ['Apache Kafka', skillLevel('Messaging', 'Apache Kafka')],
+  ['AWS', skillLevel('DevOps', 'AWS')],
+];
+
+const NEOFETCH_LINES = NEOFETCH_SKILLS.map(([name, lvl]) => ({
+  t: 'cyan',
+  v: `  ${name.padEnd(15)} ${bar(lvl)} ${lvl}%`,
+}));
 
 const COMMANDS = {
   help: {
@@ -12,6 +40,7 @@ const COMMANDS = {
       { t: 'label', v: '  │  pnl             │  portfolio   │  stats    │' },
       { t: 'label', v: '  │  resume          │  github      │  linkedin │' },
       { t: 'label', v: '  │  certifications  │  clear       │  coffee   │' },
+      { t: 'label', v: '  │  neofetch        │  sudo        │  matrix   │' },
       { t: 'dim',   v: '  └─────────────────────────────────────────────┘' },
       { t: 'muted', v: '  Tip: use ↑↓ arrow keys for history · Tab to autocomplete' },
     ],
@@ -199,6 +228,55 @@ const COMMANDS = {
       { t: 'yellow',v: '  ████████░░░░  67%' },
       { t: 'green', v: '  ████████████  100%  ☑ Done' },
       { t: 'cyan',  v: '  Coffee ready! Productivity +∞' },
+    ],
+  },
+  neofetch: {
+    output: [
+      { t: 'indigo', v: '   █████  ██   ██        akash@ak-os' },
+      { t: 'indigo', v: '  ██   ██ ██  ██         ────────────────' },
+      { t: 'cyan',   v: '  ███████ █████          OS       →  AK OS v1.0' },
+      { t: 'indigo', v: '  ██   ██ ██  ██         Role     →  Software Engineer | Trader' },
+      { t: 'indigo', v: '  ██   ██ ██   ██        Company  →  Newgen Software Technology' },
+      { t: 'muted',  v: '                         Location →  Pune, India' },
+      { t: 'muted',  v: '' },
+      ...NEOFETCH_LINES,
+    ],
+  },
+  sudo: {
+    output: [
+      { t: 'red', v: '  Permission denied: you are not in the sudoers file.' },
+      { t: 'muted', v: '  This incident will be reported. (not really)' },
+    ],
+  },
+  'sudo hire akash': {
+    output: [
+      { t: 'white', v: '  Checking candidate...' },
+      { t: 'muted', v: '' },
+      { t: 'green', v: '  ✓ Java / Spring Boot / Microservices' },
+      { t: 'green', v: '  ✓ Production experience — Newgen Software Technology' },
+      { t: 'green', v: '  ✓ Distributed systems & event-driven architecture' },
+      { t: 'green', v: '  ✓ Problem solving under production pressure' },
+      { t: 'muted', v: '' },
+      { t: 'cyan',  v: '  Recommendation: INTERVIEW CANDIDATE 🚀' },
+    ],
+  },
+  matrix: {
+    output: [
+      { t: 'green', v: '  Wake up, Akash...' },
+      { t: 'green', v: '  The Matrix has you. Follow the white rabbit.' },
+      { t: 'muted', v: '  (there is no spoon, only Spring Boot beans)' },
+    ],
+  },
+  hello: {
+    output: [
+      { t: 'cyan', v: '  Hey there 👋 thanks for poking around AK OS.' },
+      { t: 'white', v: '  Type "help" if you want the full command list.' },
+    ],
+  },
+  'rm -rf /': {
+    output: [
+      { t: 'red',   v: '  Nice try. This terminal is purely decorative.' },
+      { t: 'muted', v: '  Nothing was deleted. Your data (and mine) is safe.' },
     ],
   },
 };

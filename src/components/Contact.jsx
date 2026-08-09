@@ -103,7 +103,7 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="section-padding relative overflow-hidden">
+    <div className="@container relative p-6 sm:p-8 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
         <div
           className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px]"
@@ -111,7 +111,7 @@ export default function Contact() {
         />
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="relative z-10">
         <SectionHeader
           label="Get In Touch"
           title="Let's Build"
@@ -119,9 +119,9 @@ export default function Contact() {
           description="Open to exciting opportunities, collaborations, and interesting conversations."
         />
 
-        <div className="grid lg:grid-cols-5 gap-8">
+        <div className="grid @lg:grid-cols-5 gap-8">
           {/* Left panel */}
-          <div className="lg:col-span-2 space-y-5">
+          <div className="@lg:col-span-2 space-y-5">
             <motion.div
               className="rounded-2xl p-6 relative overflow-hidden"
               style={{
@@ -203,7 +203,7 @@ export default function Contact() {
 
           {/* Form panel */}
           <motion.div
-            className="lg:col-span-3"
+            className="@lg:col-span-3"
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -261,7 +261,7 @@ export default function Contact() {
                     animate={{ opacity: 1 }}
                   >
                     <h3 className="font-bold text-lg mb-6" style={{ color: 'var(--text-1)' }}>Send a Message</h3>
-                    <div className="grid sm:grid-cols-2 gap-5">
+                    <div className="grid @sm:grid-cols-2 gap-5">
                       <Field
                         name="name" label="Your Name" placeholder="John Doe"
                         value={form.name} error={errors.name} onChange={handleChange('name')}
@@ -312,6 +312,6 @@ export default function Contact() {
           </motion.div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
