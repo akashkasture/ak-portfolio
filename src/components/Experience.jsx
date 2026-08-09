@@ -118,8 +118,8 @@ function AchievementChip({ text, color, delay }) {
 
 export default function Experience() {
   return (
-    <section id="experience" className="section-padding" style={{ overflowX: 'clip' }}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="@container p-6 sm:p-8">
+      <div>
         <SectionHeader
           label="Experience"
           title="Professional"
@@ -128,7 +128,7 @@ export default function Experience() {
         />
 
         {/* Impact Metrics */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
+        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-4 mb-16">
           {METRICS.map((m, i) => (
             <MetricCard key={m.label} metric={m} delay={i * 0.08} />
           ))}
@@ -252,6 +252,6 @@ export default function Experience() {
           })}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, ChevronRight } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { GithubIcon } from './SocialIcons';
 import { projects } from '../data/portfolio';
 import SectionHeader from './SectionHeader';
 import { useTheme } from '../context/ThemeContext';
 import { trackEvent } from '../utils/analytics';
 
-const FEATURED = projects.slice(0, 4);
-const CATEGORIES = ['All', ...new Set(FEATURED.map((p) => p.category))];
+const CATEGORIES = ['All', ...new Set(projects.map((p) => p.category))];
 
 const CATEGORY_COLORS = {
   'AI / Backend': '#6366f1',
@@ -202,12 +201,12 @@ export default function Projects() {
 
   const filtered =
     activeCategory === 'All'
-      ? FEATURED
-      : FEATURED.filter((p) => p.category === activeCategory);
+      ? projects
+      : projects.filter((p) => p.category === activeCategory);
 
   return (
-    <section id="projects" className="section-padding" style={{ overflowX: 'clip' }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="@container p-6 sm:p-8">
+      <div>
         <SectionHeader
           label="Featured Projects"
           title="Production-Grade"
@@ -249,7 +248,7 @@ export default function Projects() {
         <AnimatePresence mode="wait">
           <motion.div
             key={activeCategory}
-            className="grid md:grid-cols-2 xl:grid-cols-2 gap-6"
+            className="grid @md:grid-cols-2 gap-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -260,26 +259,7 @@ export default function Projects() {
             ))}
           </motion.div>
         </AnimatePresence>
-
-        <motion.div
-          className="text-center mt-12"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-        >
-          <span
-            onClick={() => trackEvent('project_github_cta_click')}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-200 text-sm cursor-default"
-            style={{ border: '1px solid var(--surface-border)', color: 'var(--text-3)', background: 'var(--surface)' }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.3)'; e.currentTarget.style.color = 'var(--text-1)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--surface-border)'; e.currentTarget.style.color = 'var(--text-3)'; }}
-          >
-            <GithubIcon size={15} />
-            View All 10+ Projects on GitHub
-            <ChevronRight size={13} />
-          </span>
-        </motion.div>
       </div>
-    </section>
+    </div>
   );
 }

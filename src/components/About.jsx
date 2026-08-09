@@ -56,8 +56,8 @@ function StockTicker() {
 
 export default function About() {
   return (
-    <section id="about" className="section-padding relative" style={{ overflowX: 'clip' }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="relative @container p-6 sm:p-8">
+      <div>
         <SectionHeader
           label="About Me"
           title="Crafting Systems"
@@ -65,7 +65,7 @@ export default function About() {
           description="Passionate about building distributed systems that handle real-world complexity with elegance and performance."
         />
 
-        <div className="grid lg:grid-cols-2 gap-8 items-center mb-16">
+        <div className="grid @lg:grid-cols-2 gap-8 items-center mb-16">
           {/* Profile card */}
           <motion.div
             className="relative"
@@ -240,7 +240,7 @@ export default function About() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-20">
+        <div className="grid grid-cols-2 @md:grid-cols-4 gap-4 mb-20">
           {stats.map((stat, i) => {
             const Icon = stat.icon;
             return (
@@ -298,6 +298,6 @@ export default function About() {
           </div>
         </motion.div>
       </div>
-    </section>
+    </div>
   );
 }
