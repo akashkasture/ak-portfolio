@@ -24,11 +24,13 @@ export default function TopBar() {
       <div className="relative flex items-center gap-3">
         <button
           onClick={() => setMenuOpen((v) => !v)}
+          aria-label="AK OS menu"
+          aria-expanded={menuOpen}
           className="flex items-center gap-2 group"
         >
           <div
             className="w-6 h-6 rounded-lg flex items-center justify-center text-white font-bold text-[10px]"
-            style={{ background: 'linear-gradient(135deg, #6366f1, #06b6d4)', boxShadow: '0 0 14px rgba(99,102,241,0.5)' }}
+            style={{ background: 'linear-gradient(135deg, var(--os-accent), var(--os-accent-2))', boxShadow: '0 0 14px rgba(var(--os-accent-rgb), 0.5)' }}
           >
             AK
           </div>
@@ -91,9 +93,11 @@ export default function TopBar() {
       <div className="flex items-center gap-1.5">
         <button
           onClick={() => { toggleRecruiterMode(); trackEvent('recruiter_mode_toggle', { active: !recruiterMode }); }}
+          aria-label="Toggle Recruiter Mode"
+          aria-pressed={recruiterMode}
           className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all"
           style={{
-            background: recruiterMode ? 'linear-gradient(135deg, #6366f1, #06b6d4)' : 'rgba(255,255,255,0.06)',
+            background: recruiterMode ? 'linear-gradient(135deg, var(--os-accent), var(--os-accent-2))' : 'rgba(255,255,255,0.06)',
             color: recruiterMode ? '#fff' : 'var(--text-3)',
           }}
         >

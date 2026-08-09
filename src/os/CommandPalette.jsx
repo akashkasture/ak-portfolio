@@ -173,9 +173,9 @@ export default function CommandPalette() {
                     onClick={() => select(item)}
                     onMouseEnter={() => setSelected(i)}
                     className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors"
-                    style={{ background: isSelected ? 'rgba(99,102,241,0.12)' : 'transparent' }}
+                    style={{ background: isSelected ? 'rgba(var(--os-accent-rgb), 0.12)' : 'transparent' }}
                   >
-                    <Icon size={15} style={{ color: isSelected ? '#818cf8' : 'var(--text-3)' }} />
+                    <Icon size={15} style={{ color: isSelected ? 'var(--os-accent)' : 'var(--text-3)' }} />
                     <span className="text-sm flex-1" style={{ color: 'var(--text-1)' }}>{item.label}</span>
                     <span className="text-[11px] font-mono" style={{ color: 'var(--text-4)' }}>{item.hint}</span>
                   </button>

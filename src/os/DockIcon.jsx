@@ -43,8 +43,8 @@ export default function DockIcon({ app, isOpen, isActive, mouseX, onClick }) {
         <div
           className="w-full h-full rounded-2xl flex items-center justify-center"
           style={{
-            background: isActive ? 'linear-gradient(135deg, rgba(99,102,241,0.35), rgba(6,182,212,0.25))' : 'rgba(255,255,255,0.06)',
-            border: `1px solid ${isActive ? 'rgba(99,102,241,0.4)' : 'var(--surface-border)'}`,
+            background: isActive ? 'linear-gradient(135deg, rgba(var(--os-accent-rgb), 0.35), rgba(var(--os-accent-2-rgb), 0.25))' : 'rgba(255,255,255,0.06)',
+            border: `1px solid ${isActive ? 'rgba(var(--os-accent-rgb), 0.4)' : 'var(--surface-border)'}`,
           }}
         >
           <Icon size={19} style={{ color: isActive ? '#fff' : 'var(--text-2)' }} />
@@ -52,7 +52,7 @@ export default function DockIcon({ app, isOpen, isActive, mouseX, onClick }) {
       </motion.button>
       <div
         className="w-1 h-1 rounded-full mt-1 transition-opacity"
-        style={{ background: '#6366f1', opacity: isOpen ? 1 : 0 }}
+        style={{ background: 'var(--os-accent)', opacity: isOpen ? 1 : 0 }}
       />
     </div>
   );

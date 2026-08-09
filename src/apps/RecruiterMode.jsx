@@ -133,7 +133,7 @@ export default function RecruiterMode() {
                 href={`mailto:${personalInfo.email}?subject=Resume%20Request`}
                 onClick={() => trackEvent('recruiter_resume_request')}
                 className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
-                style={{ background: 'linear-gradient(135deg, #6366f1, #06b6d4)' }}
+                style={{ background: 'linear-gradient(135deg, var(--os-accent), var(--os-accent-2))' }}
               >
                 <FileText size={14} /> Request Resume
               </a>

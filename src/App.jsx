@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, MotionConfig } from 'framer-motion';
 import { ThemeProvider } from './context/ThemeContext';
 import { WindowManagerProvider } from './context/WindowManagerContext';
 import LoadingScreen from './components/LoadingScreen';
@@ -39,8 +39,10 @@ function AppInner() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <AppInner />
-    </ThemeProvider>
+    <MotionConfig reducedMotion="user">
+      <ThemeProvider>
+        <AppInner />
+      </ThemeProvider>
+    </MotionConfig>
   );
 }

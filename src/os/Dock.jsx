@@ -34,8 +34,8 @@ export default function Dock() {
               className="flex flex-col items-center gap-0.5 px-2 py-1"
               aria-label={app.title}
             >
-              <Icon size={19} style={{ color: isActive ? '#818cf8' : 'var(--text-3)' }} />
-              <div className="w-1 h-1 rounded-full" style={{ background: '#6366f1', opacity: isOpen ? 1 : 0 }} />
+              <Icon size={19} style={{ color: isActive ? 'var(--os-accent)' : 'var(--text-3)' }} />
+              <div className="w-1 h-1 rounded-full" style={{ background: 'var(--os-accent)', opacity: isOpen ? 1 : 0 }} />
             </button>
           );
         })}
