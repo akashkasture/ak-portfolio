@@ -1,5 +1,6 @@
 import { lazy } from 'react';
-import { User, Briefcase, FolderKanban, TerminalSquare, Sparkles, Mail, Activity, Settings as SettingsIcon } from 'lucide-react';
+import { User, Briefcase, FolderKanban, TerminalSquare, Sparkles, Mail, Activity, Settings as SettingsIcon, Network } from 'lucide-react';
+import { GithubIcon } from '../components/SocialIcons';
 
 export const APPS = {
   about: {
@@ -64,6 +65,24 @@ export const APPS = {
     defaultSize: { width: 680, height: 560 },
     defaultPosition: { x: 260, y: 130 },
     minSize: { width: 420, height: 380 },
+  },
+  github: {
+    id: 'github',
+    title: 'GitHub',
+    icon: GithubIcon,
+    component: lazy(() => import('./GitHubApp')),
+    defaultSize: { width: 700, height: 580 },
+    defaultPosition: { x: 200, y: 90 },
+    minSize: { width: 420, height: 400 },
+  },
+  architecture: {
+    id: 'architecture',
+    title: 'Architecture Lab',
+    icon: Network,
+    component: lazy(() => import('./ArchitectureLab')),
+    defaultSize: { width: 820, height: 520 },
+    defaultPosition: { x: 160, y: 100 },
+    minSize: { width: 520, height: 400 },
   },
   settings: {
     id: 'settings',
