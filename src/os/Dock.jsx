@@ -1,14 +1,32 @@
-import { useMotionValue } from 'framer-motion';
+import { useState } from 'react';
+import { motion, useMotionValue } from 'framer-motion';
 import { APP_LIST } from '../apps/registry';
 import DockIcon from './DockIcon';
 import { useWindowManager } from '../context/WindowManagerContext';
+import { useSettings } from '../context/SettingsContext';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { trackEvent } from '../utils/analytics';
 
+const CONTAINER = {
+  bottom: 'fixed bottom-3 inset-x-0 mx-auto w-fit flex items-end flex-row px-3.5 py-2.5',
+  left: 'fixed left-3 inset-y-0 my-auto h-fit flex items-start flex-col px-2.5 py-3.5',
+  right: 'fixed right-3 inset-y-0 my-auto h-fit flex items-end flex-col px-2.5 py-3.5',
+};
+
+const HIDE_OFFSET = {
+  bottom: { y: 96 },
+  left: { x: -110 },
+  right: { x: 110 },
+};
+
 export default function Dock() {
   const { windows, activeId, openApp, recruiterMode } = useWindowManager();
+  const { settings } = useSettings();
   const isMobile = useIsMobile();
-  const mouseX = useMotionValue(Infinity);
+  const mousePos = useMotionValue(Infinity);
+  const [revealed, setRevealed] = useState(false);
+
+  const { dockPosition, dockSize, dockMagnify, dockAutoHide } = settings;
 
   const handleOpen = (appId) => {
     openApp(appId);
@@ -53,22 +71,46 @@ export default function Dock() {
     );
   }
 
+  const horizontal = dockPosition === 'bottom';
+  const hidden = dockAutoHide && !revealed;
+
   return (
-    <div
-      className="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 flex items-end gap-2.5 px-3.5 py-2.5 rounded-[22px] dock-glass"
-      onMouseMove={(e) => mouseX.set(e.clientX)}
-      onMouseLeave={() => mouseX.set(Infinity)}
-    >
-      {APP_LIST.map((app) => (
-        <DockIcon
-          key={app.id}
-          app={app}
-          isOpen={Boolean(windows[app.id])}
-          isActive={activeId === app.id}
-          mouseX={mouseX}
-          onClick={() => handleOpen(app.id)}
+    <>
+      {dockAutoHide && (
+        <div
+          className="fixed z-[39]"
+          style={
+            horizontal
+              ? { bottom: 0, left: 0, right: 0, height: 10 }
+              : dockPosition === 'left'
+                ? { left: 0, top: 0, bottom: 0, width: 10 }
+                : { right: 0, top: 0, bottom: 0, width: 10 }
+          }
+          onMouseEnter={() => setRevealed(true)}
         />
-      ))}
-    </div>
+      )}
+      <motion.div
+        className={`${CONTAINER[dockPosition] || CONTAINER.bottom} z-40 gap-2.5 rounded-[22px] dock-glass`}
+        animate={hidden ? { ...HIDE_OFFSET[dockPosition], opacity: 0.4 } : { x: 0, y: 0, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        onMouseMove={(e) => mousePos.set(horizontal ? e.clientX : e.clientY)}
+        onMouseEnter={() => setRevealed(true)}
+        onMouseLeave={() => { mousePos.set(Infinity); setRevealed(false); }}
+      >
+        {APP_LIST.map((app) => (
+          <DockIcon
+            key={app.id}
+            app={app}
+            isOpen={Boolean(windows[app.id])}
+            isActive={activeId === app.id}
+            mousePos={mousePos}
+            baseSize={dockSize}
+            magnify={dockMagnify}
+            position={dockPosition}
+            onClick={() => handleOpen(app.id)}
+          />
+        ))}
+      </motion.div>
+    </>
   );
 }

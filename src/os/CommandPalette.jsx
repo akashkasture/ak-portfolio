@@ -93,7 +93,7 @@ export default function CommandPalette() {
 
   useEffect(() => {
     const onKeyDown = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      if ((e.metaKey || e.ctrlKey) && ['k', 'p'].includes(e.key.toLowerCase())) {
         e.preventDefault();
         setOpen((v) => !v);
       } else if (e.key === 'Escape' && open) {

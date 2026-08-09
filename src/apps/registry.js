@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-import { User, Briefcase, FolderKanban, TerminalSquare, Sparkles, Mail, Activity, Settings as SettingsIcon, Network } from 'lucide-react';
+import { User, Briefcase, FolderKanban, TerminalSquare, Sparkles, Mail, Activity, Settings as SettingsIcon, Network, CandlestickChart } from 'lucide-react';
 import { GithubIcon } from '../components/SocialIcons';
 
 export const APPS = {
@@ -93,6 +93,16 @@ export const APPS = {
     defaultSize: { width: 820, height: 520 },
     defaultPosition: { x: 160, y: 100 },
     minSize: { width: 520, height: 400 },
+  },
+  trade: {
+    id: 'trade',
+    tint: ['#0d9488', '#115e59'],
+    title: 'AK Trade',
+    icon: CandlestickChart,
+    component: lazy(() => import('../components/Trading')),
+    defaultSize: { width: 920, height: 660 },
+    defaultPosition: { x: 190, y: 60 },
+    minSize: { width: 520, height: 440 },
   },
   settings: {
     id: 'settings',

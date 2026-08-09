@@ -2,8 +2,24 @@ import { Suspense, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion, useDragControls, useMotionValue } from 'framer-motion';
 import { Minus, X } from 'lucide-react';
 import { useWindowManager } from '../context/WindowManagerContext';
+import { useSettings } from '../context/SettingsContext';
 import { useWindowResize } from '../hooks/useWindowResize';
 import { useIsMobile } from '../hooks/useIsMobile';
+
+const SHADOWS = {
+  soft: {
+    active: ['inset 0 1px 0 rgba(255,255,255,0.07)', '0 0 0 1px rgba(255,255,255,0.07)', '0 12px 40px rgba(0,0,0,0.4)'],
+    idle: ['inset 0 1px 0 rgba(255,255,255,0.04)', '0 0 0 1px rgba(255,255,255,0.04)', '0 8px 24px rgba(0,0,0,0.3)'],
+  },
+  normal: {
+    active: ['inset 0 1px 0 rgba(255,255,255,0.09)', '0 0 0 1px rgba(255,255,255,0.09)', '0 2px 10px rgba(0,0,0,0.35)', '0 28px 90px rgba(0,0,0,0.65)', '0 0 70px rgba(var(--os-accent-rgb), 0.10)'],
+    idle: ['inset 0 1px 0 rgba(255,255,255,0.05)', '0 0 0 1px rgba(255,255,255,0.05)', '0 14px 44px rgba(0,0,0,0.42)'],
+  },
+  strong: {
+    active: ['inset 0 1px 0 rgba(255,255,255,0.11)', '0 0 0 1px rgba(255,255,255,0.11)', '0 4px 16px rgba(0,0,0,0.45)', '0 40px 120px rgba(0,0,0,0.8)', '0 0 100px rgba(var(--os-accent-rgb), 0.16)'],
+    idle: ['inset 0 1px 0 rgba(255,255,255,0.06)', '0 0 0 1px rgba(255,255,255,0.06)', '0 20px 60px rgba(0,0,0,0.55)'],
+  },
+};
 
 const TOPBAR_H = 40;
 const SNAP_EDGE = 14;
@@ -49,6 +65,7 @@ function genieOffset(app, win) {
 
 export default function Window({ app, win, isActive }) {
   const { focusApp, closeApp, minimizeApp, toggleMaximize, updateWindowRect } = useWindowManager();
+  const { settings } = useSettings();
   const isMobile = useIsMobile();
   const Icon = app.icon;
   const Content = app.component;
@@ -211,23 +228,12 @@ export default function Window({ app, win, isActive }) {
         exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.16 } }}
       >
       <motion.div
-        className="w-full h-full rounded-[14px] overflow-hidden flex flex-col os-window relative"
+        className="w-full h-full overflow-hidden flex flex-col os-window relative"
         style={{
-          boxShadow: isActive
-            ? [
-                'inset 0 1px 0 rgba(255,255,255,0.09)',
-                '0 0 0 1px rgba(255,255,255,0.09)',
-                '0 2px 10px rgba(0,0,0,0.35)',
-                '0 28px 90px rgba(0,0,0,0.65)',
-                '0 0 70px rgba(var(--os-accent-rgb), 0.10)',
-              ].join(', ')
-            : [
-                'inset 0 1px 0 rgba(255,255,255,0.05)',
-                '0 0 0 1px rgba(255,255,255,0.05)',
-                '0 14px 44px rgba(0,0,0,0.42)',
-              ].join(', '),
+          borderRadius: maximized ? 0 : 'var(--os-window-radius, 14px)',
+          boxShadow: (SHADOWS[settings.windowShadow] || SHADOWS.normal)[isActive ? 'active' : 'idle'].join(', '),
           filter: isActive ? 'none' : 'brightness(0.94)',
-          transition: 'box-shadow 0.25s ease, filter 0.25s ease',
+          transition: 'box-shadow 0.25s ease, filter 0.25s ease, border-radius 0.2s ease',
         }}
         initial={{ opacity: 0, scale: 0.9, y: 26 }}
         animate={
