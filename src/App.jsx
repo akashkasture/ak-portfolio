@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { AnimatePresence, MotionConfig } from 'framer-motion';
 import { ThemeProvider } from './context/ThemeContext';
 import { SettingsProvider } from './context/SettingsContext';
+import { FileSystemProvider } from './context/FileSystemContext';
 import { WindowManagerProvider } from './context/WindowManagerContext';
 import LoadingScreen from './components/LoadingScreen';
 import Desktop from './os/Desktop';
@@ -43,7 +44,9 @@ export default function App() {
     <MotionConfig reducedMotion="user">
       <ThemeProvider>
         <SettingsProvider>
-          <AppInner />
+          <FileSystemProvider>
+            <AppInner />
+          </FileSystemProvider>
         </SettingsProvider>
       </ThemeProvider>
     </MotionConfig>
