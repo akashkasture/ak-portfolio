@@ -1,6 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { useNotifications } from './NotificationContext';
 
 const STORAGE_KEY = 'ak-os-settings';
+
+const WALLPAPER_LABELS = { aurora: 'Aurora', starfield: 'Starfield', gradient: 'Gradient', grid: 'Terminal Grid', minimal: 'Minimal' };
 
 export const DEFAULT_SETTINGS = {
   wallpaper: 'aurora',      // aurora | starfield | gradient | grid | minimal
@@ -29,6 +32,7 @@ const Ctx = createContext(null);
 
 export function SettingsProvider({ children }) {
   const [settings, setSettings] = useState(load);
+  const { push } = useNotifications();
 
   useEffect(() => {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); } catch { /* ignore */ }
@@ -37,7 +41,12 @@ export function SettingsProvider({ children }) {
     root.style.setProperty('--os-window-alpha', String(settings.windowOpacity));
   }, [settings]);
 
-  const set = (key, value) => setSettings((s) => ({ ...s, [key]: value }));
+  const set = (key, value) => {
+    if (key === 'wallpaper' && value !== settings.wallpaper) {
+      push({ title: 'Wallpaper Changed', body: WALLPAPER_LABELS[value] || value, kind: 'system' });
+    }
+    setSettings((s) => ({ ...s, [key]: value }));
+  };
   const reset = () => setSettings(DEFAULT_SETTINGS);
 
   return <Ctx.Provider value={{ settings, set, reset }}>{children}</Ctx.Provider>;

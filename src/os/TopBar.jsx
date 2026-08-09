@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, RotateCcw, Search, Sparkles } from 'lucide-react';
+import { RotateCcw, Search, Sparkles } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
 import SystemStats from './SystemStats';
+import NotificationCenter from './NotificationCenter';
 import { GithubIcon, LinkedinIcon } from '../components/SocialIcons';
 import { personalInfo } from '../data/portfolio';
 import { useWindowManager } from '../context/WindowManagerContext';
@@ -117,13 +118,7 @@ export default function TopBar() {
             <Search size={16} />
           </button>
         )}
-        <button
-          aria-label="Notifications"
-          className="p-2 rounded-lg text-slate-400 hover:text-white transition-colors hidden sm:block"
-          title="Notifications"
-        >
-          <Bell size={15} />
-        </button>
+        <NotificationCenter />
         <ThemeToggle />
       </div>
     </div>

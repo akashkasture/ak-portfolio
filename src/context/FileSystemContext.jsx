@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { personalInfo, projects, experience } from '../data/portfolio';
+import { useNotifications } from './NotificationContext';
 
 const STORAGE_KEY = 'ak-os-files-v1';
 
@@ -62,6 +63,7 @@ const Ctx = createContext(null);
 
 export function FileSystemProvider({ children }) {
   const [fs, setFs] = useState(load);
+  const { push } = useNotifications();
 
   useEffect(() => {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(fs)); } catch { /* ignore */ }
@@ -108,24 +110,36 @@ export function FileSystemProvider({ children }) {
     updateContent: (id, content) => mutate((next) => {
       if (next.nodes[id]) next.nodes[id] = { ...next.nodes[id], content, updatedAt: Date.now() };
     }),
-    moveToTrash: (id) => mutate((next) => {
-      if (next.nodes[id]) next.nodes[id] = { ...next.nodes[id], trashed: true };
-    }),
-    restore: (id) => mutate((next) => {
-      const node = next.nodes[id];
-      if (!node) return;
-      // If the original parent folder is gone or trashed, restore into Home
-      const parentOk = node.parentId && next.nodes[node.parentId] && !next.nodes[node.parentId].trashed;
-      next.nodes[id] = { ...node, trashed: false, parentId: parentOk ? node.parentId : next.rootId };
-    }),
+    moveToTrash: (id) => {
+      const name = fs.nodes[id]?.name;
+      mutate((next) => {
+        if (next.nodes[id]) next.nodes[id] = { ...next.nodes[id], trashed: true };
+      });
+      if (name) push({ title: 'Moved to Trash', body: name, kind: 'file' });
+    },
+    restore: (id) => {
+      const name = fs.nodes[id]?.name;
+      mutate((next) => {
+        const node = next.nodes[id];
+        if (!node) return;
+        // If the original parent folder is gone or trashed, restore into Home
+        const parentOk = node.parentId && next.nodes[node.parentId] && !next.nodes[node.parentId].trashed;
+        next.nodes[id] = { ...node, trashed: false, parentId: parentOk ? node.parentId : next.rootId };
+      });
+      if (name) push({ title: 'Restored', body: name, kind: 'file' });
+    },
     deleteForever: (id) => mutate((next) => {
       [id, ...descendants(next.nodes, id)].forEach((nid) => delete next.nodes[nid]);
     }),
-    emptyTrash: () => mutate((next) => {
-      Object.values(next.nodes)
-        .filter((n) => n.trashed)
-        .forEach((n) => [n.id, ...descendants(next.nodes, n.id)].forEach((nid) => delete next.nodes[nid]));
-    }),
+    emptyTrash: () => {
+      const count = Object.values(fs.nodes).filter((n) => n.trashed).length;
+      mutate((next) => {
+        Object.values(next.nodes)
+          .filter((n) => n.trashed)
+          .forEach((n) => [n.id, ...descendants(next.nodes, n.id)].forEach((nid) => delete next.nodes[nid]));
+      });
+      if (count > 0) push({ title: 'Trash Emptied', body: `${count} item${count === 1 ? '' : 's'} removed permanently`, kind: 'file' });
+    },
   };
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>;

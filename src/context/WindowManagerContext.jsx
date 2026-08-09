@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useReducer } from 'react';
+import { createContext, useContext, useEffect, useReducer, useRef } from 'react';
 import { APPS } from '../apps/registry';
+import { useNotifications } from './NotificationContext';
 
 const STORAGE_KEY = 'ak-os-window-state';
 
@@ -176,6 +177,8 @@ const Ctx = createContext(null);
 
 export function WindowManagerProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, undefined, init);
+  const { push } = useNotifications();
+  const prevRecruiter = useRef(state.recruiterMode);
 
   useEffect(() => {
     // Intentionally excludes recruiterMode/preRecruiterSnapshot — those are transient toggle
@@ -183,6 +186,13 @@ export function WindowManagerProvider({ children }) {
     saveSession(state);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.windows, state.activeId, state.nextZ]);
+
+  useEffect(() => {
+    if (state.recruiterMode && !prevRecruiter.current) {
+      push({ title: 'Recruiter Mode Enabled', body: 'One-page summary is ready to skim', kind: 'system' });
+    }
+    prevRecruiter.current = state.recruiterMode;
+  }, [state.recruiterMode, push]);
 
   const api = {
     windows: state.windows,

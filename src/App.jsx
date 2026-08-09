@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, MotionConfig } from 'framer-motion';
 import { ThemeProvider } from './context/ThemeContext';
+import { NotificationProvider } from './context/NotificationContext';
 import { SettingsProvider } from './context/SettingsContext';
 import { FileSystemProvider } from './context/FileSystemContext';
 import { WindowManagerProvider } from './context/WindowManagerContext';
@@ -43,11 +44,13 @@ export default function App() {
   return (
     <MotionConfig reducedMotion="user">
       <ThemeProvider>
-        <SettingsProvider>
-          <FileSystemProvider>
-            <AppInner />
-          </FileSystemProvider>
-        </SettingsProvider>
+        <NotificationProvider>
+          <SettingsProvider>
+            <FileSystemProvider>
+              <AppInner />
+            </FileSystemProvider>
+          </SettingsProvider>
+        </NotificationProvider>
       </ThemeProvider>
     </MotionConfig>
   );
