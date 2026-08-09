@@ -2,6 +2,7 @@ import { lazy } from 'react';
 import {
   IconPerson, IconCareer, IconRocket, IconPrompt, IconConstellation, IconPlane,
   IconPulse, IconTopology, IconCandles, IconFolder, IconNote, IconTrash, IconGear, IconChat,
+  IconWrench, IconCalendar,
 } from '../os/icons';
 import { GithubIcon } from '../components/SocialIcons';
 
@@ -136,6 +137,26 @@ export const APPS = {
     defaultSize: { width: 920, height: 660 },
     defaultPosition: { x: 190, y: 60 },
     minSize: { width: 520, height: 440 },
+  },
+  calendar: {
+    id: 'calendar',
+    tint: ['#ef4444', '#dc2626'],
+    title: 'Calendar',
+    icon: IconCalendar,
+    component: lazy(() => import('./CalendarApp')),
+    defaultSize: { width: 420, height: 620 },
+    defaultPosition: { x: 280, y: 80 },
+    minSize: { width: 340, height: 460 },
+  },
+  devtools: {
+    id: 'devtools',
+    tint: ['#f97316', '#ea580c'],
+    title: 'Dev Toolbox',
+    icon: IconWrench,
+    component: lazy(() => import('./DevToolboxApp')),
+    defaultSize: { width: 620, height: 560 },
+    defaultPosition: { x: 260, y: 100 },
+    minSize: { width: 460, height: 420 },
   },
   trash: {
     id: 'trash',

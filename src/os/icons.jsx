@@ -140,6 +140,22 @@ export const IconChat = makeIcon(
   </>
 );
 
+/* Dev Toolbox — wrench */
+export const IconWrench = makeIcon(
+  <>
+    <path d="M14.6 4.4a4.6 4.6 0 0 0-6 5.6L4 14.6a2.2 2.2 0 0 0 3.1 3.1l4.6-4.6a4.6 4.6 0 0 0 5.6-6l-2.9 2.9-2.4-.6-.6-2.4Z" />
+  </>
+);
+
+/* Calendar — grid with a marked day */
+export const IconCalendar = makeIcon(
+  <>
+    <rect x="3.6" y="5" width="16.8" height="15" rx="2.2" />
+    <path d="M3.6 9.6h16.8M8 3.4v3.4M16 3.4v3.4" />
+    <circle cx="12" cy="14.4" r="1.6" />
+  </>
+);
+
 /* Settings — gear */
 export const IconGear = makeIcon(
   <>
