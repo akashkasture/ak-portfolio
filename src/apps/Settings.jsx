@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Check, Image, RotateCcw, Palette, PanelBottom, AppWindow, Info, Keyboard,
+  Check, Image, RotateCcw, Palette, PanelBottom, AppWindow, Info, Keyboard, Orbit,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useSettings } from '../context/SettingsContext';
@@ -36,6 +36,7 @@ const SHORTCUTS = [
 const SECTIONS = [
   { id: 'appearance', label: 'Appearance', icon: Palette },
   { id: 'wallpaper', label: 'Wallpaper', icon: Image },
+  { id: 'space', label: 'Space', icon: Orbit },
   { id: 'dock', label: 'Dock', icon: PanelBottom },
   { id: 'windows', label: 'Windows', icon: AppWindow },
   { id: 'shortcuts', label: 'Keyboard', icon: Keyboard },
@@ -183,6 +184,58 @@ function WallpaperPane() {
   );
 }
 
+function SpacePane() {
+  const { settings, set } = useSettings();
+  const isActive = settings.wallpaper === 'solarsystem';
+  return (
+    <>
+      {!isActive && (
+        <div
+          className="text-xs rounded-lg px-3 py-2.5 mb-1"
+          style={{ background: 'rgba(255,255,255,0.04)', color: 'var(--text-4)', border: '1px solid var(--surface-border)' }}
+        >
+          These apply when the Solar System wallpaper is active — pick it under Wallpaper to see them live.
+        </div>
+      )}
+      <Row label="Quality" hint="Auto picks a tier from your device's cores and memory">
+        <Segmented
+          value={settings.spaceQuality}
+          onChange={(v) => set('spaceQuality', v)}
+          options={[{ value: 'auto', label: 'Auto' }, { value: 'high', label: 'High' }, { value: 'medium', label: 'Medium' }, { value: 'low', label: 'Low' }]}
+        />
+      </Row>
+      <Row label="Particle density">
+        <Segmented
+          value={settings.spaceParticleDensity}
+          onChange={(v) => set('spaceParticleDensity', v)}
+          options={[{ value: 'low', label: 'Low' }, { value: 'medium', label: 'Medium' }, { value: 'high', label: 'High' }]}
+        />
+      </Row>
+      <Row label="Planet animation" hint="Orbits and rotation">
+        <Toggle checked={settings.spacePlanetAnimation} onChange={(v) => set('spacePlanetAnimation', v)} label="Planet animation" />
+      </Row>
+      <Row label="Ambient glow" hint="Sun halo, atmosphere rim light, black hole glow — the priciest layer">
+        <Toggle checked={settings.spaceAmbientGlow} onChange={(v) => set('spaceAmbientGlow', v)} label="Ambient glow" />
+      </Row>
+      <Row label="Black hole">
+        <Toggle checked={settings.spaceBlackHole} onChange={(v) => set('spaceBlackHole', v)} label="Black hole" />
+      </Row>
+      <Row label="Nebula clouds">
+        <Toggle checked={settings.spaceNebula} onChange={(v) => set('spaceNebula', v)} label="Nebula clouds" />
+      </Row>
+      <Row label="Floating particles">
+        <Toggle checked={settings.spaceParticles} onChange={(v) => set('spaceParticles', v)} label="Floating particles" />
+      </Row>
+      <Row label="Shooting stars">
+        <Toggle checked={settings.spaceShootingStars} onChange={(v) => set('spaceShootingStars', v)} label="Shooting stars" />
+      </Row>
+      <Row label="Mouse parallax">
+        <Toggle checked={settings.spaceParallax} onChange={(v) => set('spaceParallax', v)} label="Mouse parallax" />
+      </Row>
+    </>
+  );
+}
+
 function DockPane() {
   const { settings, set } = useSettings();
   return (
@@ -300,6 +353,7 @@ function AboutPane() {
 const PANES = {
   appearance: AppearancePane,
   wallpaper: WallpaperPane,
+  space: SpacePane,
   dock: DockPane,
   windows: WindowsPane,
   shortcuts: ShortcutsPane,

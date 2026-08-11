@@ -23,7 +23,7 @@ function makeGlowTexture() {
   return new THREE.CanvasTexture(canvas);
 }
 
-export default function Sun({ quality = 'high', reveal = 1 }) {
+export default function Sun({ quality = 'high', reveal = 1, ambientGlow = true }) {
   const meshRef = useRef();
   const glowTexture = useMemo(() => makeGlowTexture(), []);
   const sunTexture = useLoader(THREE.TextureLoader, TEXTURES.sun);
@@ -52,13 +52,19 @@ export default function Sun({ quality = 'high', reveal = 1 }) {
           during the boot sequence rather than just popping to full output. */}
       <pointLight color="#ffe1b0" intensity={130 * reveal} distance={0} decay={1} />
 
-      {/* Soft additive glow halo */}
-      <sprite scale={[9, 9, 1]}>
-        <spriteMaterial map={glowTexture} transparent depthWrite={false} blending={THREE.AdditiveBlending} />
-      </sprite>
-      <sprite scale={[4.6, 4.6, 1]}>
-        <spriteMaterial map={glowTexture} transparent depthWrite={false} blending={THREE.AdditiveBlending} opacity={0.8} />
-      </sprite>
+      {/* Soft additive glow halo — the priciest overdraw in the scene
+          (two large screen-filling additive sprites), so it's the first
+          thing the "Ambient glow" performance toggle switches off. */}
+      {ambientGlow && (
+        <>
+          <sprite scale={[9, 9, 1]}>
+            <spriteMaterial map={glowTexture} transparent depthWrite={false} blending={THREE.AdditiveBlending} />
+          </sprite>
+          <sprite scale={[4.6, 4.6, 1]}>
+            <spriteMaterial map={glowTexture} transparent depthWrite={false} blending={THREE.AdditiveBlending} opacity={0.8} />
+          </sprite>
+        </>
+      )}
     </group>
   );
 }

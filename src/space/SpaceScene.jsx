@@ -16,6 +16,7 @@ import { trackEvent } from '../utils/analytics';
 import { PLANETS, SUN } from './planetData';
 import { TEXTURES } from './textures';
 import { STAGES, remap01, easeOutCubic, planetRevealWindow } from './introTimeline';
+import { useDocumentVisible } from '../hooks/useDocumentVisible';
 
 const TEXTURE_MAP = {
   mercury: TEXTURES.mercury,
@@ -45,16 +46,19 @@ export default function SpaceScene({
   parallax = true,
   particleDensity = 'medium',
   introT = 1,
+  planetAnimation = true,
+  ambientGlow = true,
 }) {
   const [hovered, setHovered] = useState(null);
   const [selected, setSelected] = useState(null); // { planet, point }
   const particleCount = particleDensity === 'low' ? 120 : particleDensity === 'high' ? 420 : 240;
+  const tabVisible = useDocumentVisible();
 
   const nebulaReveal = easeOutCubic(remap01(introT, ...STAGES.nebula));
   const blackHoleReveal = easeOutCubic(remap01(introT, ...STAGES.blackHole));
   const sunReveal = easeOutCubic(remap01(introT, ...STAGES.sun));
   const orbitStartFactor = easeOutCubic(remap01(introT, ...STAGES.orbitStart));
-  const effectiveTimeScale = selected ? 0 : timeScale * orbitStartFactor;
+  const effectiveTimeScale = selected || !planetAnimation ? 0 : timeScale * orbitStartFactor;
   const planetReveal = (id) => easeOutCubic(remap01(introT, ...planetRevealWindow(PLANETS.findIndex((p) => p.id === id))));
 
   const handleSelect = useCallback((planet, point) => {
@@ -79,6 +83,7 @@ export default function SpaceScene({
         dpr={quality === 'low' ? 1 : quality === 'medium' ? [1, 1.5] : [1, 2]}
         gl={{ antialias: quality !== 'low', powerPreference: 'high-performance' }}
         onPointerMissed={() => setHovered(null)}
+        frameloop={tabVisible ? 'always' : 'never'}
       >
         <color attach="background" args={['#04050b']} />
         <fogExp2 attach="fog" args={['#05060c', 0.0025]} />
@@ -89,11 +94,11 @@ export default function SpaceScene({
         <Suspense fallback={null}>
           <Starfield quality={quality} timeScale={effectiveTimeScale} />
           {nebula && <Nebula intensity={(quality === 'low' ? 0.6 : 1) * nebulaReveal} />}
-          {blackHole && quality !== 'low' && <BlackHole quality={quality} reveal={blackHoleReveal} />}
+          {blackHole && quality !== 'low' && <BlackHole quality={quality} reveal={blackHoleReveal} ambientGlow={ambientGlow} />}
           {particles && <FloatingParticles count={particleCount} />}
           {shootingStars && quality !== 'low' && !selected && introT >= 0.98 && <ShootingStars />}
 
-          <Sun quality={quality} reveal={sunReveal} />
+          <Sun quality={quality} reveal={sunReveal} ambientGlow={ambientGlow} />
           <Earth
             quality={quality}
             timeScale={effectiveTimeScale}
@@ -101,6 +106,7 @@ export default function SpaceScene({
             onSelect={handleSelect}
             isSelected={selected?.planet.id === 'earth'}
             reveal={planetReveal('earth')}
+            ambientGlow={ambientGlow}
           />
           <Saturn
             data={PLANETS.find((p) => p.id === 'saturn')}
@@ -110,6 +116,7 @@ export default function SpaceScene({
             onSelect={handleSelect}
             isSelected={selected?.planet.id === 'saturn'}
             reveal={planetReveal('saturn')}
+            ambientGlow={ambientGlow}
           />
           {PLANETS.filter((p) => !['earth', 'saturn'].includes(p.id)).map((p) => (
             <Planet
@@ -124,6 +131,7 @@ export default function SpaceScene({
               onSelect={handleSelect}
               isSelected={selected?.planet.id === p.id}
               reveal={planetReveal(p.id)}
+              ambientGlow={ambientGlow}
             />
           ))}
         </Suspense>

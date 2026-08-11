@@ -69,7 +69,7 @@ function useRingGeometry(inner, outer, segments) {
   }, [inner, outer, segments]);
 }
 
-export default function BlackHole({ quality = 'high', position = [-42, 0, -60], scale = 1.3, reveal = 1 }) {
+export default function BlackHole({ quality = 'high', position = [-42, 0, -60], scale = 1.3, reveal = 1, ambientGlow = true }) {
   const diskRef = useRef();
   const photonRef = useRef();
   const segments = quality === 'low' ? 48 : 96;
@@ -103,9 +103,11 @@ export default function BlackHole({ quality = 'high', position = [-42, 0, -60], 
   return (
     <group position={position}>
       {/* Ambient halo */}
-      <sprite scale={[horizonRadius * 9, horizonRadius * 9, 1]}>
-        <spriteMaterial map={glowTexture} transparent depthWrite={false} blending={THREE.AdditiveBlending} />
-      </sprite>
+      {ambientGlow && (
+        <sprite scale={[horizonRadius * 9, horizonRadius * 9, 1]}>
+          <spriteMaterial map={glowTexture} transparent depthWrite={false} blending={THREE.AdditiveBlending} />
+        </sprite>
+      )}
 
       {/* Accretion disk, tilted for a 3/4 view */}
       <mesh ref={diskRef} rotation={[Math.PI / 2.4, 0, 0]}>

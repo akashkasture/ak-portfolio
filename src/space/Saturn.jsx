@@ -21,7 +21,7 @@ function useRingGeometry(inner, outer, segments) {
   }, [inner, outer, segments]);
 }
 
-export default function Saturn({ data, quality = 'high', timeScale = 1, onHover, onSelect, isSelected, reveal = 1 }) {
+export default function Saturn({ data, quality = 'high', timeScale = 1, onHover, onSelect, isSelected, reveal = 1, ambientGlow = true }) {
   const orbitGroup = useRef();
   const spinRef = useRef();
   const [hovered, setHovered] = useState(false);
@@ -68,7 +68,7 @@ export default function Saturn({ data, quality = 'high', timeScale = 1, onHover,
             />
           </mesh>
 
-          <AtmosphereGlow radius={data.size} color="#e8d9ad" power={2.8} intensity={hovered ? 0.9 : 0.4} />
+          {ambientGlow && <AtmosphereGlow radius={data.size} color="#e8d9ad" power={2.8} intensity={hovered ? 0.9 : 0.4} />}
         </group>
       </group>
     </group>

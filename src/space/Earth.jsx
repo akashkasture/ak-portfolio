@@ -33,7 +33,7 @@ const DAY_NIGHT_FRAGMENT = `
   }
 `;
 
-export default function Earth({ quality = 'high', timeScale = 1, onHover, onSelect, isSelected, reveal = 1 }) {
+export default function Earth({ quality = 'high', timeScale = 1, onHover, onSelect, isSelected, reveal = 1, ambientGlow = true }) {
   const orbitGroup = useRef();
   const positionHolder = useRef();
   const spinRef = useRef();
@@ -98,7 +98,7 @@ export default function Earth({ quality = 'high', timeScale = 1, onHover, onSele
             <sphereGeometry args={[data.size, segments, segments]} />
             <meshBasicMaterial map={cloudsMap} transparent opacity={0.5} blending={THREE.AdditiveBlending} depthWrite={false} />
           </mesh>
-          <AtmosphereGlow radius={data.size} color="#5fa8ff" power={2.2} intensity={hovered ? 1 : 0.6} />
+          {ambientGlow && <AtmosphereGlow radius={data.size} color="#5fa8ff" power={2.2} intensity={hovered ? 1 : 0.6} />}
         </group>
 
         {/* Moon — orbits Earth's position, independent of Earth's own spin/tilt */}
