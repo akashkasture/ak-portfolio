@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import OrbitPath from './OrbitPath';
 import AtmosphereGlow from './AtmosphereGlow';
 
-export default function Planet({ data, texturePath, cloudsPath, quality = 'high', timeScale = 1, onHover, onSelect, isSelected, glow }) {
+export default function Planet({ data, texturePath, cloudsPath, quality = 'high', timeScale = 1, onHover, onSelect, isSelected, glow, reveal = 1 }) {
   const orbitGroup = useRef();
   const spinRef = useRef();
   const cloudsRef = useRef();
@@ -38,7 +38,7 @@ export default function Planet({ data, texturePath, cloudsPath, quality = 'high'
     <group ref={orbitGroup} rotation={[0, startAngle, 0]}>
       <OrbitPath radius={data.orbitRadius} />
       <group position={[data.orbitRadius, 0, 0]}>
-        <group rotation={[0, 0, data.tilt]}>
+        <group rotation={[0, 0, data.tilt]} scale={Math.max(0.001, reveal)}>
           <mesh
             ref={spinRef}
             scale={hovered || isSelected ? 1.12 : 1}

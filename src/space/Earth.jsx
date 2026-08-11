@@ -33,7 +33,7 @@ const DAY_NIGHT_FRAGMENT = `
   }
 `;
 
-export default function Earth({ quality = 'high', timeScale = 1, onHover, onSelect, isSelected }) {
+export default function Earth({ quality = 'high', timeScale = 1, onHover, onSelect, isSelected, reveal = 1 }) {
   const orbitGroup = useRef();
   const positionHolder = useRef();
   const spinRef = useRef();
@@ -82,7 +82,7 @@ export default function Earth({ quality = 'high', timeScale = 1, onHover, onSele
   return (
     <group ref={orbitGroup} rotation={[0, startAngle, 0]}>
       <OrbitPath radius={data.orbitRadius} />
-      <group ref={positionHolder} position={[data.orbitRadius, 0, 0]}>
+      <group ref={positionHolder} position={[data.orbitRadius, 0, 0]} scale={Math.max(0.001, reveal)}>
         <group rotation={[0, 0, data.tilt]}>
           <mesh
             ref={spinRef}

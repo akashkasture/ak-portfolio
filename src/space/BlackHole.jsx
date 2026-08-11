@@ -69,10 +69,11 @@ function useRingGeometry(inner, outer, segments) {
   }, [inner, outer, segments]);
 }
 
-export default function BlackHole({ quality = 'high', position = [-42, 0, -60], scale = 1.3 }) {
+export default function BlackHole({ quality = 'high', position = [-42, 0, -60], scale = 1.3, reveal = 1 }) {
   const diskRef = useRef();
   const photonRef = useRef();
   const segments = quality === 'low' ? 48 : 96;
+  const effectiveScale = scale * Math.max(0.001, reveal);
   const diskTexture = useMemo(() => makeDiskTexture(), []);
   const glowTexture = useMemo(
     () => makeGlowTexture([
@@ -91,7 +92,7 @@ export default function BlackHole({ quality = 'high', position = [-42, 0, -60], 
     []
   );
 
-  const horizonRadius = 6 * scale;
+  const horizonRadius = 6 * effectiveScale;
   const diskGeo = useRingGeometry(horizonRadius * 1.35, horizonRadius * 4.2, segments);
 
   useFrame((_, delta) => {

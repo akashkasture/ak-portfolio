@@ -21,7 +21,7 @@ function useRingGeometry(inner, outer, segments) {
   }, [inner, outer, segments]);
 }
 
-export default function Saturn({ data, quality = 'high', timeScale = 1, onHover, onSelect, isSelected }) {
+export default function Saturn({ data, quality = 'high', timeScale = 1, onHover, onSelect, isSelected, reveal = 1 }) {
   const orbitGroup = useRef();
   const spinRef = useRef();
   const [hovered, setHovered] = useState(false);
@@ -45,7 +45,7 @@ export default function Saturn({ data, quality = 'high', timeScale = 1, onHover,
     <group ref={orbitGroup} rotation={[0, startAngle, 0]}>
       <OrbitPath radius={data.orbitRadius} />
       <group position={[data.orbitRadius, 0, 0]}>
-        <group rotation={[0, 0, data.tilt]}>
+        <group rotation={[0, 0, data.tilt]} scale={Math.max(0.001, reveal)}>
           <mesh
             ref={spinRef}
             scale={hovered || isSelected ? 1.08 : 1}

@@ -1,9 +1,10 @@
 import { Suspense, lazy } from 'react';
 import { useSettings } from '../context/SettingsContext';
+import { STAGES, remap01 } from '../space/introTimeline';
 
 const SpaceScene = lazy(() => import('../space/SpaceScene'));
 
-export default function Wallpaper() {
+export default function Wallpaper({ introT = 1 }) {
   const { settings } = useSettings();
   const {
     wallpaper, wallpaperFx, fxIntensity, spaceQuality,
@@ -13,6 +14,10 @@ export default function Wallpaper() {
 
   if (wallpaper === 'solarsystem') {
     const resolvedQuality = spaceQuality === 'auto' ? 'high' : spaceQuality;
+    // Curtain hides the freshly-rendered starfield until the very first
+    // reveal beat, so "stars appear" reads as an intentional first frame
+    // rather than a pop from the fallback background color.
+    const curtainOpacity = 1 - remap01(introT, ...STAGES.curtain);
     return (
       <Suspense fallback={<div className="fixed inset-0" style={{ background: '#04050b' }} />}>
         <SpaceScene
@@ -23,7 +28,14 @@ export default function Wallpaper() {
           shootingStars={spaceShootingStars}
           particleDensity={spaceParticleDensity}
           parallax={spaceParallax}
+          introT={introT}
         />
+        {curtainOpacity > 0 && (
+          <div
+            className="fixed inset-0 pointer-events-none"
+            style={{ background: '#000000', opacity: curtainOpacity, zIndex: 1 }}
+          />
+        )}
       </Suspense>
     );
   }

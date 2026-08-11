@@ -23,11 +23,12 @@ function makeGlowTexture() {
   return new THREE.CanvasTexture(canvas);
 }
 
-export default function Sun({ quality = 'high' }) {
+export default function Sun({ quality = 'high', reveal = 1 }) {
   const meshRef = useRef();
   const glowTexture = useMemo(() => makeGlowTexture(), []);
   const sunTexture = useLoader(THREE.TextureLoader, TEXTURES.sun);
   const segments = quality === 'low' ? 24 : quality === 'medium' ? 40 : 64;
+  const revealScale = Math.max(0.001, reveal);
 
   useFrame((_, delta) => {
     if (meshRef.current) {
@@ -37,7 +38,7 @@ export default function Sun({ quality = 'high' }) {
   });
 
   return (
-    <group>
+    <group scale={revealScale}>
       <mesh ref={meshRef}>
         <sphereGeometry args={[2.1, segments, segments]} />
         <meshBasicMaterial map={sunTexture} toneMapped={false} />
@@ -46,8 +47,10 @@ export default function Sun({ quality = 'high' }) {
       {/* Point light — illuminates every planet in the scene. Decay is
           softened well below physical inverse-square so outer planets
           (Uranus, Neptune) stay visible instead of vanishing into black —
-          a deliberate stylized choice over strict photometric accuracy. */}
-      <pointLight color="#ffe1b0" intensity={130} distance={0} decay={1} />
+          a deliberate stylized choice over strict photometric accuracy.
+          Intensity ramps with `reveal` so the sun visibly glows to life
+          during the boot sequence rather than just popping to full output. */}
+      <pointLight color="#ffe1b0" intensity={130 * reveal} distance={0} decay={1} />
 
       {/* Soft additive glow halo */}
       <sprite scale={[9, 9, 1]}>
