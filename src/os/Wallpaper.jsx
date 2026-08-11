@@ -5,13 +5,24 @@ const SpaceScene = lazy(() => import('../space/SpaceScene'));
 
 export default function Wallpaper() {
   const { settings } = useSettings();
-  const { wallpaper, wallpaperFx, fxIntensity, spaceQuality } = settings;
+  const {
+    wallpaper, wallpaperFx, fxIntensity, spaceQuality,
+    spaceBlackHole, spaceNebula, spaceParticles, spaceShootingStars, spaceParticleDensity,
+  } = settings;
   const minimal = wallpaper === 'minimal';
 
   if (wallpaper === 'solarsystem') {
+    const resolvedQuality = spaceQuality === 'auto' ? 'high' : spaceQuality;
     return (
       <Suspense fallback={<div className="fixed inset-0" style={{ background: '#04050b' }} />}>
-        <SpaceScene quality={spaceQuality} />
+        <SpaceScene
+          quality={resolvedQuality}
+          blackHole={spaceBlackHole}
+          nebula={spaceNebula}
+          particles={spaceParticles}
+          shootingStars={spaceShootingStars}
+          particleDensity={spaceParticleDensity}
+        />
       </Suspense>
     );
   }

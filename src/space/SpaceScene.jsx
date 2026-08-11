@@ -5,6 +5,10 @@ import Planet from './Planet';
 import Earth from './Earth';
 import Saturn from './Saturn';
 import Starfield from './Starfield';
+import Nebula from './Nebula';
+import BlackHole from './BlackHole';
+import FloatingParticles from './FloatingParticles';
+import ShootingStars from './ShootingStars';
 import PlanetInfoPanel from './PlanetInfoPanel';
 import { PLANETS, SUN } from './planetData';
 import { TEXTURES } from './textures';
@@ -27,13 +31,22 @@ const GLOW_MAP = {
   neptune: '#7a9bff',
 };
 
-export default function SpaceScene({ quality = 'high', timeScale = 1 }) {
+export default function SpaceScene({
+  quality = 'high',
+  timeScale = 1,
+  blackHole = true,
+  nebula = true,
+  particles = true,
+  shootingStars = true,
+  particleDensity = 'medium',
+}) {
   const [hovered, setHovered] = useState(null);
+  const particleCount = particleDensity === 'low' ? 120 : particleDensity === 'high' ? 420 : 240;
 
   return (
     <div className="fixed inset-0" style={{ background: '#04050b' }}>
       <Canvas
-        camera={{ position: [0, 15, 32], fov: 48, near: 0.1, far: 300 }}
+        camera={{ position: [0, 15, 32], fov: 48, near: 0.1, far: 320 }}
         dpr={quality === 'low' ? 1 : quality === 'medium' ? [1, 1.5] : [1, 2]}
         gl={{ antialias: quality !== 'low', powerPreference: 'high-performance' }}
         onPointerMissed={() => setHovered(null)}
@@ -44,6 +57,12 @@ export default function SpaceScene({ quality = 'high', timeScale = 1 }) {
         <hemisphereLight args={['#3a4a7a', '#050508', 0.18]} />
 
         <Suspense fallback={null}>
+          <Starfield quality={quality} timeScale={timeScale} />
+          {nebula && <Nebula intensity={quality === 'low' ? 0.6 : 1} />}
+          {blackHole && quality !== 'low' && <BlackHole quality={quality} />}
+          {particles && <FloatingParticles count={particleCount} />}
+          {shootingStars && quality !== 'low' && <ShootingStars />}
+
           <Sun quality={quality} />
           <Earth quality={quality} timeScale={timeScale} onHover={setHovered} />
           <Saturn data={PLANETS.find((p) => p.id === 'saturn')} quality={quality} timeScale={timeScale} onHover={setHovered} />
@@ -59,7 +78,6 @@ export default function SpaceScene({ quality = 'high', timeScale = 1 }) {
               onHover={setHovered}
             />
           ))}
-          <Starfield quality={quality} timeScale={timeScale} />
         </Suspense>
       </Canvas>
 
