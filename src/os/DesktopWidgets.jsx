@@ -80,7 +80,7 @@ function HintToast() {
     <AnimatePresence>
       {visible && (
         <motion.div
-          className="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-3 pl-4 pr-2 py-2.5 rounded-2xl dock-glass max-w-lg"
+          className="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-3 pl-4 pr-2 py-2.5 rounded-2xl dock-glass max-w-lg pointer-events-auto"
           initial={{ opacity: 0, y: -16, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -16, scale: 0.95 }}

@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import Sun from './Sun';
 import Planet from './Planet';
@@ -9,7 +9,10 @@ import Nebula from './Nebula';
 import BlackHole from './BlackHole';
 import FloatingParticles from './FloatingParticles';
 import ShootingStars from './ShootingStars';
+import CameraRig from './CameraRig';
 import PlanetInfoPanel from './PlanetInfoPanel';
+import PlanetDetailOverlay from './PlanetDetailOverlay';
+import { trackEvent } from '../utils/analytics';
 import { PLANETS, SUN } from './planetData';
 import { TEXTURES } from './textures';
 
@@ -38,10 +41,28 @@ export default function SpaceScene({
   nebula = true,
   particles = true,
   shootingStars = true,
+  parallax = true,
   particleDensity = 'medium',
 }) {
   const [hovered, setHovered] = useState(null);
+  const [selected, setSelected] = useState(null); // { planet, point }
   const particleCount = particleDensity === 'low' ? 120 : particleDensity === 'high' ? 420 : 240;
+  const effectiveTimeScale = selected ? 0 : timeScale;
+
+  const handleSelect = useCallback((planet, point) => {
+    setSelected({ planet, point });
+    setHovered(null);
+    trackEvent('space_planet_select', { planet: planet.name });
+  }, []);
+
+  const handleClose = useCallback(() => setSelected(null), []);
+
+  useEffect(() => {
+    if (!selected) return;
+    const onKey = (e) => { if (e.key === 'Escape') handleClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [selected, handleClose]);
 
   return (
     <div className="fixed inset-0" style={{ background: '#04050b' }}>
@@ -55,17 +76,25 @@ export default function SpaceScene({
         <fogExp2 attach="fog" args={['#05060c', 0.0025]} />
         <ambientLight intensity={0.14} />
         <hemisphereLight args={['#3a4a7a', '#050508', 0.18]} />
+        <CameraRig parallax={parallax && !selected} focusPoint={selected?.point ?? null} />
 
         <Suspense fallback={null}>
-          <Starfield quality={quality} timeScale={timeScale} />
+          <Starfield quality={quality} timeScale={effectiveTimeScale} />
           {nebula && <Nebula intensity={quality === 'low' ? 0.6 : 1} />}
           {blackHole && quality !== 'low' && <BlackHole quality={quality} />}
           {particles && <FloatingParticles count={particleCount} />}
-          {shootingStars && quality !== 'low' && <ShootingStars />}
+          {shootingStars && quality !== 'low' && !selected && <ShootingStars />}
 
           <Sun quality={quality} />
-          <Earth quality={quality} timeScale={timeScale} onHover={setHovered} />
-          <Saturn data={PLANETS.find((p) => p.id === 'saturn')} quality={quality} timeScale={timeScale} onHover={setHovered} />
+          <Earth quality={quality} timeScale={effectiveTimeScale} onHover={setHovered} onSelect={handleSelect} isSelected={selected?.planet.id === 'earth'} />
+          <Saturn
+            data={PLANETS.find((p) => p.id === 'saturn')}
+            quality={quality}
+            timeScale={effectiveTimeScale}
+            onHover={setHovered}
+            onSelect={handleSelect}
+            isSelected={selected?.planet.id === 'saturn'}
+          />
           {PLANETS.filter((p) => !['earth', 'saturn'].includes(p.id)).map((p) => (
             <Planet
               key={p.id}
@@ -74,14 +103,17 @@ export default function SpaceScene({
               cloudsPath={p.id === 'venus' ? TEXTURES.venusAtmosphere : undefined}
               glow={GLOW_MAP[p.id]}
               quality={quality}
-              timeScale={timeScale}
+              timeScale={effectiveTimeScale}
               onHover={setHovered}
+              onSelect={handleSelect}
+              isSelected={selected?.planet.id === p.id}
             />
           ))}
         </Suspense>
       </Canvas>
 
-      <PlanetInfoPanel planet={hovered} />
+      <PlanetInfoPanel planet={!selected ? hovered : null} />
+      <PlanetDetailOverlay planet={selected?.planet ?? null} onClose={handleClose} />
     </div>
   );
 }

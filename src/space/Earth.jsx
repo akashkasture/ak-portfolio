@@ -89,7 +89,7 @@ export default function Earth({ quality = 'high', timeScale = 1, onHover, onSele
             scale={hovered || isSelected ? 1.12 : 1}
             onPointerOver={(e) => { e.stopPropagation(); setHover(true); document.body.style.cursor = 'pointer'; }}
             onPointerOut={(e) => { e.stopPropagation(); setHover(false); document.body.style.cursor = 'auto'; }}
-            onClick={(e) => { e.stopPropagation(); onSelect?.(data); }}
+            onClick={(e) => { e.stopPropagation(); onSelect?.(data, e.point.clone()); }}
           >
             <sphereGeometry args={[data.size, segments, segments]} />
             <shaderMaterial uniforms={uniforms} vertexShader={DAY_NIGHT_VERTEX} fragmentShader={DAY_NIGHT_FRAGMENT} />

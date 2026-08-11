@@ -51,7 +51,7 @@ export default function Saturn({ data, quality = 'high', timeScale = 1, onHover,
             scale={hovered || isSelected ? 1.08 : 1}
             onPointerOver={(e) => { e.stopPropagation(); setHover(true); document.body.style.cursor = 'pointer'; }}
             onPointerOut={(e) => { e.stopPropagation(); setHover(false); document.body.style.cursor = 'auto'; }}
-            onClick={(e) => { e.stopPropagation(); onSelect?.(data); }}
+            onClick={(e) => { e.stopPropagation(); onSelect?.(data, e.point.clone()); }}
           >
             <sphereGeometry args={[data.size, segments, segments]} />
             <meshStandardMaterial map={planetTex} roughness={0.85} metalness={0.05} emissive={data.color} emissiveIntensity={0.05} />

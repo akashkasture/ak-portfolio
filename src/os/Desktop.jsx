@@ -22,7 +22,7 @@ export default function Desktop() {
       <TopBar />
 
       <div
-        className="absolute left-0 right-0"
+        className="absolute left-0 right-0 pointer-events-none"
         style={{ top: 40, bottom: isMobile ? 60 : 0 }}
       >
         <DesktopWidgets />

@@ -26,7 +26,7 @@ export default function RecruiterMode() {
 
   return (
     <motion.div
-      className="absolute inset-3 sm:inset-6 rounded-xl overflow-hidden flex flex-col glass-strong"
+      className="absolute inset-3 sm:inset-6 rounded-xl overflow-hidden flex flex-col glass-strong pointer-events-auto"
       style={{ boxShadow: '0 24px 70px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06)' }}
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}

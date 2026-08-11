@@ -7,7 +7,7 @@ export default function Wallpaper() {
   const { settings } = useSettings();
   const {
     wallpaper, wallpaperFx, fxIntensity, spaceQuality,
-    spaceBlackHole, spaceNebula, spaceParticles, spaceShootingStars, spaceParticleDensity,
+    spaceBlackHole, spaceNebula, spaceParticles, spaceShootingStars, spaceParticleDensity, spaceParallax,
   } = settings;
   const minimal = wallpaper === 'minimal';
 
@@ -22,6 +22,7 @@ export default function Wallpaper() {
           particles={spaceParticles}
           shootingStars={spaceShootingStars}
           particleDensity={spaceParticleDensity}
+          parallax={spaceParallax}
         />
       </Suspense>
     );
