@@ -266,6 +266,13 @@ function AboutPane() {
         Built with React, Vite, Tailwind CSS and framer-motion. Every window, the dock, the terminal
         and this settings app run entirely in your browser — no backend, no tracking beyond page analytics.
       </div>
+      <div className="text-xs leading-relaxed" style={{ color: 'var(--text-3)' }}>
+        The solar system wallpaper is rendered with Three.js / React Three Fiber. Planet, sun and moon
+        textures are courtesy of{' '}
+        <a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'var(--os-accent)' }}>
+          Solar System Scope
+        </a>, licensed under CC BY 4.0.
+      </div>
       <div className="flex flex-wrap gap-2 pt-2">
         <button
           onClick={() => {
