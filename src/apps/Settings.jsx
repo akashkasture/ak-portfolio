@@ -15,6 +15,7 @@ const ACCENT_SWATCHES = [
 ];
 
 const WALLPAPERS = [
+  { id: 'solarsystem', label: 'Solar System', preview: 'radial-gradient(circle at 38% 45%, #ffdca8, #ff9d42 22%, transparent 45%), radial-gradient(1px 1px at 15% 20%, #fff, transparent 30%), radial-gradient(1px 1px at 75% 15%, #fff, transparent 30%), radial-gradient(1.5px 1.5px at 60% 75%, #818cf8, transparent 30%), radial-gradient(1px 1px at 85% 60%, #fff, transparent 30%), #04050b' },
   { id: 'aurora', label: 'Aurora', preview: 'radial-gradient(ellipse 70% 60% at 25% 20%, rgba(99,102,241,0.5), transparent 65%), radial-gradient(ellipse 60% 50% at 80% 85%, rgba(6,182,212,0.4), transparent 60%), #06060c' },
   { id: 'starfield', label: 'Starfield', preview: 'radial-gradient(1px 1px at 20% 30%, #fff, transparent 30%), radial-gradient(1px 1px at 70% 60%, #fff, transparent 30%), radial-gradient(1.5px 1.5px at 45% 75%, #818cf8, transparent 30%), radial-gradient(1px 1px at 85% 20%, #fff, transparent 30%), #04040a' },
   { id: 'gradient', label: 'Gradient', preview: 'linear-gradient(140deg, rgba(99,102,241,0.6), #0a0a14 45%, rgba(6,182,212,0.5))' },

@@ -3,7 +3,7 @@ import { useNotifications } from './NotificationContext';
 
 const STORAGE_KEY = 'ak-os-settings';
 
-const WALLPAPER_LABELS = { aurora: 'Aurora', starfield: 'Starfield', gradient: 'Gradient', grid: 'Terminal Grid', minimal: 'Minimal' };
+const WALLPAPER_LABELS = { solarsystem: 'Solar System', aurora: 'Aurora', starfield: 'Starfield', gradient: 'Gradient', grid: 'Terminal Grid', minimal: 'Minimal' };
 
 export const DEFAULT_SETTINGS = {
   wallpaper: 'solarsystem', // solarsystem | aurora | starfield | gradient | grid | minimal
