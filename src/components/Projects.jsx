@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, ExternalLink, FileText } from 'lucide-react';
 import { GithubIcon } from './SocialIcons';
-import { projects } from '../data/portfolio';
+import { projects, blogPosts } from '../data/portfolio';
 import SectionHeader from './SectionHeader';
 import { useTheme } from '../context/ThemeContext';
 import { trackEvent } from '../utils/analytics';
 
-const FEATURED = projects.slice(0, 4);
-const CATEGORIES = ['All', ...new Set(FEATURED.map((p) => p.category))];
+const CATEGORIES = ['All', ...new Set(projects.map((p) => p.category))];
 
 const CATEGORY_COLORS = {
   'AI / Backend': '#6366f1',
@@ -18,7 +17,115 @@ const CATEGORY_COLORS = {
   'DevOps': '#f59e0b',
 };
 
-function TiltCard({ children, color }) {
+// Surfaces a real engineering note when its tags genuinely overlap the project's
+// tech stack or title — never invented, just cross-linking existing content.
+function relatedNote(project) {
+  return blogPosts.find((post) =>
+    post.tags.some(
+      (tag) =>
+        project.tech.some((t) => t.toLowerCase().includes(tag.toLowerCase()) || tag.toLowerCase().includes(t.toLowerCase())) ||
+        project.title.toLowerCase().includes(tag.toLowerCase())
+    )
+  );
+}
+
+function ProjectDetail({ project, color, onBack }) {
+  const note = relatedNote(project);
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 24 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 24 }}
+      transition={{ duration: 0.2 }}
+    >
+      <button
+        onClick={onBack}
+        className="flex items-center gap-1.5 text-sm mb-5 transition-colors hover:text-white"
+        style={{ color: 'var(--text-3)' }}
+      >
+        <ArrowLeft size={14} /> All Projects
+      </button>
+
+      <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
+        <div>
+          <span
+            className="inline-block px-2.5 py-1 rounded-lg text-[10px] font-semibold mb-2"
+            style={{ background: `${color}20`, color, border: `1px solid ${color}35` }}
+          >
+            {project.category}
+          </span>
+          <h2 className="text-2xl font-bold" style={{ color: 'var(--text-1)' }}>{project.title}</h2>
+        </div>
+        <div className="flex gap-2">
+          <span
+            onClick={() => trackEvent('project_demo_click', { project: project.title })}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-white text-xs font-semibold cursor-default"
+            style={{ background: color }}
+          >
+            <ExternalLink size={12} /> Live Demo
+          </span>
+          <span
+            onClick={() => trackEvent('project_code_click', { project: project.title })}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold cursor-default"
+            style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-2)' }}
+          >
+            <GithubIcon size={12} /> Code
+          </span>
+        </div>
+      </div>
+
+      {/* Overview — the real project description, which already reads architecture-first */}
+      <section className="mb-6">
+        <h3 className="text-xs font-mono uppercase tracking-widest mb-2" style={{ color: 'var(--text-4)' }}>Overview</h3>
+        <p className="text-sm leading-relaxed" style={{ color: 'var(--text-2)' }}>{project.description}</p>
+      </section>
+
+      {/* Impact / metrics */}
+      <section className="mb-6">
+        <h3 className="text-xs font-mono uppercase tracking-widest mb-3" style={{ color: 'var(--text-4)' }}>Impact</h3>
+        <div className="grid grid-cols-3 gap-3">
+          {Object.entries(project.metrics).map(([key, val]) => (
+            <div key={key} className="rounded-xl p-3 text-center" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--surface-border)' }}>
+              <div className="text-base font-bold" style={{ color }}>{val}</div>
+              <div className="text-[10px] capitalize mt-0.5" style={{ color: 'var(--text-4)' }}>{key}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Tech stack */}
+      <section className="mb-6">
+        <h3 className="text-xs font-mono uppercase tracking-widest mb-3" style={{ color: 'var(--text-4)' }}>Tech Stack</h3>
+        <div className="flex flex-wrap gap-1.5">
+          {project.tech.map((t) => (
+            <span key={t} className="px-2.5 py-1 rounded-lg text-xs font-mono" style={{ border: '1px solid var(--surface-border)', background: 'var(--surface)', color: 'var(--text-2)' }}>
+              {t}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      {/* Related engineering note — only when tags genuinely overlap */}
+      {note && (
+        <section>
+          <h3 className="text-xs font-mono uppercase tracking-widest mb-3" style={{ color: 'var(--text-4)' }}>Related Engineering Note</h3>
+          <div className="rounded-xl p-4 flex items-start gap-3" style={{ background: `${note.color}0a`, border: `1px solid ${note.color}30` }}>
+            <FileText size={16} className="flex-shrink-0 mt-0.5" style={{ color: note.color }} />
+            <div className="min-w-0">
+              <div className="text-sm font-semibold flex items-center gap-1.5" style={{ color: 'var(--text-1)' }}>
+                {note.title} <ArrowUpRight size={12} style={{ color: note.color }} />
+              </div>
+              <p className="text-xs mt-1 leading-relaxed" style={{ color: 'var(--text-3)' }}>{note.excerpt}</p>
+              <div className="text-[10px] mt-1.5 font-mono" style={{ color: 'var(--text-4)' }}>{note.date} · {note.readTime}</div>
+            </div>
+          </div>
+        </section>
+      )}
+    </motion.div>
+  );
+}
+
+function TiltCard({ children }) {
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [hovered, setHovered] = useState(false);
 
@@ -51,7 +158,7 @@ function TiltCard({ children, color }) {
   );
 }
 
-function ProjectCard({ project, index }) {
+function ProjectCard({ project, index, onOpen }) {
   const [imgHovered, setImgHovered] = useState(false);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -63,6 +170,8 @@ function ProjectCard({ project, index }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.5, delay: index * 0.08 }}
+      onClick={onOpen}
+      className="cursor-pointer"
     >
       <TiltCard color={color}>
         <div
@@ -157,9 +266,13 @@ function ProjectCard({ project, index }) {
               </h3>
             </div>
 
-            <p className="text-sm leading-relaxed mb-4 flex-1 line-clamp-3" style={{ color: 'var(--text-3)' }}>
+            <p className="text-sm leading-relaxed mb-3 flex-1 line-clamp-3" style={{ color: 'var(--text-3)' }}>
               {project.description}
             </p>
+
+            <span className="text-xs font-semibold mb-3 flex items-center gap-1" style={{ color }}>
+              View Details <ArrowUpRight size={12} />
+            </span>
 
             {/* Tech badges */}
             <div className="flex flex-wrap gap-1.5 mb-4">
@@ -199,15 +312,33 @@ function ProjectCard({ project, index }) {
 
 export default function Projects() {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [selectedId, setSelectedId] = useState(null);
 
   const filtered =
     activeCategory === 'All'
-      ? FEATURED
-      : FEATURED.filter((p) => p.category === activeCategory);
+      ? projects
+      : projects.filter((p) => p.category === activeCategory);
+
+  const selected = selectedId ? projects.find((p) => p.id === selectedId) : null;
+
+  if (selected) {
+    return (
+      <div className="@container p-6 sm:p-8">
+        <AnimatePresence mode="wait">
+          <ProjectDetail
+            key={selected.id}
+            project={selected}
+            color={CATEGORY_COLORS[selected.category] || '#6366f1'}
+            onBack={() => setSelectedId(null)}
+          />
+        </AnimatePresence>
+      </div>
+    );
+  }
 
   return (
-    <section id="projects" className="section-padding" style={{ overflowX: 'clip' }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="@container p-6 sm:p-8">
+      <div>
         <SectionHeader
           label="Featured Projects"
           title="Production-Grade"
@@ -249,37 +380,23 @@ export default function Projects() {
         <AnimatePresence mode="wait">
           <motion.div
             key={activeCategory}
-            className="grid md:grid-cols-2 xl:grid-cols-2 gap-6"
+            className="grid @md:grid-cols-2 gap-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
           >
             {filtered.map((project, i) => (
-              <ProjectCard key={project.id} project={project} index={i} />
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={i}
+                onOpen={() => { setSelectedId(project.id); trackEvent('project_detail_open', { project: project.title }); }}
+              />
             ))}
           </motion.div>
         </AnimatePresence>
-
-        <motion.div
-          className="text-center mt-12"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-        >
-          <span
-            onClick={() => trackEvent('project_github_cta_click')}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-200 text-sm cursor-default"
-            style={{ border: '1px solid var(--surface-border)', color: 'var(--text-3)', background: 'var(--surface)' }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.3)'; e.currentTarget.style.color = 'var(--text-1)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--surface-border)'; e.currentTarget.style.color = 'var(--text-3)'; }}
-          >
-            <GithubIcon size={15} />
-            View All 10+ Projects on GitHub
-            <ChevronRight size={13} />
-          </span>
-        </motion.div>
       </div>
-    </section>
+    </div>
   );
 }

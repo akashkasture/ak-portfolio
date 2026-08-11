@@ -109,8 +109,8 @@ export default function Trading() {
   }, [inView]);
 
   return (
-    <section id="trading" className="section-padding" style={{ overflowX: 'clip' }}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="@container p-6 sm:p-8">
+      <div>
         <SectionHeader
           label="Trading & Quant"
           title="Systematic"
@@ -119,7 +119,7 @@ export default function Trading() {
         />
 
         {/* Metric row — clean stat cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-10">
+        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-3 mb-10">
           {METRICS.map((m, i) => {
             const Icon = m.icon;
             const decimals = Number.isInteger(m.value) ? 0 : 1;
@@ -154,7 +154,7 @@ export default function Trading() {
         </div>
 
         {/* Chart + Depth grid */}
-        <div className="grid lg:grid-cols-5 gap-6">
+        <div className="grid @lg:grid-cols-5 gap-6">
 
           {/* Equity Curve — Recharts */}
           <motion.div
@@ -318,6 +318,6 @@ export default function Trading() {
           For educational purposes only · Past performance does not indicate future results
         </motion.p>
       </div>
-    </section>
+    </div>
   );
 }

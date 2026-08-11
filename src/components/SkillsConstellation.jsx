@@ -75,8 +75,8 @@ export default function SkillsConstellation() {
     focus && ((a === focus && connected?.has(b)) || (b === focus && connected?.has(a)));
 
   return (
-    <section id="skills" className="section-padding" style={{ overflowX: 'clip' }}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="@container p-6 sm:p-8">
+      <div>
         <SectionHeader
           label="Skills"
           title="Technology"
@@ -238,6 +238,6 @@ export default function SkillsConstellation() {
           )}
         </motion.div>
       </div>
-    </section>
+    </div>
   );
 }

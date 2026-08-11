@@ -1,7 +1,33 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal as TerminalIcon, Maximize2 } from 'lucide-react';
-import SectionHeader from './SectionHeader';
+import { skills } from '../data/portfolio';
+
+function skillLevel(category, name) {
+  const cat = skills.find((s) => s.category === category);
+  const item = cat?.items.find((i) => i.name === name);
+  return item?.level ?? 0;
+}
+
+function bar(level) {
+  const filled = Math.round(level / 10);
+  return '█'.repeat(filled) + '░'.repeat(10 - filled);
+}
+
+const NEOFETCH_SKILLS = [
+  ['Java', skillLevel('Backend', 'Java')],
+  ['Spring Boot', skillLevel('Backend', 'Spring Boot')],
+  ['Microservices', skillLevel('Backend', 'Microservices')],
+  ['Docker', skillLevel('DevOps', 'Docker')],
+  ['Kubernetes', skillLevel('DevOps', 'Kubernetes')],
+  ['Oracle SQL', skillLevel('Databases', 'Oracle SQL')],
+  ['Apache Kafka', skillLevel('Messaging', 'Apache Kafka')],
+  ['AWS', skillLevel('DevOps', 'AWS')],
+];
+
+const NEOFETCH_LINES = NEOFETCH_SKILLS.map(([name, lvl]) => ({
+  t: 'cyan',
+  v: `  ${name.padEnd(15)} ${bar(lvl)} ${lvl}%`,
+}));
 
 const COMMANDS = {
   help: {
@@ -14,6 +40,7 @@ const COMMANDS = {
       { t: 'label', v: '  │  pnl             │  portfolio   │  stats    │' },
       { t: 'label', v: '  │  resume          │  github      │  linkedin │' },
       { t: 'label', v: '  │  certifications  │  clear       │  coffee   │' },
+      { t: 'label', v: '  │  neofetch        │  sudo        │  matrix   │' },
       { t: 'dim',   v: '  └─────────────────────────────────────────────┘' },
       { t: 'muted', v: '  Tip: use ↑↓ arrow keys for history · Tab to autocomplete' },
     ],
@@ -203,6 +230,55 @@ const COMMANDS = {
       { t: 'cyan',  v: '  Coffee ready! Productivity +∞' },
     ],
   },
+  neofetch: {
+    output: [
+      { t: 'indigo', v: '   █████  ██   ██        akash@ak-os' },
+      { t: 'indigo', v: '  ██   ██ ██  ██         ────────────────' },
+      { t: 'cyan',   v: '  ███████ █████          OS       →  AK OS v1.0' },
+      { t: 'indigo', v: '  ██   ██ ██  ██         Role     →  Software Engineer | Trader' },
+      { t: 'indigo', v: '  ██   ██ ██   ██        Company  →  Newgen Software Technology' },
+      { t: 'muted',  v: '                         Location →  Pune, India' },
+      { t: 'muted',  v: '' },
+      ...NEOFETCH_LINES,
+    ],
+  },
+  sudo: {
+    output: [
+      { t: 'red', v: '  Permission denied: you are not in the sudoers file.' },
+      { t: 'muted', v: '  This incident will be reported. (not really)' },
+    ],
+  },
+  'sudo hire akash': {
+    output: [
+      { t: 'white', v: '  Checking candidate...' },
+      { t: 'muted', v: '' },
+      { t: 'green', v: '  ✓ Java / Spring Boot / Microservices' },
+      { t: 'green', v: '  ✓ Production experience — Newgen Software Technology' },
+      { t: 'green', v: '  ✓ Distributed systems & event-driven architecture' },
+      { t: 'green', v: '  ✓ Problem solving under production pressure' },
+      { t: 'muted', v: '' },
+      { t: 'cyan',  v: '  Recommendation: INTERVIEW CANDIDATE 🚀' },
+    ],
+  },
+  matrix: {
+    output: [
+      { t: 'green', v: '  Wake up, Akash...' },
+      { t: 'green', v: '  The Matrix has you. Follow the white rabbit.' },
+      { t: 'muted', v: '  (there is no spoon, only Spring Boot beans)' },
+    ],
+  },
+  hello: {
+    output: [
+      { t: 'cyan', v: '  Hey there 👋 thanks for poking around AK OS.' },
+      { t: 'white', v: '  Type "help" if you want the full command list.' },
+    ],
+  },
+  'rm -rf /': {
+    output: [
+      { t: 'red',   v: '  Nice try. This terminal is purely decorative.' },
+      { t: 'muted', v: '  Nothing was deleted. Your data (and mine) is safe.' },
+    ],
+  },
 };
 
 const SUGGESTIONS = Object.keys(COMMANDS);
@@ -327,112 +403,73 @@ export default function Terminal() {
   };
 
   return (
-    <section id="terminal" className="section-padding">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeader
-          label="Interactive Terminal"
-          title="Talk to My"
-          highlight="Portfolio"
-          description="An interactive CLI to explore my profile and trading stats. Type 'help' to begin."
-        />
-
-        <motion.div
-          className="rounded-2xl overflow-hidden"
-          style={{
-            background: '#000000',
-            border: '1px solid rgba(99,102,241,0.15)',
-            boxShadow: '0 0 60px rgba(99,102,241,0.08), 0 25px 60px rgba(0,0,0,0.5)',
-          }}
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          {/* Title bar */}
-          <div
-            className="flex items-center gap-3 px-5 py-3 border-b"
-            style={{ background: '#0a0a0a', borderColor: 'rgba(255,255,255,0.06)' }}
-          >
-            <div className="flex gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-red-500/70 hover:bg-red-500 transition-colors cursor-pointer" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500/70 hover:bg-yellow-500 transition-colors cursor-pointer" />
-              <div className="w-3 h-3 rounded-full bg-emerald-500/70 hover:bg-emerald-500 transition-colors cursor-pointer" />
+    <div className="h-full flex flex-col" style={{ background: '#000000' }}>
+      {/* Output */}
+      <div
+        ref={outputRef}
+        className="p-5 flex-1 min-h-0 overflow-y-auto overflow-x-hidden font-mono text-sm terminal-scroll"
+        onClick={() => inputRef.current?.focus()}
+        style={{ letterSpacing: '0.01em' }}
+      >
+        <AnimatePresence initial={false}>
+          {history.map((entry, i) => (
+            <motion.div
+              key={i}
+              className={`leading-relaxed whitespace-pre-wrap mb-0.5 ${
+                entry.type === 'input'
+                  ? 'text-indigo-400'
+                  : COLOR_MAP[entry.type] || 'text-slate-400'
+              }`}
+              initial={{ opacity: 0, x: -6 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.12 }}
+            >
+              {entry.content}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+        {/* Input line */}
+        {booted && (
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-indigo-400 select-none">$</span>
+            <div className="relative flex-1">
+              {/* Autocomplete ghost text */}
+              {suggestion && suggestion !== input && (
+                <span className="absolute left-0 top-0 text-slate-700 pointer-events-none font-mono">
+                  {suggestion}
+                </span>
+              )}
+              <input
+                ref={inputRef}
+                value={input}
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+                className="w-full bg-transparent text-white outline-none caret-indigo-400 font-mono"
+                spellCheck={false}
+                autoComplete="off"
+                autoCapitalize="off"
+                aria-label="Terminal input"
+              />
             </div>
-            <div className="flex items-center gap-2 mx-auto text-slate-600 text-xs font-mono">
-              <TerminalIcon size={11} />
-              akash@portfolio — zsh — 80×24
-            </div>
-            <Maximize2 size={12} className="text-slate-700" />
           </div>
-
-          {/* Output */}
-          <div
-            ref={outputRef}
-            className="p-5 h-96 overflow-y-auto overflow-x-hidden font-mono text-sm terminal-scroll"
-            onClick={() => inputRef.current?.focus()}
-            style={{ letterSpacing: '0.01em' }}
-          >
-            <AnimatePresence initial={false}>
-              {history.map((entry, i) => (
-                <motion.div
-                  key={i}
-                  className={`leading-relaxed whitespace-pre-wrap mb-0.5 ${
-                    entry.type === 'input'
-                      ? 'text-indigo-400'
-                      : COLOR_MAP[entry.type] || 'text-slate-400'
-                  }`}
-                  initial={{ opacity: 0, x: -6 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.12 }}
-                >
-                  {entry.content}
-                </motion.div>
-              ))}
-            </AnimatePresence>
-            {/* Input line */}
-            {booted && (
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-indigo-400 select-none">$</span>
-                <div className="relative flex-1">
-                  {/* Autocomplete ghost text */}
-                  {suggestion && suggestion !== input && (
-                    <span className="absolute left-0 top-0 text-slate-700 pointer-events-none font-mono">
-                      {suggestion}
-                    </span>
-                  )}
-                  <input
-                    ref={inputRef}
-                    value={input}
-                    onChange={handleChange}
-                    onKeyDown={handleKeyDown}
-                    className="w-full bg-transparent text-white outline-none caret-indigo-400 font-mono"
-                    spellCheck={false}
-                    autoComplete="off"
-                    autoCapitalize="off"
-                    aria-label="Terminal input"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Quick command chips */}
-          <div
-            className="px-5 py-3 border-t flex gap-1.5 flex-wrap"
-            style={{ borderColor: 'rgba(255,255,255,0.05)', background: '#0a1120' }}
-          >
-            {['help', 'about', 'skills', 'trading', 'market', 'pnl', 'stats', 'projects', 'experience', 'contact'].map(cmd => (
-              <button
-                key={cmd}
-                onClick={() => { inputRef.current?.focus(); runCommand(cmd); }}
-                className="px-2.5 py-1 rounded-lg text-[10px] font-mono border border-white/6 text-slate-600 hover:text-slate-300 hover:border-indigo-500/25 hover:bg-indigo-500/5 transition-all duration-150"
-              >
-                {cmd}
-              </button>
-            ))}
-          </div>
-        </motion.div>
+        )}
       </div>
-    </section>
+
+      {/* Quick command chips */}
+      <div
+        className="px-5 py-3 border-t flex gap-1.5 flex-wrap flex-shrink-0"
+        style={{ borderColor: 'rgba(255,255,255,0.05)', background: '#0a1120' }}
+      >
+        {['help', 'about', 'skills', 'trading', 'market', 'pnl', 'stats', 'projects', 'experience', 'contact'].map(cmd => (
+          <button
+            key={cmd}
+            onClick={() => { inputRef.current?.focus(); runCommand(cmd); }}
+            className="px-2.5 py-1 rounded-lg text-[10px] font-mono border border-white/6 text-slate-600 hover:text-slate-300 hover:border-indigo-500/25 hover:bg-indigo-500/5 transition-all duration-150"
+          >
+            {cmd}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }

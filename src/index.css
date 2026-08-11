@@ -18,6 +18,41 @@
   --grid-dot2:      rgba(6,182,212,0.06);
   --accent:         #7c3aed;
   --selection-bg:   rgba(124,58,237,0.35);
+
+  /* AK OS accent theme (default) — swappable via [data-accent] on <html> */
+  --os-accent:      #6366f1;
+  --os-accent-rgb:  99,102,241;
+  --os-accent-2:    #06b6d4;
+  --os-accent-2-rgb:6,182,212;
+}
+
+/* ── AK OS accent theme presets ───────────────────────── */
+[data-accent="midnight"] {
+  --os-accent:       #4f46e5;
+  --os-accent-rgb:   79,70,229;
+  --os-accent-2:     #7c3aed;
+  --os-accent-2-rgb: 124,58,237;
+}
+
+[data-accent="terminal"] {
+  --os-accent:       #22c55e;
+  --os-accent-rgb:   34,197,94;
+  --os-accent-2:     #16a34a;
+  --os-accent-2-rgb: 22,163,74;
+}
+
+[data-accent="arctic"] {
+  --os-accent:       #0ea5e9;
+  --os-accent-rgb:   14,165,233;
+  --os-accent-2:     #38bdf8;
+  --os-accent-2-rgb: 56,189,248;
+}
+
+[data-accent="cyber"] {
+  --os-accent:       #ec4899;
+  --os-accent-rgb:   236,72,153;
+  --os-accent-2:     #a855f7;
+  --os-accent-2-rgb: 168,85,247;
 }
 
 [data-theme="light"] {
@@ -48,6 +83,13 @@
   html {
     scroll-behavior: auto;
     background-color: var(--bg);
+  }
+
+  /* Visible keyboard-focus ring — only for keyboard nav, not mouse clicks */
+  :focus-visible {
+    outline: 2px solid var(--os-accent, #6366f1);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 
   body {
@@ -98,6 +140,15 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 @layer utilities {
   .text-gradient {
     background: linear-gradient(135deg, #6366f1, #06b6d4, #8b5cf6);
@@ -127,6 +178,169 @@
     -webkit-backdrop-filter: blur(40px);
     border: 1px solid var(--nav-border);
     transition: background 0.4s ease, border-color 0.4s ease;
+  }
+
+  /* ── AK OS chrome surfaces ─────────────────────────── */
+  .dock-glass {
+    background: rgba(18, 16, 28, 0.55);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 20px 50px rgba(0, 0, 0, 0.55),
+      0 4px 14px rgba(0, 0, 0, 0.35);
+  }
+
+  [data-theme="light"] .dock-glass {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      0 20px 50px rgba(15, 23, 42, 0.18),
+      0 4px 14px rgba(15, 23, 42, 0.08);
+  }
+
+  .os-window {
+    background: rgba(12, 10, 20, var(--os-window-alpha, 0.82));
+    backdrop-filter: blur(50px) saturate(160%);
+    -webkit-backdrop-filter: blur(50px) saturate(160%);
+  }
+
+  [data-theme="light"] .os-window {
+    background: rgba(248, 250, 252, var(--os-window-alpha, 0.86));
+  }
+
+  .os-titlebar {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015));
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  [data-theme="light"] .os-titlebar {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(240, 242, 248, 0.4));
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  }
+
+  /* ── AK OS wallpaper ───────────────────────────────── */
+  .wallpaper-aurora {
+    background:
+      radial-gradient(ellipse 70% 55% at 18% 8%, rgba(var(--os-accent-rgb), 0.16) 0%, transparent 62%),
+      radial-gradient(ellipse 60% 50% at 85% 88%, rgba(var(--os-accent-2-rgb), 0.13) 0%, transparent 60%),
+      radial-gradient(ellipse 45% 40% at 70% 25%, rgba(139, 92, 246, 0.08) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 45% at 30% 80%, rgba(var(--os-accent-rgb), 0.07) 0%, transparent 58%);
+  }
+
+  [data-theme="light"] .wallpaper-aurora {
+    background:
+      radial-gradient(ellipse 70% 55% at 18% 8%, rgba(var(--os-accent-rgb), 0.12) 0%, transparent 62%),
+      radial-gradient(ellipse 60% 50% at 85% 88%, rgba(var(--os-accent-2-rgb), 0.1) 0%, transparent 60%),
+      radial-gradient(ellipse 45% 40% at 70% 25%, rgba(139, 92, 246, 0.06) 0%, transparent 55%);
+  }
+
+  .wallpaper-noise {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+  }
+
+  .wallpaper-vignette {
+    background: radial-gradient(ellipse 110% 90% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.42) 100%);
+  }
+
+  [data-theme="light"] .wallpaper-vignette {
+    background: radial-gradient(ellipse 110% 90% at 50% 45%, transparent 60%, rgba(15, 23, 42, 0.1) 100%);
+  }
+
+  .wallpaper-dots {
+    background-image: radial-gradient(circle, var(--grid-dot) 1px, transparent 1px);
+    background-size: 34px 34px;
+    opacity: 0.5;
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 30%, transparent 90%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 30%, transparent 90%);
+  }
+
+  @keyframes aurora-drift-a {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    50%      { transform: translate3d(4%, 6%, 0) scale(1.12); }
+  }
+
+  @keyframes aurora-drift-b {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); }
+    50%      { transform: translate3d(-5%, -4%, 0) scale(1); }
+  }
+
+  .aurora-blob-a {
+    background: radial-gradient(circle, rgba(var(--os-accent-rgb), 0.14) 0%, transparent 65%);
+    filter: blur(60px);
+    animation: aurora-drift-a 26s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .aurora-blob-b {
+    background: radial-gradient(circle, rgba(var(--os-accent-2-rgb), 0.11) 0%, transparent 65%);
+    filter: blur(70px);
+    animation: aurora-drift-b 32s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  /* ── Wallpaper variants ────────────────────────────── */
+  .wallpaper-gradient {
+    background: linear-gradient(140deg,
+      rgba(var(--os-accent-rgb), 0.28) 0%,
+      transparent 38%,
+      rgba(139, 92, 246, 0.1) 62%,
+      rgba(var(--os-accent-2-rgb), 0.22) 100%);
+    background-size: 160% 160%;
+    animation: gradientShift 24s ease infinite;
+  }
+
+  @keyframes star-twinkle {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.55; }
+  }
+
+  .wallpaper-stars-a,
+  .wallpaper-stars-b {
+    background-image:
+      radial-gradient(1px 1px at 25px 35px, rgba(255,255,255,0.9), transparent 40%),
+      radial-gradient(1px 1px at 120px 90px, rgba(255,255,255,0.55), transparent 40%),
+      radial-gradient(1.5px 1.5px at 200px 40px, rgba(255,255,255,0.8), transparent 40%),
+      radial-gradient(1px 1px at 80px 160px, rgba(255,255,255,0.45), transparent 40%),
+      radial-gradient(1px 1px at 170px 140px, rgba(255,255,255,0.65), transparent 40%),
+      radial-gradient(1.5px 1.5px at 40px 110px, rgba(var(--os-accent-rgb), 0.9), transparent 40%);
+  }
+
+  .wallpaper-stars-a {
+    background-size: 240px 200px;
+    animation: star-twinkle 7s ease-in-out infinite;
+  }
+
+  .wallpaper-stars-b {
+    background-size: 340px 300px;
+    background-position: 60px 40px;
+    opacity: 0.55;
+    animation: star-twinkle 9s ease-in-out -3s infinite;
+  }
+
+  [data-theme="light"] .wallpaper-stars-a,
+  [data-theme="light"] .wallpaper-stars-b {
+    filter: invert(1);
+    opacity: 0.35;
+  }
+
+  .wallpaper-terminal-grid {
+    background-image:
+      linear-gradient(rgba(34, 197, 94, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34, 197, 94, 0.07) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: radial-gradient(ellipse 95% 85% at 50% 50%, black 40%, transparent 95%);
+    -webkit-mask-image: radial-gradient(ellipse 95% 85% at 50% 50%, black 40%, transparent 95%);
+  }
+
+  [data-theme="light"] .wallpaper-terminal-grid {
+    background-image:
+      linear-gradient(rgba(22, 163, 74, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(22, 163, 74, 0.1) 1px, transparent 1px);
   }
 
   .glow-indigo {

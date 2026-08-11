@@ -1,58 +1,40 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { AnimatePresence, MotionConfig } from 'framer-motion';
 import { ThemeProvider } from './context/ThemeContext';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import About from './components/About';
-import CareerJourney from './components/CareerJourney';
-import Projects from './components/Projects';
-import SkillsConstellation from './components/SkillsConstellation';
-import Experience from './components/Experience';
-const Trading = lazy(() => import('./components/Trading'));
-import Terminal from './components/Terminal';
-import GitHubHeatmap from './components/GitHubHeatmap';
-import Blog from './components/Blog';
-import Contact from './components/Contact';
-import Footer from './components/Footer';
-import CursorGlow from './components/CursorGlow';
+import { NotificationProvider } from './context/NotificationContext';
+import { SettingsProvider } from './context/SettingsContext';
+import { FileSystemProvider } from './context/FileSystemContext';
+import { WindowManagerProvider } from './context/WindowManagerContext';
 import LoadingScreen from './components/LoadingScreen';
-import GridBackground from './components/GridBackground';
+import Desktop from './os/Desktop';
 
 function AppInner() {
   const [loading, setLoading] = useState(true);
+  const [bootForce, setBootForce] = useState(false);
+  const [bootKey, setBootKey] = useState(0);
 
   useEffect(() => {
-    // Give enough time for all boot lines to appear + brief pause
-    const timer = setTimeout(() => setLoading(false), 3200);
-    return () => clearTimeout(timer);
+    const onReplay = () => {
+      setBootForce(true);
+      setBootKey((k) => k + 1);
+      setLoading(true);
+    };
+    window.addEventListener('ak-os:replay-boot', onReplay);
+    return () => window.removeEventListener('ak-os:replay-boot', onReplay);
   }, []);
 
   return (
     <>
       <AnimatePresence>
-        {loading && <LoadingScreen key="loading" />}
+        {loading && (
+          <LoadingScreen key={bootKey} force={bootForce} onDone={() => setLoading(false)} />
+        )}
       </AnimatePresence>
 
       {!loading && (
-        <div className="relative min-h-screen overflow-x-hidden" style={{ color: 'var(--text-1)' }}>
-          <CursorGlow />
-          <GridBackground />
-          <Navbar />
-          <main className="relative z-10">
-            <Hero />
-            <About />
-            <Terminal />
-            <CareerJourney />
-            <Projects />
-            <SkillsConstellation />
-            <Experience />
-            <Suspense fallback={null}><Trading /></Suspense>
-            <GitHubHeatmap />
-            <Blog />
-            <Contact />
-          </main>
-          <Footer />
-        </div>
+        <WindowManagerProvider>
+          <Desktop />
+        </WindowManagerProvider>
       )}
     </>
   );
@@ -60,8 +42,16 @@ function AppInner() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <AppInner />
-    </ThemeProvider>
+    <MotionConfig reducedMotion="user">
+      <ThemeProvider>
+        <NotificationProvider>
+          <SettingsProvider>
+            <FileSystemProvider>
+              <AppInner />
+            </FileSystemProvider>
+          </SettingsProvider>
+        </NotificationProvider>
+      </ThemeProvider>
+    </MotionConfig>
   );
 }
