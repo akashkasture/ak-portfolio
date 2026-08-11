@@ -6,8 +6,8 @@ const STORAGE_KEY = 'ak-os-settings';
 const WALLPAPER_LABELS = { aurora: 'Aurora', starfield: 'Starfield', gradient: 'Gradient', grid: 'Terminal Grid', minimal: 'Minimal' };
 
 export const DEFAULT_SETTINGS = {
-  wallpaper: 'aurora',      // aurora | starfield | gradient | grid | minimal
-  wallpaperFx: true,        // drifting ambient blobs on/off
+  wallpaper: 'solarsystem', // solarsystem | aurora | starfield | gradient | grid | minimal
+  wallpaperFx: true,        // drifting ambient blobs on/off (2D wallpapers)
   fxIntensity: 1,           // 0.3 – 1.5
   dockPosition: 'bottom',   // bottom | left | right
   dockSize: 48,             // base icon px
@@ -16,6 +16,17 @@ export const DEFAULT_SETTINGS = {
   windowRadius: 14,
   windowOpacity: 0.82,      // 0.55 – 1
   windowShadow: 'normal',   // soft | normal | strong
+
+  // Solar system wallpaper
+  spaceQuality: 'auto',          // auto | high | medium | low
+  spacePlanetAnimation: true,
+  spaceBlackHole: true,
+  spaceParticles: true,
+  spaceShootingStars: true,
+  spaceParallax: true,
+  spaceNebula: true,
+  spaceAmbientGlow: true,
+  spaceParticleDensity: 'medium', // low | medium | high
 };
 
 function load() {

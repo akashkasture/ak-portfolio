@@ -1,9 +1,20 @@
+import { Suspense, lazy } from 'react';
 import { useSettings } from '../context/SettingsContext';
+
+const SpaceScene = lazy(() => import('../space/SpaceScene'));
 
 export default function Wallpaper() {
   const { settings } = useSettings();
-  const { wallpaper, wallpaperFx, fxIntensity } = settings;
+  const { wallpaper, wallpaperFx, fxIntensity, spaceQuality } = settings;
   const minimal = wallpaper === 'minimal';
+
+  if (wallpaper === 'solarsystem') {
+    return (
+      <Suspense fallback={<div className="fixed inset-0" style={{ background: '#04050b' }} />}>
+        <SpaceScene quality={spaceQuality} />
+      </Suspense>
+    );
+  }
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ background: 'var(--bg)' }}>
