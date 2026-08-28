@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 import {
   MapPin, Compass, Clock, CheckCircle2, Activity, TrendingUp,
-  BarChart2, Terminal, ArrowUp, ArrowDown,
-  Award, Coffee, GitBranch, Code2,
+  BarChart2, Terminal,
+  Award, Coffee, GitBranch,
 } from 'lucide-react';
 import { personalInfo, techBadges } from '../data/portfolio';
 import SectionHeader from './SectionHeader';
@@ -15,44 +15,6 @@ const stats = [
   { value: '99.95%',label: 'Uptime Achieved',     icon: Activity,     color: '#10b981' },
   { value: '$50M+', label: 'Txn Volume/Month',    icon: Award,        color: '#f59e0b' },
 ];
-
-const TICKERS = [
-  { symbol: 'NIFTY 50', value: '22,450.50', change: '+1.2%', up: true },
-  { symbol: 'BANKNIFTY', value: '48,120.75', change: '+0.8%', up: true },
-  { symbol: 'SENSEX', value: '74,119.60', change: '+1.1%', up: true },
-  { symbol: 'RELIANCE', value: '2,890.30', change: '-0.4%', up: false },
-  { symbol: 'HDFC BANK', value: '1,542.15', change: '+0.6%', up: true },
-  { symbol: 'TCS', value: '3,654.80', change: '+0.9%', up: true },
-  { symbol: 'INFY', value: '1,432.50', change: '-0.2%', up: false },
-  { symbol: 'WIPRO', value: '465.20', change: '+0.3%', up: true },
-];
-
-function StockTicker() {
-  const doubled = [...TICKERS, ...TICKERS];
-  return (
-    <div className="relative overflow-hidden rounded-xl border border-white/8 py-2.5" style={{ background: 'var(--surface)' }}>
-      <div className="absolute left-0 top-0 bottom-0 w-12 z-10 pointer-events-none" style={{ background: 'linear-gradient(to right, var(--surface), transparent)' }} />
-      <div className="absolute right-0 top-0 bottom-0 w-12 z-10 pointer-events-none" style={{ background: 'linear-gradient(to left, var(--surface), transparent)' }} />
-      <div className="flex gap-0 animate-ticker">
-        {doubled.map((t, i) => (
-          <div key={i} className="flex items-center gap-2 px-5 shrink-0">
-            <span className="text-xs font-mono font-semibold text-slate-300">{t.symbol}</span>
-            <span className="text-xs font-mono text-white">{t.value}</span>
-            <span
-              className={`flex items-center gap-0.5 text-[10px] font-mono font-semibold ${
-                t.up ? 'text-emerald-400' : 'text-red-400'
-              }`}
-            >
-              {t.up ? <ArrowUp size={9} /> : <ArrowDown size={9} />}
-              {t.change}
-            </span>
-            <span className="text-slate-700 ml-2">·</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 export default function About() {
   return (
@@ -232,9 +194,6 @@ export default function About() {
                   );
                 })}
               </div>
-
-              {/* Live-style stock ticker */}
-              <StockTicker />
             </div>
           </motion.div>
         </div>

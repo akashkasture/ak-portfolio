@@ -1,14 +1,41 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Send, CheckCircle, MapPin, Clock } from 'lucide-react';
+import { Mail, Send, CheckCircle, MapPin, Clock, Copy, Check } from 'lucide-react';
 import { GithubIcon, LinkedinIcon } from './SocialIcons';
 import { personalInfo } from '../data/portfolio';
 import SectionHeader from './SectionHeader';
 import { trackEvent } from '../utils/analytics';
 
+function CopyEmailButton() {
+  const [copied, setCopied] = useState(false);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(personalInfo.email);
+      setCopied(true);
+      trackEvent('contact_email_copy');
+      setTimeout(() => setCopied(false), 1400);
+    } catch {
+      /* clipboard unavailable — the mailto link right next to this still works */
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      className="inline-flex items-center gap-1.5 text-xs font-medium transition-colors"
+      style={{ color: copied ? '#34d399' : 'var(--text-3)' }}
+    >
+      {copied ? <Check size={12} /> : <Copy size={12} />}
+      {copied ? 'Copied' : 'Copy email'}
+    </button>
+  );
+}
+
 // Field MUST be outside Contact — defining it inside causes React to remount
 // the input on every keystroke (new component type = new DOM node = lost focus)
-function Field({ name, label, type, as, placeholder, value, error, onChange }) {
+function Field({ label, type, as, placeholder, value, error, onChange }) {
   const Tag = as || 'input';
   return (
     <div>
@@ -93,13 +120,22 @@ export default function Contact() {
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
   };
 
+  // There's no backend here — submitting opens the visitor's own email client
+  // with the message pre-filled, rather than faking a "sent" state with
+  // nowhere for the message to actually go.
+  const buildMailto = () => {
+    const subject = encodeURIComponent(form.subject.trim());
+    const body = encodeURIComponent(`${form.message.trim()}\n\n— ${form.name.trim()} (${form.email.trim()})`);
+    return `mailto:${personalInfo.email}?subject=${subject}&body=${body}`;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
     trackEvent('contact_form_submit');
-    setStatus('sending');
-    setTimeout(() => setStatus('success'), 1800);
+    window.location.href = buildMailto();
+    setStatus('opened');
   };
 
   return (
@@ -222,9 +258,9 @@ export default function Contact() {
                 style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), transparent)' }}
               />
               <AnimatePresence mode="wait">
-                {status === 'success' ? (
+                {status === 'opened' ? (
                   <motion.div
-                    key="success"
+                    key="opened"
                     className="flex flex-col items-center justify-center py-16 text-center"
                     initial={{ opacity: 0, scale: 0.85 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -242,8 +278,21 @@ export default function Contact() {
                         style={{ filter: 'drop-shadow(0 0 20px rgba(16,185,129,0.5))' }}
                       />
                     </motion.div>
-                    <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-1)' }}>Message Sent!</h3>
-                    <p className="text-sm" style={{ color: 'var(--text-3)' }}>I'll get back to you within 24 hours.</p>
+                    <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-1)' }}>Almost there</h3>
+                    <p className="text-sm max-w-xs" style={{ color: 'var(--text-3)' }}>
+                      Your email app should have opened with this message ready to go — just hit send there
+                      to reach me directly.
+                    </p>
+                    <div className="flex items-center gap-3 mt-4">
+                      <span className="text-xs" style={{ color: 'var(--text-4)' }}>Nothing open?</span>
+                      <a
+                        href={`mailto:${personalInfo.email}`}
+                        className="text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
+                      >
+                        Email me directly
+                      </a>
+                      <CopyEmailButton />
+                    </div>
                     <button
                       onClick={() => { setStatus('idle'); setForm({ name: '', email: '', subject: '', message: '' }); }}
                       className="mt-6 px-5 py-2.5 rounded-xl text-sm transition-all duration-200"
@@ -282,8 +331,7 @@ export default function Contact() {
                     />
                     <button
                       type="submit"
-                      disabled={status === 'sending'}
-                      className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-white transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed relative overflow-hidden group"
+                      className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-white transition-all duration-200 relative overflow-hidden group"
                       style={{
                         background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
                         boxShadow: '0 0 30px rgba(99,102,241,0.3)',
@@ -292,19 +340,13 @@ export default function Contact() {
                       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         style={{ background: 'linear-gradient(135deg, #818cf8, #6366f1)' }} />
                       <span className="relative flex items-center gap-2">
-                        {status === 'sending' ? (
-                          <>
-                            <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                            Sending...
-                          </>
-                        ) : (
-                          <>
-                            <Send size={15} />
-                            Send Message
-                          </>
-                        )}
+                        <Send size={15} />
+                        Open Email to Send
                       </span>
                     </button>
+                    <p className="text-center text-xs" style={{ color: 'var(--text-4)' }}>
+                      Opens your email app with this message pre-filled — nothing is sent from this page.
+                    </p>
                   </motion.form>
                 )}
               </AnimatePresence>

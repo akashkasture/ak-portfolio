@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowUpRight, ExternalLink, FileText } from 'lucide-react';
 import { GithubIcon } from './SocialIcons';
-import { projects, blogPosts } from '../data/portfolio';
+import { projects, blogPosts, personalInfo } from '../data/portfolio';
 import SectionHeader from './SectionHeader';
 import { useTheme } from '../context/ThemeContext';
 import { trackEvent } from '../utils/analytics';
@@ -16,6 +16,16 @@ const CATEGORY_COLORS = {
   'Architecture': '#8b5cf6',
   'DevOps': '#f59e0b',
 };
+
+// None of these projects have a public live deploy or a dedicated public repo —
+// so "Live Demo" asks for a real walkthrough instead of faking a link, and
+// "Code" points at the actual GitHub profile rather than implying a repo that
+// doesn't exist.
+function walkthroughMailto(project) {
+  const subject = encodeURIComponent(`Walkthrough request — ${project.title}`);
+  const body = encodeURIComponent(`Hi Akash,\n\nI'd like to see a walkthrough of ${project.title}.\n\n`);
+  return `mailto:${personalInfo.email}?subject=${subject}&body=${body}`;
+}
 
 // Surfaces a real engineering note when its tags genuinely overlap the project's
 // tech stack or title — never invented, just cross-linking existing content.
@@ -57,20 +67,23 @@ function ProjectDetail({ project, color, onBack }) {
           <h2 className="text-2xl font-bold" style={{ color: 'var(--text-1)' }}>{project.title}</h2>
         </div>
         <div className="flex gap-2">
-          <span
+          <a
+            href={walkthroughMailto(project)}
             onClick={() => trackEvent('project_demo_click', { project: project.title })}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-white text-xs font-semibold cursor-default"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-white text-xs font-semibold transition-opacity hover:opacity-90"
             style={{ background: color }}
           >
-            <ExternalLink size={12} /> Live Demo
-          </span>
-          <span
+            <ExternalLink size={12} /> Request Walkthrough
+          </a>
+          <a
+            href={personalInfo.github}
+            target="_blank" rel="noopener noreferrer"
             onClick={() => trackEvent('project_code_click', { project: project.title })}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold cursor-default"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-opacity hover:opacity-90"
             style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-2)' }}
           >
-            <GithubIcon size={12} /> Code
-          </span>
+            <GithubIcon size={12} /> GitHub Profile
+          </a>
         </div>
       </div>
 
@@ -223,21 +236,24 @@ function ProjectCard({ project, index, onOpen }) {
               animate={{ opacity: imgHovered ? 1 : 0 }}
               transition={{ duration: 0.2 }}
             >
-              <span
-                onClick={() => trackEvent('project_demo_click', { project: project.title })}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-xs font-semibold backdrop-blur-sm cursor-default"
+              <a
+                href={walkthroughMailto(project)}
+                onClick={(e) => { e.stopPropagation(); trackEvent('project_demo_click', { project: project.title }); }}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-xs font-semibold backdrop-blur-sm transition-opacity hover:opacity-90"
                 style={{ background: color, boxShadow: `0 0 20px ${color}60` }}
               >
                 <ExternalLink size={12} />
-                Live Demo
-              </span>
-              <span
-                onClick={() => trackEvent('project_code_click', { project: project.title })}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/15 text-white text-xs font-semibold backdrop-blur-sm cursor-default"
+                Request Walkthrough
+              </a>
+              <a
+                href={personalInfo.github}
+                target="_blank" rel="noopener noreferrer"
+                onClick={(e) => { e.stopPropagation(); trackEvent('project_code_click', { project: project.title }); }}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/15 text-white text-xs font-semibold backdrop-blur-sm transition-opacity hover:opacity-90"
               >
                 <GithubIcon size={12} />
-                Code
-              </span>
+                GitHub
+              </a>
             </motion.div>
 
             {/* Category badge */}

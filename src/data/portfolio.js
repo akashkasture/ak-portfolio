@@ -9,7 +9,7 @@ export const personalInfo = {
   linkedin: "https://linkedin.com/in/akashkasture",
   location: "Pune, India",
   available: true,
-  resumeUrl: "#",
+  resumeUrl: "mailto:akashkasture4884@gmail.com?subject=Resume%20Request",
   currentlyLearning: ["Rust", "Kubernetes Operators", "Apache Flink", "Algorithmic Trading"],
   funFacts: [
     "Debugged a production issue at 3 AM with just logs and intuition",
@@ -330,41 +330,6 @@ export const timeline = [
     icon: "Code",
     color: "#a855f7",
     locked: true,
-  },
-];
-
-export const testimonials = [
-  {
-    name: "Arjun Mehta",
-    role: "Engineering Manager",
-    company: "Newgen Software",
-    initials: "AM",
-    color: "#6366f1",
-    text: "Akash has an exceptional ability to design systems that scale. His Kafka implementation handled our peak load of 15K+ messages/day flawlessly with zero downtime.",
-  },
-  {
-    name: "Sneha Iyer",
-    role: "Senior Architect",
-    company: "Infosys Finacle",
-    initials: "SI",
-    color: "#10b981",
-    text: "One of the sharpest backend engineers I've mentored. Akash's Oracle SQL optimisation reduced our report generation from 4 minutes to under 8 seconds.",
-  },
-  {
-    name: "Rohit Desai",
-    role: "Tech Lead",
-    company: "HDFC Securities",
-    initials: "RD",
-    color: "#06b6d4",
-    text: "Akash built our payment workflow engine that now processes ₹50Cr+ monthly. His attention to idempotency and fault tolerance is rare at this experience level.",
-  },
-  {
-    name: "Kavya Nair",
-    role: "Product Engineering Lead",
-    company: "Groww",
-    initials: "KN",
-    color: "#f59e0b",
-    text: "Akash's microservices architecture knowledge is outstanding. He delivered a resilient order-management service that maintained 99.95% uptime through high-volatility market sessions.",
   },
 ];
 

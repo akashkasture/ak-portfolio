@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react'; // useRef/useState still used by useTilt
 import { motion } from 'framer-motion';
 import {
-  Briefcase, Calendar, TrendingUp, Zap, DollarSign, Activity,
-  CheckCircle2, MessageSquare, BarChart3, Cpu, ArrowUpRight,
+  Briefcase, Calendar, TrendingUp, DollarSign, Activity,
+  CheckCircle2, MessageSquare,
 } from 'lucide-react';
 import { experience } from '../data/portfolio';
 import SectionHeader from './SectionHeader';
@@ -79,22 +79,6 @@ function MetricCard({ metric, delay }) {
   );
 }
 
-function useTilt() {
-  const ref = useRef(null);
-  const [style, setStyle] = useState({});
-
-  const onMove = (e) => {
-    const el = ref.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const x = ((e.clientX - r.left) / r.width  - 0.5) * 12;
-    const y = ((e.clientY - r.top)  / r.height - 0.5) * -12;
-    setStyle({ transform: `perspective(900px) rotateY(${x}deg) rotateX(${y}deg) scale3d(1.015,1.015,1.015)` });
-  };
-  const onLeave = () => setStyle({ transform: 'perspective(900px) rotateY(0deg) rotateX(0deg) scale3d(1,1,1)' });
-
-  return { ref, style, onMove, onLeave };
-}
 
 function AchievementChip({ text, color, delay }) {
   return (
@@ -112,6 +96,135 @@ function AchievementChip({ text, color, delay }) {
     >
       <CheckCircle2 size={14} className="flex-shrink-0 mt-0.5" style={{ color }} />
       <span className="text-sm leading-relaxed" style={{ color: 'var(--text-2)' }}>{text}</span>
+    </motion.div>
+  );
+}
+
+// Its own component (rather than inlined in the parent's .map()) so useTilt()
+// is called once per card at a stable top level, not conditionally inside a
+// loop — calling a hook inside .map() only happened to work while the array
+// length stayed constant.
+function ExperienceCard({ exp, color, delay }) {
+  const cardRef = useRef(null);
+  const [tiltStyle, setTiltStyle] = useState({});
+
+  const onMove = (e) => {
+    const el = cardRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width  - 0.5) * 12;
+    const y = ((e.clientY - r.top)  / r.height - 0.5) * -12;
+    setTiltStyle({ transform: `perspective(900px) rotateY(${x}deg) rotateX(${y}deg) scale3d(1.015,1.015,1.015)` });
+  };
+  const onLeave = () => setTiltStyle({ transform: 'perspective(900px) rotateY(0deg) rotateX(0deg) scale3d(1,1,1)' });
+
+  return (
+    <motion.div
+      ref={cardRef}
+      style={{ ...tiltStyle, transition: 'transform 0.25s ease' }}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      className="relative rounded-2xl overflow-hidden"
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.55, delay }}
+    >
+      <div
+        className="relative"
+        style={{
+          background: `linear-gradient(145deg, ${color}10 0%, var(--surface) 35%)`,
+          backdropFilter: 'blur(24px)',
+          border: `1px solid ${color}30`,
+          boxShadow: `0 0 70px ${color}12, 0 30px 60px rgba(0,0,0,0.4)`,
+          borderRadius: 16,
+        }}
+      >
+        <div className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: `linear-gradient(90deg, transparent, ${color}90, transparent)` }} />
+        <div className="absolute top-0 right-0 w-64 h-64 pointer-events-none"
+          style={{ background: `radial-gradient(circle at 100% 0%, ${color}15 0%, transparent 65%)` }} />
+
+        <motion.div
+          className="absolute inset-0 pointer-events-none rounded-2xl"
+          style={{ background: `linear-gradient(105deg, transparent 40%, ${color}07 50%, transparent 60%)` }}
+          animate={{ x: ['-100%', '200%'] }}
+          transition={{ duration: 5, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
+        />
+
+        <div className="relative z-10 p-6 lg:p-9">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
+            <div className="flex items-start gap-4">
+              <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: `linear-gradient(135deg, ${color}30, ${color}10)`,
+                  border: `1px solid ${color}45`,
+                  boxShadow: `0 0 24px ${color}35`,
+                }}
+              >
+                <Briefcase size={20} style={{ color }} />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold" style={{ color: 'var(--text-1)', textShadow: `0 0 20px ${color}40` }}>
+                  {exp.role}
+                </h3>
+                <div className="font-semibold text-sm mt-0.5" style={{ color }}>
+                  {exp.company}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5 flex-shrink-0 flex-wrap">
+              <span
+                className="px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider"
+                style={{ background: `${color}18`, color, border: `1px solid ${color}35` }}
+              >
+                {exp.type === 'full-time' ? 'Full-time' : 'Internship'}
+              </span>
+              <div
+                className="flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded-xl"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-3)' }}
+              >
+                <Calendar size={11} />
+                {exp.period}
+              </div>
+            </div>
+          </div>
+
+          {/* Description */}
+          <p className="text-sm leading-relaxed mb-6 sm:pl-16" style={{ color: 'var(--text-3)' }}>
+            {exp.description}
+          </p>
+
+          {/* Achievements */}
+          <div className="grid sm:grid-cols-2 gap-2.5 mb-6">
+            {exp.achievements.map((ach, j) => (
+              <AchievementChip key={j} text={ach} color={color} delay={j * 0.06} />
+            ))}
+          </div>
+
+          {/* Tech stack */}
+          <div className="flex flex-wrap gap-1.5">
+            {exp.tech.map((t) => (
+              <motion.span
+                key={t}
+                className="px-2.5 py-1 rounded-lg text-xs font-mono"
+                style={{
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.09)',
+                  color: 'var(--text-3)',
+                }}
+                whileHover={{ color: '#fff', borderColor: `${color}45`, background: `${color}12` }}
+                transition={{ duration: 0.15 }}
+              >
+                {t}
+              </motion.span>
+            ))}
+          </div>
+        </div>
+      </div>
     </motion.div>
   );
 }
@@ -136,120 +249,9 @@ export default function Experience() {
 
         {/* Experience cards */}
         <div className="space-y-8">
-          {experience.map((exp, i) => {
-            const color = ROLE_COLORS[i] || '#7c3aed';
-            const tilt = useTilt();
-            return (
-              <motion.div
-                key={exp.id}
-                ref={tilt.ref}
-                style={{ ...tilt.style, transition: 'transform 0.25s ease' }}
-                onMouseMove={tilt.onMove}
-                onMouseLeave={tilt.onLeave}
-                className="relative rounded-2xl overflow-hidden"
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-60px' }}
-                transition={{ duration: 0.55, delay: i * 0.1 }}
-              >
-                <div
-                  className="relative"
-                  style={{
-                    background: `linear-gradient(145deg, ${color}10 0%, var(--surface) 35%)`,
-                    backdropFilter: 'blur(24px)',
-                    border: `1px solid ${color}30`,
-                    boxShadow: `0 0 70px ${color}12, 0 30px 60px rgba(0,0,0,0.4)`,
-                    borderRadius: 16,
-                  }}
-                >
-                  <div className="absolute top-0 left-0 right-0 h-px"
-                    style={{ background: `linear-gradient(90deg, transparent, ${color}90, transparent)` }} />
-                  <div className="absolute top-0 right-0 w-64 h-64 pointer-events-none"
-                    style={{ background: `radial-gradient(circle at 100% 0%, ${color}15 0%, transparent 65%)` }} />
-
-                  <motion.div
-                    className="absolute inset-0 pointer-events-none rounded-2xl"
-                    style={{ background: `linear-gradient(105deg, transparent 40%, ${color}07 50%, transparent 60%)` }}
-                    animate={{ x: ['-100%', '200%'] }}
-                    transition={{ duration: 5, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
-                  />
-
-                  <div className="relative z-10 p-6 lg:p-9">
-                    {/* Header */}
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
-                      <div className="flex items-start gap-4">
-                        <div
-                          className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                          style={{
-                            background: `linear-gradient(135deg, ${color}30, ${color}10)`,
-                            border: `1px solid ${color}45`,
-                            boxShadow: `0 0 24px ${color}35`,
-                          }}
-                        >
-                          <Briefcase size={20} style={{ color }} />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold" style={{ color: 'var(--text-1)', textShadow: `0 0 20px ${color}40` }}>
-                            {exp.role}
-                          </h3>
-                          <div className="font-semibold text-sm mt-0.5" style={{ color }}>
-                            {exp.company}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2.5 flex-shrink-0 flex-wrap">
-                        <span
-                          className="px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider"
-                          style={{ background: `${color}18`, color, border: `1px solid ${color}35` }}
-                        >
-                          {exp.type === 'full-time' ? 'Full-time' : 'Internship'}
-                        </span>
-                        <div
-                          className="flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded-xl"
-                          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-3)' }}
-                        >
-                          <Calendar size={11} />
-                          {exp.period}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Description */}
-                    <p className="text-sm leading-relaxed mb-6 sm:pl-16" style={{ color: 'var(--text-3)' }}>
-                      {exp.description}
-                    </p>
-
-                    {/* Achievements */}
-                    <div className="grid sm:grid-cols-2 gap-2.5 mb-6">
-                      {exp.achievements.map((ach, j) => (
-                        <AchievementChip key={j} text={ach} color={color} delay={j * 0.06} />
-                      ))}
-                    </div>
-
-                    {/* Tech stack */}
-                    <div className="flex flex-wrap gap-1.5">
-                      {exp.tech.map((t) => (
-                        <motion.span
-                          key={t}
-                          className="px-2.5 py-1 rounded-lg text-xs font-mono"
-                          style={{
-                            background: 'rgba(255,255,255,0.04)',
-                            border: '1px solid rgba(255,255,255,0.09)',
-                            color: 'var(--text-3)',
-                          }}
-                          whileHover={{ color: '#fff', borderColor: `${color}45`, background: `${color}12` }}
-                          transition={{ duration: 0.15 }}
-                        >
-                          {t}
-                        </motion.span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
+          {experience.map((exp, i) => (
+            <ExperienceCard key={exp.id} exp={exp} color={ROLE_COLORS[i] || '#7c3aed'} delay={i * 0.1} />
+          ))}
         </div>
       </div>
     </div>
