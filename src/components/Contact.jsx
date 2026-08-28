@@ -172,9 +172,6 @@ export default function Contact({ compact = false }) {
                 border: '1px solid var(--surface-border)',
                 boxShadow: '0 8px 40px rgba(99,102,241,0.06)',
               }}
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
               whileHover={{ boxShadow: '0 8px 50px rgba(99,102,241,0.14), 0 0 0 1px rgba(99,102,241,0.15)' }}
             >
               <div
@@ -223,10 +220,6 @@ export default function Contact({ compact = false }) {
                 border: '1px solid rgba(16,185,129,0.18)',
                 boxShadow: '0 4px 24px rgba(16,185,129,0.06)',
               }}
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
               whileHover={{ boxShadow: '0 4px 30px rgba(16,185,129,0.15), 0 0 0 1px rgba(16,185,129,0.2)' }}
             >
               <div className="flex items-center gap-2 mb-3">
@@ -246,9 +239,6 @@ export default function Contact({ compact = false }) {
           {/* Form panel */}
           <motion.div
             className="@lg:col-span-3"
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
           >
             <div
               className="rounded-2xl p-8 relative overflow-hidden"

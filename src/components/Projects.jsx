@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowUpRight, ExternalLink, FileText } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, ExternalLink } from 'lucide-react';
 import { GithubIcon } from './SocialIcons';
-import { projects, blogPosts, personalInfo } from '../data/portfolio';
+import { projects, personalInfo } from '../data/portfolio';
 import SectionHeader from './SectionHeader';
 import { useTheme } from '../context/ThemeContext';
 import { trackEvent } from '../utils/analytics';
@@ -27,20 +27,7 @@ function walkthroughMailto(project) {
   return `mailto:${personalInfo.email}?subject=${subject}&body=${body}`;
 }
 
-// Surfaces a real engineering note when its tags genuinely overlap the project's
-// tech stack or title — never invented, just cross-linking existing content.
-function relatedNote(project) {
-  return blogPosts.find((post) =>
-    post.tags.some(
-      (tag) =>
-        project.tech.some((t) => t.toLowerCase().includes(tag.toLowerCase()) || tag.toLowerCase().includes(t.toLowerCase())) ||
-        project.title.toLowerCase().includes(tag.toLowerCase())
-    )
-  );
-}
-
 function ProjectDetail({ project, color, onBack }) {
-  const note = relatedNote(project);
   return (
     <motion.div
       initial={{ opacity: 0, x: 24 }}
@@ -93,17 +80,20 @@ function ProjectDetail({ project, color, onBack }) {
         <p className="text-sm leading-relaxed" style={{ color: 'var(--text-2)' }}>{project.description}</p>
       </section>
 
-      {/* Impact / metrics */}
+      {/* These were headed "Impact" and set as big coloured figures, which
+          read as measured outcomes. Most of them are design facts — the
+          algorithm chosen, the store used, the tracing tool — so they're
+          labelled and set as what they are. */}
       <section className="mb-6">
-        <h3 className="text-xs font-mono uppercase tracking-widest mb-3" style={{ color: 'var(--text-4)' }}>Impact</h3>
-        <div className="grid grid-cols-3 gap-3">
+        <h3 className="text-xs font-mono uppercase tracking-widest mb-3" style={{ color: 'var(--text-4)' }}>At a glance</h3>
+        <dl className="space-y-1.5">
           {Object.entries(project.metrics).map(([key, val]) => (
-            <div key={key} className="rounded-xl p-3 text-center" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--surface-border)' }}>
-              <div className="text-base font-bold" style={{ color }}>{val}</div>
-              <div className="text-[10px] capitalize mt-0.5" style={{ color: 'var(--text-4)' }}>{key}</div>
+            <div key={key} className="flex items-baseline gap-3 text-[13.5px]">
+              <dt className="capitalize w-28 flex-shrink-0" style={{ color: 'var(--text-4)' }}>{key}</dt>
+              <dd className="font-mono" style={{ color: 'var(--text-2)' }}>{val}</dd>
             </div>
           ))}
-        </div>
+        </dl>
       </section>
 
       {/* Tech stack */}
@@ -118,22 +108,6 @@ function ProjectDetail({ project, color, onBack }) {
         </div>
       </section>
 
-      {/* Related engineering note — only when tags genuinely overlap */}
-      {note && (
-        <section>
-          <h3 className="text-xs font-mono uppercase tracking-widest mb-3" style={{ color: 'var(--text-4)' }}>Related Engineering Note</h3>
-          <div className="rounded-xl p-4 flex items-start gap-3" style={{ background: `${note.color}0a`, border: `1px solid ${note.color}30` }}>
-            <FileText size={16} className="flex-shrink-0 mt-0.5" style={{ color: note.color }} />
-            <div className="min-w-0">
-              <div className="text-sm font-semibold flex items-center gap-1.5" style={{ color: 'var(--text-1)' }}>
-                {note.title} <ArrowUpRight size={12} style={{ color: note.color }} />
-              </div>
-              <p className="text-xs mt-1 leading-relaxed" style={{ color: 'var(--text-3)' }}>{note.excerpt}</p>
-              <div className="text-[10px] mt-1.5 font-mono" style={{ color: 'var(--text-4)' }}>{note.date} · {note.readTime}</div>
-            </div>
-          </div>
-        </section>
-      )}
     </motion.div>
   );
 }
@@ -171,18 +145,13 @@ function TiltCard({ children }) {
   );
 }
 
-function ProjectCard({ project, index, onOpen }) {
-  const [imgHovered, setImgHovered] = useState(false);
+function ProjectCard({ project, onOpen }) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const color = CATEGORY_COLORS[project.category] || '#6366f1';
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.5, delay: index * 0.08 }}
       onClick={onOpen}
       className="cursor-pointer"
     >
@@ -214,60 +183,35 @@ function ProjectCard({ project, index, onOpen }) {
             style={{ background: `radial-gradient(circle at 100% 0%, ${color}20 0%, transparent 65%)` }}
           />
 
-          {/* Image */}
-          <div
-            className="relative overflow-hidden"
-            style={{ aspectRatio: '16/9' }}
-            onMouseEnter={() => setImgHovered(true)}
-            onMouseLeave={() => setImgHovered(false)}
-          >
-            <img
-              src={project.image}
-              alt={project.title}
-              className="w-full h-full object-cover transition-transform duration-700"
-              style={{ transform: imgHovered ? 'scale(1.08)' : 'scale(1)' }}
-              loading="lazy"
-            />
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, var(--surface) 0%, transparent 60%)' }} />
-
-            {/* Hover overlay buttons */}
-            <motion.div
-              className="absolute inset-0 flex items-center justify-center gap-3"
-              animate={{ opacity: imgHovered ? 1 : 0 }}
-              transition={{ duration: 0.2 }}
+          {/* No cover images. These were Unsplash stock — a glowing circuit
+              brain and a robot sitting at a laptop — which is exactly the
+              visual shorthand that makes a portfolio look generated rather
+              than built. The card leads with the work instead. */}
+          <div className="px-5 pt-5 flex items-center justify-between gap-3">
+            <span
+              className="px-2.5 py-1 rounded-lg text-[10px] font-semibold border"
+              style={{ background: `${color}18`, borderColor: `${color}35`, color }}
             >
+              {project.category}
+            </span>
+            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <a
                 href={walkthroughMailto(project)}
                 onClick={(e) => { e.stopPropagation(); trackEvent('project_demo_click', { project: project.title }); }}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-xs font-semibold backdrop-blur-sm transition-opacity hover:opacity-90"
-                style={{ background: color, boxShadow: `0 0 20px ${color}60` }}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-colors"
+                style={{ border: '1px solid var(--surface-border)', color: 'var(--text-2)' }}
               >
-                <ExternalLink size={12} />
-                Request Walkthrough
+                <ExternalLink size={11} /> Walkthrough
               </a>
               <a
                 href={personalInfo.github}
                 target="_blank" rel="noopener noreferrer"
                 onClick={(e) => { e.stopPropagation(); trackEvent('project_code_click', { project: project.title }); }}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/15 text-white text-xs font-semibold backdrop-blur-sm transition-opacity hover:opacity-90"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-colors"
+                style={{ border: '1px solid var(--surface-border)', color: 'var(--text-2)' }}
               >
-                <GithubIcon size={12} />
-                GitHub
+                <GithubIcon size={11} /> GitHub
               </a>
-            </motion.div>
-
-            {/* Category badge */}
-            <div className="absolute top-3 left-3">
-              <span
-                className="px-2.5 py-1 rounded-lg text-[10px] font-semibold border backdrop-blur-sm"
-                style={{
-                  background: `${color}20`,
-                  borderColor: `${color}35`,
-                  color,
-                }}
-              >
-                {project.category}
-              </span>
             </div>
           </div>
 
@@ -308,17 +252,9 @@ function ProjectCard({ project, index, onOpen }) {
               )}
             </div>
 
-            {/* Metrics */}
-            <div className="grid grid-cols-3 gap-2 pt-4" style={{ borderTop: '1px solid var(--surface-border)' }}>
-              {Object.entries(project.metrics).map(([key, val]) => (
-                <div key={key} className="text-center">
-                  <div className="text-xs font-bold" style={{ color }}>
-                    {val}
-                  </div>
-                  <div className="text-[9px] capitalize mt-0.5" style={{ color: 'var(--text-4)' }}>{key}</div>
-                </div>
-              ))}
-            </div>
+            {/* The metric row that sat here repeated the detail view's
+                "at a glance" list, in the same big-coloured-figure styling
+                that made design facts read as measured results. */}
           </div>
         </div>
       </TiltCard>
@@ -365,9 +301,6 @@ export default function Projects() {
         {/* Category filter */}
         <motion.div
           className="flex flex-wrap justify-center gap-2 mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
         >
           {CATEGORIES.map((cat) => {
             const catColor = CATEGORY_COLORS[cat] || '#6366f1';
@@ -402,11 +335,10 @@ export default function Projects() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
           >
-            {filtered.map((project, i) => (
+            {filtered.map((project) => (
               <ProjectCard
                 key={project.id}
                 project={project}
-                index={i}
                 onOpen={() => { setSelectedId(project.id); trackEvent('project_detail_open', { project: project.title }); }}
               />
             ))}

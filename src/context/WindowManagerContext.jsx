@@ -52,8 +52,8 @@ function makeWindow(appId, zIndex) {
 
 function defaultState() {
   return {
-    windows: { about: makeWindow('about', 1) },
-    activeId: 'about',
+    windows: { briefing: makeWindow('briefing', 1) },
+    activeId: 'briefing',
     nextZ: 2,
     recruiterMode: false,
     preRecruiterSnapshot: null,

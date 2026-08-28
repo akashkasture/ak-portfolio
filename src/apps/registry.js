@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 import {
   IconPerson, IconCareer, IconRocket, IconPrompt, IconConstellation, IconPlane,
-  IconTopology, IconGear,
+  IconTopology, IconGear, IconBriefing,
 } from '../os/icons';
 import { GithubIcon } from '../components/SocialIcons';
 
@@ -9,8 +9,22 @@ import { GithubIcon } from '../components/SocialIcons';
    worked → what they built → how they build it → prove it → reach them.
    Anything that was only furniture (Files, Notes, Trash, Calendar, Dev
    Toolbox, Chat, Trade, System Monitor) is gone — a dock full of empty
-   desk accessories made the whole thing read as a demo. */
+   desk accessories made the whole thing read as a demo.
+
+   Briefing leads, and it's what opens on a fresh desktop: the first
+   window a visitor sees should answer who this is, not invite them to
+   go hunting through a dock for it. */
 export const APPS = {
+  briefing: {
+    id: 'briefing',
+    tint: ['#475569', '#334155'],
+    title: 'Briefing',
+    icon: IconBriefing,
+    component: lazy(() => import('./Briefing')),
+    defaultSize: { width: 680, height: 640 },
+    defaultPosition: { x: 140, y: 80 },
+    minSize: { width: 420, height: 400 },
+  },
   about: {
     id: 'about',
     tint: ['#6366f1', '#8b5cf6'],

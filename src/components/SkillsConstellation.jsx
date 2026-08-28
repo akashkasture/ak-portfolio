@@ -94,10 +94,6 @@ export default function SkillsConstellation() {
         {/* SVG constellation — no container border */}
         <motion.div
           className="relative"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
         >
           <svg
             viewBox="0 0 800 500"

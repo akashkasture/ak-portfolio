@@ -44,7 +44,7 @@ const METRICS = [
 
 const ROLE_COLORS = ['#7c3aed', '#f59e0b'];
 
-function MetricCard({ metric, delay }) {
+function MetricCard({ metric }) {
   const Icon = metric.icon;
   return (
     <motion.div
@@ -54,10 +54,6 @@ function MetricCard({ metric, delay }) {
         border: '1px solid var(--surface-border)',
         borderLeft: `3px solid ${metric.color}`,
       }}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay, duration: 0.4 }}
       whileHover={{ y: -2 }}
     >
       <div className="flex items-center gap-2">
@@ -80,7 +76,7 @@ function MetricCard({ metric, delay }) {
 }
 
 
-function AchievementChip({ text, color, delay }) {
+function AchievementChip({ text, color }) {
   return (
     <motion.div
       className="flex items-start gap-2.5 p-3.5 rounded-xl relative overflow-hidden group"
@@ -88,10 +84,6 @@ function AchievementChip({ text, color, delay }) {
         background: `${color}08`,
         border: `1px solid ${color}22`,
       }}
-      initial={{ opacity: 0, x: -16 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.4, delay }}
       whileHover={{ borderColor: `${color}50`, background: `${color}14` }}
     >
       <CheckCircle2 size={14} className="flex-shrink-0 mt-0.5" style={{ color }} />
@@ -104,7 +96,7 @@ function AchievementChip({ text, color, delay }) {
 // is called once per card at a stable top level, not conditionally inside a
 // loop — calling a hook inside .map() only happened to work while the array
 // length stayed constant.
-function ExperienceCard({ exp, color, delay }) {
+function ExperienceCard({ exp, color }) {
   const cardRef = useRef(null);
   const [tiltStyle, setTiltStyle] = useState({});
 
@@ -125,10 +117,6 @@ function ExperienceCard({ exp, color, delay }) {
       onMouseMove={onMove}
       onMouseLeave={onLeave}
       className="relative rounded-2xl overflow-hidden"
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.55, delay }}
     >
       <div
         className="relative"
@@ -201,7 +189,7 @@ function ExperienceCard({ exp, color, delay }) {
           {/* Achievements */}
           <div className="grid sm:grid-cols-2 gap-2.5 mb-6">
             {exp.achievements.map((ach, j) => (
-              <AchievementChip key={j} text={ach} color={color} delay={j * 0.06} />
+              <AchievementChip key={j} text={ach} color={color} />
             ))}
           </div>
 
@@ -242,15 +230,15 @@ export default function Experience() {
 
         {/* Impact Metrics */}
         <div className="grid grid-cols-2 @lg:grid-cols-4 gap-4 mb-16">
-          {METRICS.map((m, i) => (
-            <MetricCard key={m.label} metric={m} delay={i * 0.08} />
+          {METRICS.map((m) => (
+            <MetricCard key={m.label} metric={m} />
           ))}
         </div>
 
         {/* Experience cards */}
         <div className="space-y-8">
           {experience.map((exp, i) => (
-            <ExperienceCard key={exp.id} exp={exp} color={ROLE_COLORS[i] || '#7c3aed'} delay={i * 0.1} />
+            <ExperienceCard key={exp.id} exp={exp} color={ROLE_COLORS[i] || '#7c3aed'} />
           ))}
         </div>
       </div>

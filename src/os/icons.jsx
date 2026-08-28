@@ -88,6 +88,14 @@ export const IconTopology = makeIcon(
   </>
 );
 
+/* Briefing — a sheet with a rule under its heading */
+export const IconBriefing = makeIcon(
+  <>
+    <rect x="4.6" y="3" width="14.8" height="18" rx="2.2" />
+    <path d="M8.2 7.6h7.6M8.2 11h7.6M8.2 14.4h4.8" />
+  </>
+);
+
 /* Settings — gear */
 export const IconGear = makeIcon(
   <>

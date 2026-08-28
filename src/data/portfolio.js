@@ -110,7 +110,6 @@ export const projects = [
     title: "ChatStream — AI Conversational Platform",
     description:
       "Real-time AI chat platform with code generation, debugging assistance, and contextual Q&A. Kafka-based message backbone (producer → topic partitioning → consumer → WebSocket push) decouples ingestion from delivery. Redis-backed session management with TTL heartbeats.",
-    image: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=800&q=80",
     tech: ["Spring Boot", "WebSocket", "Kafka", "Redis", "PostgreSQL", "Spring AI", "Docker", "AWS EC2"],
     github: "https://github.com/akashkasture",
     live: "https://github.com/akashkasture",
@@ -123,7 +122,6 @@ export const projects = [
     title: "Multi-LLM AI Platform with RAG",
     description:
       "Multi-tenant LLM orchestration platform routing across GPT-4, Claude, and Gemini via Spring AI. Implements RAG with pgvector embeddings for grounded answers. Redis-backed prompt caching cuts API spend. Streaming via Spring WebFlux SSE for low time-to-first-token.",
-    image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&q=80",
     tech: ["Spring AI", "GPT-4", "Claude", "Gemini", "Spring WebFlux", "pgvector", "Redis", "Kafka", "Kubernetes"],
     github: "https://github.com/akashkasture",
     live: "https://github.com/akashkasture",
@@ -136,7 +134,6 @@ export const projects = [
     title: "BankNifty Options Screener",
     description:
       "Real-time F&O screening dashboard for BankNifty options — fetches live OI data, calculates PCR, max pain, and IV percentile. Streams data via WebSocket with Redis caching for sub-100ms updates.",
-    image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&q=80",
     tech: ["Spring Boot", "WebSocket", "Redis", "React", "Recharts", "PostgreSQL"],
     github: "https://github.com/akashkasture",
     live: "https://github.com/akashkasture",
@@ -149,7 +146,6 @@ export const projects = [
     title: "Distributed Cache Library",
     description:
       "Spring Boot starter library implementing cache-aside, write-through, and write-behind patterns on top of Redis. Automatic TTL management, cache warming, and metrics via Micrometer.",
-    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80",
     tech: ["Java", "Spring Boot", "Redis", "Micrometer", "Maven"],
     github: "https://github.com/akashkasture",
     live: "https://github.com/akashkasture",
@@ -162,7 +158,6 @@ export const projects = [
     title: "API Rate Limiter — Redis Sliding Window",
     description:
       "Production-ready rate-limiting library using Redis sorted sets with sliding window algorithm. Supports per-user, per-endpoint, and global rate limits with configurable burst allowances.",
-    image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80",
     tech: ["Java", "Spring Boot", "Redis", "Spring Security", "Docker"],
     github: "https://github.com/akashkasture",
     live: "https://github.com/akashkasture",
@@ -175,7 +170,6 @@ export const projects = [
     title: "Kafka Event Streaming Pipeline",
     description:
       "End-to-end streaming pipeline for financial transactions — producer with custom partitioner by account ID, exactly-once delivery, consumer groups with dead-letter queues, and real-time Grafana dashboards.",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
     tech: ["Apache Kafka", "Spring Batch", "PostgreSQL", "Grafana", "Docker", "Kubernetes"],
     github: "https://github.com/akashkasture",
     live: "https://github.com/akashkasture",
@@ -188,7 +182,6 @@ export const projects = [
     title: "Spring Boot Microservices Starter",
     description:
       "Opinionated microservices chassis — service discovery (Eureka), circuit breaker (Resilience4j), distributed tracing (Zipkin), centralized config (Spring Cloud Config), and API gateway out of the box.",
-    image: "https://images.unsplash.com/photo-1509718443690-d8e2fb3474b7?w=800&q=80",
     tech: ["Spring Cloud", "Eureka", "Resilience4j", "Zipkin", "Kubernetes"],
     github: "https://github.com/akashkasture",
     live: "https://github.com/akashkasture",
@@ -201,7 +194,6 @@ export const projects = [
     title: "SQL Query Optimizer Tool",
     description:
       "CLI utility to analyze SQL execution plans, detect full-table scans, suggest composite indexes, and identify N+1 query patterns in Hibernate-generated SQL. Supports Oracle and PostgreSQL.",
-    image: "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&q=80",
     tech: ["Java", "Oracle SQL", "JDBC", "Spring Shell", "Maven"],
     github: "https://github.com/akashkasture",
     live: "https://github.com/akashkasture",
@@ -214,7 +206,6 @@ export const projects = [
     title: "Event Sourcing CQRS Framework",
     description:
       "Lightweight event sourcing + CQRS framework for Java. Aggregate root lifecycle management, event store with PostgreSQL, projections, and replay support. Zero-dependency core.",
-    image: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&q=80",
     tech: ["Java", "PostgreSQL", "Spring Boot", "CQRS", "Event Sourcing"],
     github: "https://github.com/akashkasture",
     live: "https://github.com/akashkasture",
@@ -227,7 +218,6 @@ export const projects = [
     title: "DevOps CI/CD Pipeline Templates",
     description:
       "Battle-tested GitHub Actions and Jenkins pipeline templates for Spring Boot microservices — build, test, Docker push, Kubernetes deploy, smoke test, and automatic rollback on failure.",
-    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80",
     tech: ["GitHub Actions", "Jenkins", "Docker", "Kubernetes", "Helm", "AWS ECR"],
     github: "https://github.com/akashkasture",
     live: "https://github.com/akashkasture",
@@ -332,29 +322,3 @@ export const timeline = [
   },
 ];
 
-export const blogPosts = [
-  {
-    title: "Kafka at Scale: 15K+ Messages/Day in Production",
-    excerpt: "Deep dive into partitioning strategies, consumer groups, exactly-once semantics, and dead-letter queues in a real enterprise environment.",
-    date: "Apr 2025",
-    readTime: "8 min read",
-    tags: ["Kafka", "Architecture", "Java"],
-    color: "#6366f1",
-  },
-  {
-    title: "SQL Optimization: From Minutes to Milliseconds",
-    excerpt: "How I consolidated multiple interdependent views into a modular, performance-tuned architecture on a real-time financial reporting module.",
-    date: "Mar 2025",
-    readTime: "6 min read",
-    tags: ["Oracle", "Performance", "SQL"],
-    color: "#06b6d4",
-  },
-  {
-    title: "RAG Architecture with pgvector & Spring AI",
-    excerpt: "Building a retrieval-augmented generation pipeline — document ingestion, chunking, embedding with pgvector, and grounding LLM answers in user data.",
-    date: "Feb 2025",
-    readTime: "10 min read",
-    tags: ["Spring AI", "RAG", "LLM"],
-    color: "#8b5cf6",
-  },
-];

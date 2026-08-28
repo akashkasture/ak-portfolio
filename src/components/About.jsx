@@ -31,10 +31,6 @@ export default function About() {
           {/* Profile card */}
           <motion.div
             className="relative"
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="relative w-full max-w-sm sm:max-w-md mx-auto aspect-square">
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-indigo-600/25 to-cyan-600/15 blur-3xl" />
@@ -93,10 +89,6 @@ export default function About() {
           {/* Bio text + hobbies */}
           <motion.div
             className="w-full min-w-0"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <p className="text-slate-300 text-base sm:text-lg leading-relaxed mb-5" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
               I'm a{' '}
@@ -145,10 +137,6 @@ export default function About() {
                   <motion.div
                     key={i}
                     className="flex items-start gap-2 text-slate-400 text-sm"
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
                   >
                     <span className="text-indigo-500 mt-0.5 shrink-0">→</span>
                     {fact}
@@ -170,10 +158,6 @@ export default function About() {
                     <motion.div
                       key={i}
                       className="flex items-center gap-2.5 p-3 rounded-xl border border-white/8 bg-white/2 hover:bg-white/4 transition-all group cursor-default"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.08 }}
                       whileHover={{ scale: 1.03, borderColor: `${hobby.color}40` }}
                       style={{ '--hover-color': hobby.color }}
                     >
@@ -200,16 +184,12 @@ export default function About() {
 
         {/* Stats */}
         <div className="grid grid-cols-2 @md:grid-cols-4 gap-4 mb-20">
-          {stats.map((stat, i) => {
+          {stats.map((stat) => {
             const Icon = stat.icon;
             return (
               <motion.div
                 key={stat.label}
                 className="glass rounded-2xl p-6 text-center card-hover border border-white/5 relative overflow-hidden group"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
               >
                 <div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
@@ -232,23 +212,15 @@ export default function About() {
 
         {/* Tech Radar */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
         >
           <h3 className="text-center text-xs font-mono text-slate-500 uppercase tracking-widest mb-6">
             Technology Radar
           </h3>
           <div className="flex flex-wrap justify-center gap-2">
-            {techBadges.map((badge, i) => (
+            {techBadges.map((badge) => (
               <motion.span
                 key={badge}
                 className="px-3 py-1.5 rounded-lg text-sm border border-white/8 bg-white/3 text-slate-300 hover:border-indigo-500/40 hover:bg-indigo-500/10 hover:text-white transition-all duration-200 cursor-default"
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.03 }}
                 whileHover={{ scale: 1.07 }}
               >
                 {badge}
