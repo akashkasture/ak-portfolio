@@ -6,7 +6,10 @@ const STORAGE_KEY = 'ak-os-settings';
 const WALLPAPER_LABELS = { solarsystem: 'Solar System', aurora: 'Aurora', starfield: 'Starfield', gradient: 'Gradient', grid: 'Terminal Grid', minimal: 'Minimal' };
 
 export const DEFAULT_SETTINGS = {
-  wallpaper: 'solarsystem', // solarsystem | aurora | starfield | gradient | grid | minimal
+  // A fresh visitor lands on the quiet wallpaper: no WebGL boot, no 3D
+  // texture download, nothing moving while they read. The solar system is
+  // still fully intact and one click away in Settings.
+  wallpaper: 'minimal', // solarsystem | aurora | starfield | gradient | grid | minimal
   wallpaperFx: true,        // drifting ambient blobs on/off (2D wallpapers)
   fxIntensity: 1,           // 0.3 – 1.5
   dockPosition: 'bottom',   // bottom | left | right

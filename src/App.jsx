@@ -3,7 +3,6 @@ import { AnimatePresence, MotionConfig } from 'framer-motion';
 import { ThemeProvider } from './context/ThemeContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { SettingsProvider } from './context/SettingsContext';
-import { FileSystemProvider } from './context/FileSystemContext';
 import { WindowManagerProvider } from './context/WindowManagerContext';
 import LoadingScreen from './components/LoadingScreen';
 import Desktop from './os/Desktop';
@@ -46,9 +45,7 @@ export default function App() {
       <ThemeProvider>
         <NotificationProvider>
           <SettingsProvider>
-            <FileSystemProvider>
-              <AppInner />
-            </FileSystemProvider>
+            <AppInner />
           </SettingsProvider>
         </NotificationProvider>
       </ThemeProvider>

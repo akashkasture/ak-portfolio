@@ -42,7 +42,7 @@ export default function About() {
                 <div className="text-center p-8 w-full">
                   {/* Avatar */}
                   <div
-                    className="w-20 h-20 sm:w-28 sm:h-28 mx-auto mb-4 sm:mb-6 rounded-full flex items-center justify-center text-white text-3xl sm:text-4xl font-bold glow-pulse"
+                    className="w-20 h-20 sm:w-28 sm:h-28 mx-auto mb-4 sm:mb-6 rounded-full flex items-center justify-center text-white text-3xl sm:text-4xl font-bold"
                     style={{
                       background: 'linear-gradient(135deg, #6366f1, #06b6d4)',
                       boxShadow: '0 0 40px rgba(99,102,241,0.5), 0 0 80px rgba(99,102,241,0.2)',

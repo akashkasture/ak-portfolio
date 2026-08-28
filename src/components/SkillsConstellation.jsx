@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SectionHeader from './SectionHeader';
 
@@ -55,12 +55,6 @@ function curveMid(na, nb) {
 
 export default function SkillsConstellation() {
   const [focus, setFocus] = useState(null);
-  const [tick, setTick] = useState(0);
-
-  useEffect(() => {
-    const id = setInterval(() => setTick(t => t + 1), 55);
-    return () => clearInterval(id);
-  }, []);
 
   const connected = focus ? getConnected(focus) : null;
   const focusNode = NODES.find(n => n.id === focus);
@@ -162,8 +156,10 @@ export default function SkillsConstellation() {
             {NODES.map((node) => {
               const isF = node.id === focus;
               const alpha = nodeAlpha(node);
-              const pulse = Math.sin(tick * 0.06 + node.x * 0.015) * 0.5 + 0.5;
-              const glowR = node.r + (isF ? 16 : 8 + pulse * 4);
+              // The glow used to breathe on a 55ms interval — an ~18/s
+              // re-render of the whole SVG for a few pixels of radius nobody
+              // could see. Static now; focus is the only thing that moves.
+              const glowR = node.r + (isF ? 16 : 10);
 
               return (
                 <g key={node.id}
@@ -173,7 +169,7 @@ export default function SkillsConstellation() {
                   {/* Outer glow */}
                   <circle cx={node.x} cy={node.y} r={glowR}
                     fill={node.color}
-                    opacity={isF ? 0.20 : 0.07 + pulse * 0.05}
+                    opacity={isF ? 0.20 : 0.09}
                     style={{ transition: 'opacity 0.3s, r 0.3s' }} />
 
                   {/* Stroke ring */}
