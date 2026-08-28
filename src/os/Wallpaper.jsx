@@ -40,7 +40,7 @@ export default function Wallpaper({ introT = 1 }) {
   const { settings } = useSettings();
   const {
     wallpaper, wallpaperFx, fxIntensity, spaceQuality,
-    spaceBlackHole, spaceNebula, spaceParticles, spaceShootingStars, spaceParticleDensity, spaceParallax,
+    spaceNebula, spaceParticles, spaceShootingStars, spaceParticleDensity, spaceParallax,
     spacePlanetAnimation, spaceAmbientGlow,
   } = settings;
 
@@ -61,7 +61,6 @@ export default function Wallpaper({ introT = 1 }) {
       <Suspense fallback={<div className="fixed inset-0" style={{ background: '#04050b' }} />}>
         <SpaceScene
           quality={resolvedQuality}
-          blackHole={spaceBlackHole}
           nebula={spaceNebula}
           particles={spaceParticles}
           shootingStars={spaceShootingStars}

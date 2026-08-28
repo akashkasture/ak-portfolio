@@ -20,7 +20,6 @@ export const DEFAULT_SETTINGS = {
   // Solar system wallpaper
   spaceQuality: 'auto',          // auto | high | medium | low
   spacePlanetAnimation: true,
-  spaceBlackHole: true,
   spaceParticles: true,
   spaceShootingStars: true,
   spaceParallax: true,

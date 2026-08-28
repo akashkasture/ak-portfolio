@@ -6,7 +6,6 @@ import Earth from './Earth';
 import Saturn from './Saturn';
 import Starfield from './Starfield';
 import Nebula from './Nebula';
-import BlackHole from './BlackHole';
 import FloatingParticles from './FloatingParticles';
 import ShootingStars from './ShootingStars';
 import CameraRig from './CameraRig';
@@ -39,7 +38,6 @@ const GLOW_MAP = {
 export default function SpaceScene({
   quality = 'high',
   timeScale = 1,
-  blackHole = true,
   nebula = true,
   particles = true,
   shootingStars = true,
@@ -55,7 +53,6 @@ export default function SpaceScene({
   const tabVisible = useDocumentVisible();
 
   const nebulaReveal = easeOutCubic(remap01(introT, ...STAGES.nebula));
-  const blackHoleReveal = easeOutCubic(remap01(introT, ...STAGES.blackHole));
   const sunReveal = easeOutCubic(remap01(introT, ...STAGES.sun));
   const orbitStartFactor = easeOutCubic(remap01(introT, ...STAGES.orbitStart));
   const effectiveTimeScale = selected || !planetAnimation ? 0 : timeScale * orbitStartFactor;
@@ -94,7 +91,6 @@ export default function SpaceScene({
         <Suspense fallback={null}>
           <Starfield quality={quality} timeScale={effectiveTimeScale} />
           {nebula && <Nebula intensity={(quality === 'low' ? 0.6 : 1) * nebulaReveal} />}
-          {blackHole && quality !== 'low' && <BlackHole quality={quality} reveal={blackHoleReveal} ambientGlow={ambientGlow} />}
           {particles && <FloatingParticles count={particleCount} />}
           {shootingStars && quality !== 'low' && !selected && introT >= 0.98 && <ShootingStars />}
 

@@ -214,11 +214,8 @@ function SpacePane() {
       <Row label="Planet animation" hint="Orbits and rotation">
         <Toggle checked={settings.spacePlanetAnimation} onChange={(v) => set('spacePlanetAnimation', v)} label="Planet animation" />
       </Row>
-      <Row label="Ambient glow" hint="Sun halo, atmosphere rim light, black hole glow — the priciest layer">
+      <Row label="Ambient glow" hint="Sun halo and atmosphere rim light — the priciest layer">
         <Toggle checked={settings.spaceAmbientGlow} onChange={(v) => set('spaceAmbientGlow', v)} label="Ambient glow" />
-      </Row>
-      <Row label="Black hole">
-        <Toggle checked={settings.spaceBlackHole} onChange={(v) => set('spaceBlackHole', v)} label="Black hole" />
       </Row>
       <Row label="Nebula clouds">
         <Toggle checked={settings.spaceNebula} onChange={(v) => set('spaceNebula', v)} label="Nebula clouds" />
