@@ -101,7 +101,11 @@ const contactLinks = [
   },
 ];
 
-export default function Contact() {
+/* `compact` drops the full-width hero header. On a phone that header is
+   an entire viewport of pill, gradient heading and tagline standing
+   between someone and the email address they came for — the mobile
+   Contact tab already names itself in the workspace header. */
+export default function Contact({ compact = false }) {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState('idle');
@@ -148,12 +152,14 @@ export default function Contact() {
       </div>
 
       <div className="relative z-10">
-        <SectionHeader
-          label="Get In Touch"
-          title="Let's Build"
-          highlight="Together"
-          description="Open to exciting opportunities, collaborations, and interesting conversations."
-        />
+        {!compact && (
+          <SectionHeader
+            label="Get In Touch"
+            title="Let's Build"
+            highlight="Together"
+            description="Open to exciting opportunities, collaborations, and interesting conversations."
+          />
+        )}
 
         <div className="grid @lg:grid-cols-5 gap-8">
           {/* Left panel */}

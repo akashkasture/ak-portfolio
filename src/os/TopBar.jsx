@@ -1,21 +1,17 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RotateCcw, Search, Sparkles } from 'lucide-react';
+import { RotateCcw, Sparkles } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
 import SystemStats from './SystemStats';
 import NotificationCenter from './NotificationCenter';
 import { GithubIcon, LinkedinIcon } from '../components/SocialIcons';
 import { personalInfo } from '../data/portfolio';
 import { useWindowManager } from '../context/WindowManagerContext';
-import { useIsMobile } from '../hooks/useIsMobile';
 import { trackEvent } from '../utils/analytics';
 
 export default function TopBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { recruiterMode, toggleRecruiterMode } = useWindowManager();
-  const isMobile = useIsMobile();
-
-  const openPalette = () => window.dispatchEvent(new CustomEvent('ak-os:open-palette'));
 
   return (
     <div
@@ -109,15 +105,6 @@ export default function TopBar() {
           <Sparkles size={13} />
           <span className="hidden sm:inline">Recruiter Mode</span>
         </button>
-        {isMobile && (
-          <button
-            onClick={openPalette}
-            aria-label="Search"
-            className="p-2 rounded-lg text-slate-400 hover:text-white transition-colors"
-          >
-            <Search size={16} />
-          </button>
-        )}
         <NotificationCenter />
         <ThemeToggle />
       </div>

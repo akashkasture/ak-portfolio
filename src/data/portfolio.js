@@ -252,7 +252,6 @@ export const experience = [
       "Designed automated transaction engine processing $50M+/month with zero errors — 30% straight-through processing gain",
       "Tuned complex SQL on a financial reporting module — consolidated interdependent views into a performance-tuned modular architecture",
       "Rule-engine-driven validations: 40% efficiency gains, 50% fewer mismatches, 65% less manual intervention",
-      "Rule-engine validations cut 50% mismatches — measurable production impact",
     ],
   },
   {

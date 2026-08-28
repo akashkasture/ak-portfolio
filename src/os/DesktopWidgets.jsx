@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Bell, Command, FolderOpen, Sparkles, Wrench, X } from 'lucide-react';
-import { useIsMobile } from '../hooks/useIsMobile';
 
 const TIP_INDEX_KEY = 'ak-os-hint-index';
 const SESSION_KEY = 'ak-os-hint-shown';
@@ -110,8 +109,6 @@ function HintToast() {
 }
 
 export default function DesktopWidgets() {
-  const isMobile = useIsMobile();
-  if (isMobile) return null;
   return (
     <>
       <Clock />

@@ -1,14 +1,23 @@
 import { useEffect, useState } from 'react';
 
-const BREAKPOINT = 768;
+/* A phone in landscape is still a phone — 844px wide passes a naive
+   width test and would hand a thumb the whole desktop window manager.
+   So a coarse pointer counts too, up to tablet width. */
+const NARROW = '(max-width: 767px)';
+const TOUCH_LANDSCAPE = '(pointer: coarse) and (max-width: 1023px)';
+
+function check() {
+  return window.matchMedia(NARROW).matches || window.matchMedia(TOUCH_LANDSCAPE).matches;
+}
 
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth < BREAKPOINT);
+  const [isMobile, setIsMobile] = useState(check);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < BREAKPOINT);
-    window.addEventListener('resize', check, { passive: true });
-    return () => window.removeEventListener('resize', check);
+    const queries = [window.matchMedia(NARROW), window.matchMedia(TOUCH_LANDSCAPE)];
+    const onChange = () => setIsMobile(check());
+    queries.forEach((q) => q.addEventListener('change', onChange));
+    return () => queries.forEach((q) => q.removeEventListener('change', onChange));
   }, []);
 
   return isMobile;

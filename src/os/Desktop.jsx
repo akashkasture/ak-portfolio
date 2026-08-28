@@ -9,14 +9,12 @@ import CommandPalette from './CommandPalette';
 import RecruiterMode from '../apps/RecruiterMode';
 import { APPS } from '../apps/registry';
 import { useWindowManager } from '../context/WindowManagerContext';
-import { useIsMobile } from '../hooks/useIsMobile';
 import { useSettings } from '../context/SettingsContext';
 import { useIntroSequence } from '../hooks/useIntroSequence';
 
 export default function Desktop() {
   const { windows, activeId, recruiterMode } = useWindowManager();
   const { settings } = useSettings();
-  const isMobile = useIsMobile();
   const { t: introT, done: introDone, skip: skipIntro } = useIntroSequence({
     enabled: settings.wallpaper === 'solarsystem',
   });
@@ -40,7 +38,7 @@ export default function Desktop() {
 
         <div
           className="absolute left-0 right-0 pointer-events-none"
-          style={{ top: 40, bottom: isMobile ? 60 : 0 }}
+          style={{ top: 40, bottom: 0 }}
         >
           <DesktopWidgets />
           <AnimatePresence>

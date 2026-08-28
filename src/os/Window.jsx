@@ -1,10 +1,8 @@
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion, useDragControls, useMotionValue } from 'framer-motion';
-import { Minus, X } from 'lucide-react';
 import { useWindowManager } from '../context/WindowManagerContext';
 import { useSettings } from '../context/SettingsContext';
 import { useWindowResize } from '../hooks/useWindowResize';
-import { useIsMobile } from '../hooks/useIsMobile';
 
 const SHADOWS = {
   soft: {
@@ -66,7 +64,6 @@ function genieOffset(app, win) {
 export default function Window({ app, win, isActive }) {
   const { focusApp, closeApp, minimizeApp, toggleMaximize, updateWindowRect } = useWindowManager();
   const { settings } = useSettings();
-  const isMobile = useIsMobile();
   const Icon = app.icon;
   const Content = app.component;
 
@@ -138,45 +135,6 @@ export default function Window({ app, win, isActive }) {
     }
     setSnapZone(null);
   };
-
-  if (isMobile) {
-    return (
-      <motion.div
-        className="absolute inset-0 flex flex-col"
-        style={{ zIndex: win.zIndex, background: 'var(--bg)', ...minimizedStyle }}
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: win.minimized ? 0 : 1, y: 0 }}
-        exit={{ opacity: 0, y: 24 }}
-        transition={{ duration: 0.2 }}
-        aria-hidden={win.minimized}
-        onPointerDown={() => focusApp(app.id)}
-      >
-        <div className="glass-strong flex items-center gap-3 px-4 py-3 flex-shrink-0" style={{ borderBottom: '1px solid var(--surface-border)' }}>
-          <button
-            onClick={() => minimizeApp(app.id)}
-            aria-label="Back to desktop"
-            className="p-1.5 -ml-1.5 rounded-lg text-slate-400 hover:text-white transition-colors"
-          >
-            <Minus size={18} className="rotate-90" />
-          </button>
-          <Icon size={16} style={{ color: 'var(--text-2)' }} />
-          <span className="text-sm font-semibold font-mono" style={{ color: 'var(--text-1)' }}>{app.title}</span>
-          <button
-            onClick={() => closeApp(app.id)}
-            aria-label="Close"
-            className="ml-auto p-1.5 rounded-lg text-slate-400 hover:text-white transition-colors"
-          >
-            <X size={18} />
-          </button>
-        </div>
-        <div className="flex-1 min-h-0 overflow-auto">
-          <Suspense fallback={<WindowLoadingSkeleton />}>
-            <Content />
-          </Suspense>
-        </div>
-      </motion.div>
-    );
-  }
 
   const maximized = win.maximized;
 

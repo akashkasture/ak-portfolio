@@ -36,8 +36,7 @@ const COMMANDS = {
       { t: 'head',  v: '  │        akash.dev — available commands        │' },
       { t: 'dim',   v: '  ├──────────────────┬──────────────────────────┤' },
       { t: 'label', v: '  │  whoami / about  │  experience  │  skills   │' },
-      { t: 'label', v: '  │  projects        │  trading     │  market   │' },
-      { t: 'label', v: '  │  pnl             │  portfolio   │  stats    │' },
+      { t: 'label', v: '  │  projects        │  trading     │  stats    │' },
       { t: 'label', v: '  │  resume          │  github      │  linkedin │' },
       { t: 'label', v: '  │  certifications  │  clear       │  coffee   │' },
       { t: 'label', v: '  │  neofetch        │  sudo        │  matrix   │' },
@@ -119,33 +118,6 @@ const COMMANDS = {
       { t: 'cyan',  v: '  Watchlist   →  NIFTY50 · BANKNIFTY · SENSEX · FINNIFTY' },
       { t: 'muted', v: '' },
       { t: 'muted', v: '  "Markets are just distributed systems with latency." — AK' },
-    ],
-  },
-  market: {
-    output: [
-      { t: 'head',  v: '  LIVE MARKET SNAPSHOT  [simulated]' },
-      { t: 'dim',   v: '  ┌─────────────────────────────────────────┐' },
-      { t: 'green', v: '  │  NIFTY 50    22,450.50   ▲ +1.2%       │' },
-      { t: 'green', v: '  │  BANK NIFTY  48,120.75   ▲ +0.8%       │' },
-      { t: 'green', v: '  │  SENSEX      74,119.60   ▲ +1.1%       │' },
-      { t: 'red',   v: '  │  NASDAQ      17,855.20   ▼ -0.3%       │' },
-      { t: 'green', v: '  │  S&P 500      5,247.60   ▲ +0.5%       │' },
-      { t: 'dim',   v: '  └─────────────────────────────────────────┘' },
-      { t: 'muted', v: '  [Simulated values — for demo purposes only]' },
-    ],
-  },
-  pnl: {
-    output: [
-      { t: 'head',  v: '  P&L SUMMARY  [simulated]' },
-      { t: 'green', v: '  Today        →  ▲ +2.4%   ₹ 3,840' },
-      { t: 'green', v: '  This Week    →  ▲ +7.1%   ₹ 11,360' },
-      { t: 'green', v: '  This Month   →  ▲ +18.3%  ₹ 29,280' },
-      { t: 'muted', v: '' },
-      { t: 'white', v: '  Best Trade   →  BANKNIFTY CE  +127%' },
-      { t: 'white', v: '  Win Rate     →  68%' },
-      { t: 'white', v: '  Risk/Reward  →  1 : 2.4' },
-      { t: 'muted', v: '' },
-      { t: 'muted', v: '  [Simulated values — for demo purposes only]' },
     ],
   },
   portfolio: {
@@ -301,7 +273,6 @@ const COLOR_MAP = {
 const BOOT_LINES = [
   { t: 'dim',   v: '  akash.dev terminal v3.0 — booting...' },
   { t: 'muted', v: '  [✓] Loading profile data...' },
-  { t: 'muted', v: '  [✓] Connecting to market feed...' },
   { t: 'muted', v: '  [✓] Initializing Kafka consumer...' },
   { t: 'green', v: '  [✓] All systems online. Ready.' },
   { t: 'cyan',  v: '  Type "help" to see all commands.' },
@@ -321,12 +292,17 @@ export default function Terminal() {
   useEffect(() => {
     let cancelled = false;
     const show = async () => {
+      // Accumulate locally and replace the history each tick rather than
+      // appending to it. A cancelled first run under StrictMode leaves its
+      // lines behind, and appending printed the banner twice.
+      const acc = [];
       for (let i = 0; i < BOOT_LINES.length; i++) {
-        if (cancelled) return;
         await new Promise(r => setTimeout(r, 280));
-        setHistory(prev => [...prev, { type: BOOT_LINES[i].t, content: BOOT_LINES[i].v }]);
+        if (cancelled) return;
+        acc.push({ type: BOOT_LINES[i].t, content: BOOT_LINES[i].v });
+        setHistory([...acc]);
       }
-      if (!cancelled) setBooted(true);
+      setBooted(true);
     };
     show();
     return () => { cancelled = true; };
@@ -460,7 +436,7 @@ export default function Terminal() {
         className="px-5 py-3 border-t flex gap-1.5 flex-wrap flex-shrink-0"
         style={{ borderColor: 'rgba(255,255,255,0.05)', background: '#0a1120' }}
       >
-        {['help', 'about', 'skills', 'trading', 'market', 'pnl', 'stats', 'projects', 'experience', 'contact'].map(cmd => (
+        {['help', 'about', 'skills', 'projects', 'experience', 'trading', 'stats', 'contact'].map(cmd => (
           <button
             key={cmd}
             onClick={() => { inputRef.current?.focus(); runCommand(cmd); }}
