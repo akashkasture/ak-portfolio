@@ -103,3 +103,13 @@ export const IconGear = makeIcon(
     <path d="M12 2.6v2.6M12 18.8v2.6M2.6 12h2.6M18.8 12h2.6M5.35 5.35l1.85 1.85M16.8 16.8l1.85 1.85M18.65 5.35 16.8 7.2M7.2 16.8l-1.85 1.85" />
   </>
 );
+
+/* Signal Flow — three nodes and the edges between them */
+export const IconSignalFlow = makeIcon(
+  <>
+    <circle cx="12" cy="4.6" r="2" />
+    <circle cx="5.4" cy="16" r="2" />
+    <circle cx="18.6" cy="16" r="2" />
+    <path d="M10.6 6.3 6.8 14.3M13.4 6.3l3.8 8M7.4 16h9.2" />
+  </>
+);

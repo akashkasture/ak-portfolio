@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, useMotionValue } from 'framer-motion';
 import { APP_LIST } from '../apps/registry';
+import { IconSignalFlow } from './icons';
 import DockIcon from './DockIcon';
 import { useWindowManager } from '../context/WindowManagerContext';
 import { useSettings } from '../context/SettingsContext';
@@ -18,7 +19,14 @@ const HIDE_OFFSET = {
   right: { x: 110 },
 };
 
-export default function Dock() {
+const FLOW_APP = {
+  id: 'signalflow',
+  title: 'Signal Flow',
+  icon: IconSignalFlow,
+  tint: ['#0ea5e9', '#22d3ee'],
+};
+
+export default function Dock({ flowOpen = false }) {
   const { windows, activeId, openApp, recruiterMode } = useWindowManager();
   const { settings } = useSettings();
   const mousePos = useMotionValue(Infinity);
@@ -73,6 +81,31 @@ export default function Dock() {
             onClick={() => handleOpen(app.id)}
           />
         ))}
+
+        {/* Signal Flow isn't a window, so it isn't in the registry — it
+            takes over the screen. The divider says so before you click. */}
+        <div
+          aria-hidden="true"
+          className="self-center flex-shrink-0"
+          style={
+            horizontal
+              ? { width: 1, height: dockSize * 0.55, background: 'var(--surface-border)', margin: '0 4px' }
+              : { height: 1, width: dockSize * 0.55, background: 'var(--surface-border)', margin: '4px 0' }
+          }
+        />
+        <DockIcon
+          app={FLOW_APP}
+          isOpen={flowOpen}
+          isActive={flowOpen}
+          mousePos={mousePos}
+          baseSize={dockSize}
+          magnify={dockMagnify}
+          position={dockPosition}
+          onClick={() => {
+            window.dispatchEvent(new CustomEvent('ak-os:open-flow'));
+            trackEvent('dock_app_open', { app: 'signalflow' });
+          }}
+        />
       </motion.nav>
     </>
   );

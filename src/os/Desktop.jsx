@@ -1,3 +1,4 @@
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Wallpaper from './Wallpaper';
 import DesktopWidgets from './DesktopWidgets';
@@ -6,6 +7,9 @@ import Dock from './Dock';
 import Window from './Window';
 import CommandPalette from './CommandPalette';
 import ShortcutsOverlay from './ShortcutsOverlay';
+
+// three.js only ships to visitors who actually open Signal Flow.
+const FlowMode = lazy(() => import('../flow/FlowMode'));
 import RecruiterMode from '../apps/RecruiterMode';
 import { APPS } from '../apps/registry';
 import { useWindowManager } from '../context/WindowManagerContext';
@@ -19,6 +23,13 @@ export default function Desktop() {
   const { windows, activeId, recruiterMode } = wm;
   const { settings } = useSettings();
   useKeyboardShortcuts(wm);
+  const [flowOpen, setFlowOpen] = useState(false);
+
+  useEffect(() => {
+    const open = () => setFlowOpen(true);
+    window.addEventListener('ak-os:open-flow', open);
+    return () => window.removeEventListener('ak-os:open-flow', open);
+  }, []);
   const { t: introT, done: introDone, skip: skipIntro } = useIntroSequence({
     enabled: settings.wallpaper === 'solarsystem',
   });
@@ -60,10 +71,18 @@ export default function Desktop() {
           </AnimatePresence>
         </main>
 
-        <Dock />
+        <Dock flowOpen={flowOpen} />
         <CommandPalette />
         <ShortcutsOverlay />
       </motion.div>
+
+      <AnimatePresence>
+        {flowOpen && (
+          <Suspense fallback={null}>
+            <FlowMode key="flow" onExit={() => setFlowOpen(false)} />
+          </Suspense>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {!introDone && (
