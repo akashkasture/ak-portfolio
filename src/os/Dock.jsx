@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useMotionValue } from 'framer-motion';
 import { APP_LIST } from '../apps/registry';
 import { IconSignalFlow } from './icons';
@@ -7,23 +7,30 @@ import { useWindowManager } from '../context/WindowManagerContext';
 import { useSettings } from '../context/SettingsContext';
 import { trackEvent } from '../utils/analytics';
 
-const CONTAINER = {
-  bottom: 'fixed bottom-3 inset-x-0 mx-auto w-fit flex items-end flex-row px-3.5 py-2.5',
-  left: 'fixed left-3 inset-y-0 my-auto h-fit flex items-start flex-col px-2.5 py-3.5',
-  right: 'fixed right-3 inset-y-0 my-auto h-fit flex items-end flex-col px-2.5 py-3.5',
-};
+/* Geometry derived from the icon size rather than fixed pixel classes, so
+   the Settings size slider moves padding, gap, radius and the bar's height
+   together instead of leaving a 32px dock with 48px-worth of padding. */
+const geom = (s) => ({
+  padX: Math.round(s * 0.17),
+  padY: Math.round(s * 0.13),
+  gap: Math.round(s * 0.11),
+  radius: Math.round(s * 0.42),
+  dotStrip: Math.max(7, Math.round(s * 0.18)),
+});
+
+const MAX_GROWTH = 0.55; // must match MAX_SCALE - 1 in DockIcon
 
 const HIDE_OFFSET = {
-  bottom: { y: 96 },
-  left: { x: -110 },
-  right: { x: 110 },
+  bottom: { y: 110 },
+  left: { x: -120 },
+  right: { x: 120 },
 };
 
 const FLOW_APP = {
   id: 'signalflow',
   title: 'Signal Flow',
   icon: IconSignalFlow,
-  tint: ['#0ea5e9', '#22d3ee'],
+  tint: ['#0e7490', '#155e75'],
 };
 
 export default function Dock({ flowOpen = false }) {
@@ -31,8 +38,46 @@ export default function Dock({ flowOpen = false }) {
   const { settings } = useSettings();
   const mousePos = useMotionValue(Infinity);
   const [revealed, setRevealed] = useState(false);
+  const barRef = useRef(null);
 
   const { dockPosition, dockSize, dockMagnify, dockAutoHide } = settings;
+  const horizontal = dockPosition === 'bottom';
+  const g = useMemo(() => geom(dockSize), [dockSize]);
+
+  /* Pointer tracking lives on the window, not on the bar.
+
+     Icons now grow up and out of the bar, so a magnified icon sits
+     outside its own container's box. A mousemove handler on the bar would
+     stop firing the moment the cursor rode an icon above the bar's top
+     edge — the icon would collapse, which would put the cursor back
+     inside, which would magnify it again: a flicker loop. Measuring
+     against a band that includes the growth region avoids the whole
+     problem, and (as in the real dock) approaching from outside starts
+     the magnification before the cursor arrives. */
+  useEffect(() => {
+    if (recruiterMode) return;
+    const growth = dockSize * MAX_GROWTH + 16;
+
+    const onMove = (e) => {
+      const bar = barRef.current;
+      if (!bar) return;
+      const r = bar.getBoundingClientRect();
+      const band = horizontal
+        ? { l: r.left - dockSize, r: r.right + dockSize, t: r.top - growth, b: r.bottom + 8 }
+        : { l: r.left - growth, r: r.right + growth, t: r.top - dockSize, b: r.bottom + dockSize };
+      const inside = e.clientX >= band.l && e.clientX <= band.r && e.clientY >= band.t && e.clientY <= band.b;
+      if (inside) {
+        mousePos.set(horizontal ? e.clientX : e.clientY);
+        setRevealed(true);
+      } else {
+        mousePos.set(Infinity);
+        setRevealed(false);
+      }
+    };
+
+    window.addEventListener('mousemove', onMove, { passive: true });
+    return () => window.removeEventListener('mousemove', onMove);
+  }, [horizontal, dockSize, mousePos, recruiterMode]);
 
   const handleOpen = (appId) => {
     openApp(appId);
@@ -41,8 +86,22 @@ export default function Dock({ flowOpen = false }) {
 
   if (recruiterMode) return null;
 
-  const horizontal = dockPosition === 'bottom';
   const hidden = dockAutoHide && !revealed;
+  const thickness = dockSize + g.dotStrip + g.padY * 2;
+
+  const place = {
+    bottom: 'fixed bottom-3 inset-x-0 mx-auto w-fit flex-row',
+    left: 'fixed left-3 inset-y-0 my-auto h-fit flex-col',
+    right: 'fixed right-3 inset-y-0 my-auto h-fit flex-col',
+  }[dockPosition] || 'fixed bottom-3 inset-x-0 mx-auto w-fit flex-row';
+
+  const iconProps = {
+    mousePos,
+    baseSize: dockSize,
+    magnify: dockMagnify,
+    position: dockPosition,
+    dotStrip: g.dotStrip,
+  };
 
   return (
     <>
@@ -60,13 +119,19 @@ export default function Dock({ flowOpen = false }) {
         />
       )}
       <motion.nav
+        ref={barRef}
         aria-label="Applications"
-        className={`${CONTAINER[dockPosition] || CONTAINER.bottom} z-40 gap-2.5 rounded-[22px] dock-glass`}
-        animate={hidden ? { ...HIDE_OFFSET[dockPosition], opacity: 0.4 } : { x: 0, y: 0, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        onMouseMove={(e) => mousePos.set(horizontal ? e.clientX : e.clientY)}
-        onMouseEnter={() => setRevealed(true)}
-        onMouseLeave={() => { mousePos.set(Infinity); setRevealed(false); }}
+        className={`${place} z-40 flex items-end dock-glass`}
+        style={{
+          /* Fixed on the cross axis. Nothing an icon does can change it —
+             that constancy is what separates this from a toy dock. */
+          [horizontal ? 'height' : 'width']: thickness,
+          padding: horizontal ? `${g.padY}px ${g.padX}px` : `${g.padX}px ${g.padY}px`,
+          gap: g.gap,
+          borderRadius: g.radius,
+        }}
+        animate={hidden ? { ...HIDE_OFFSET[dockPosition], opacity: 0.35 } : { x: 0, y: 0, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 320, damping: 32 }}
       >
         {APP_LIST.map((app) => (
           <DockIcon
@@ -74,37 +139,36 @@ export default function Dock({ flowOpen = false }) {
             app={app}
             isOpen={Boolean(windows[app.id])}
             isActive={activeId === app.id}
-            mousePos={mousePos}
-            baseSize={dockSize}
-            magnify={dockMagnify}
-            position={dockPosition}
             onClick={() => handleOpen(app.id)}
+            {...iconProps}
           />
         ))}
 
         {/* Signal Flow isn't a window, so it isn't in the registry — it
-            takes over the screen. The divider says so before you click. */}
+            takes over the screen. The separator says so before you click,
+            and sits on the icon baseline rather than the bar's centre so
+            it lines up with the row it divides. */}
         <div
           aria-hidden="true"
-          className="self-center flex-shrink-0"
+          className="flex-shrink-0 self-end"
           style={
             horizontal
-              ? { width: 1, height: dockSize * 0.55, background: 'var(--surface-border)', margin: '0 4px' }
-              : { height: 1, width: dockSize * 0.55, background: 'var(--surface-border)', margin: '4px 0' }
+              ? { width: 1, height: Math.round(dockSize * 0.62), background: 'rgba(255,255,255,0.14)',
+                  marginBottom: g.dotStrip + Math.round(dockSize * 0.19), marginLeft: g.gap, marginRight: g.gap }
+              : { height: 1, width: Math.round(dockSize * 0.62), background: 'rgba(255,255,255,0.14)',
+                  marginRight: g.dotStrip + Math.round(dockSize * 0.19), marginTop: g.gap, marginBottom: g.gap }
           }
         />
+
         <DockIcon
           app={FLOW_APP}
           isOpen={flowOpen}
           isActive={flowOpen}
-          mousePos={mousePos}
-          baseSize={dockSize}
-          magnify={dockMagnify}
-          position={dockPosition}
           onClick={() => {
             window.dispatchEvent(new CustomEvent('ak-os:open-flow'));
             trackEvent('dock_app_open', { app: 'signalflow' });
           }}
+          {...iconProps}
         />
       </motion.nav>
     </>

@@ -17,7 +17,7 @@ import { GithubIcon } from '../components/SocialIcons';
 export const APPS = {
   briefing: {
     id: 'briefing',
-    tint: ['#475569', '#334155'],
+    tint: ['#3f5a7a', '#2c405a'],
     title: 'Briefing',
     icon: IconBriefing,
     component: lazy(() => import('./Briefing')),
@@ -27,7 +27,7 @@ export const APPS = {
   },
   about: {
     id: 'about',
-    tint: ['#6366f1', '#8b5cf6'],
+    tint: ['#4f46e5', '#4338ca'],
     title: 'About Me',
     icon: IconPerson,
     component: lazy(() => import('../components/About')),
@@ -37,7 +37,7 @@ export const APPS = {
   },
   experience: {
     id: 'experience',
-    tint: ['#f59e0b', '#f97316'],
+    tint: ['#d97706', '#b45309'],
     title: 'Experience',
     icon: IconCareer,
     component: lazy(() => import('../components/Experience')),
@@ -47,7 +47,7 @@ export const APPS = {
   },
   projects: {
     id: 'projects',
-    tint: ['#06b6d4', '#3b82f6'],
+    tint: ['#0369a1', '#075985'],
     title: 'Projects',
     icon: IconRocket,
     component: lazy(() => import('../components/Projects')),
@@ -57,7 +57,7 @@ export const APPS = {
   },
   architecture: {
     id: 'architecture',
-    tint: ['#8b5cf6', '#6366f1'],
+    tint: ['#6d28d9', '#5b21b6'],
     title: 'Architecture Lab',
     icon: IconTopology,
     component: lazy(() => import('./ArchitectureLab')),
@@ -67,7 +67,7 @@ export const APPS = {
   },
   skills: {
     id: 'skills',
-    tint: ['#a855f7', '#ec4899'],
+    tint: ['#0f766e', '#115e59'],
     title: 'Skills',
     icon: IconConstellation,
     component: lazy(() => import('../components/SkillsConstellation')),
@@ -98,7 +98,7 @@ export const APPS = {
   },
   contact: {
     id: 'contact',
-    tint: ['#3b82f6', '#0ea5e9'],
+    tint: ['#2563eb', '#1d4ed8'],
     title: 'Contact',
     icon: IconPlane,
     component: lazy(() => import('../components/Contact')),
@@ -108,7 +108,7 @@ export const APPS = {
   },
   settings: {
     id: 'settings',
-    tint: ['#64748b', '#475569'],
+    tint: ['#52525b', '#3f3f46'],
     title: 'Settings',
     icon: IconGear,
     component: lazy(() => import('./Settings')),
