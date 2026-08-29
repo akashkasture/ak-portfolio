@@ -9,6 +9,7 @@ import { useTheme } from '../context/ThemeContext';
 import { GithubIcon, LinkedinIcon } from '../components/SocialIcons';
 import { personalInfo, projects, experience, skills } from '../data/portfolio';
 import { trackEvent } from '../utils/analytics';
+import { IconSignalFlow } from './icons';
 import { T } from './motion';
 
 /* Search over the portfolio, not over the dock.
@@ -120,6 +121,12 @@ export default function CommandPalette() {
         hint: 'Theme', terms: 'theme dark light appearance',
         icon: theme === 'dark' ? Sun : Moon,
         action: () => toggleTheme(),
+      },
+      {
+        id: 'signalflow', group: 'Commands', label: 'Signal Flow', hint: 'Fly the architecture',
+        terms: 'signal flow architecture graph kafka topology system diagram 3d',
+        icon: IconSignalFlow,
+        action: () => window.dispatchEvent(new CustomEvent('ak-os:open-flow')),
       },
       {
         id: 'shortcuts', group: 'Commands', label: 'Keyboard shortcuts', hint: '?',
