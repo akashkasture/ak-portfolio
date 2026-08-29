@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SectionHeader from './SectionHeader';
+import { T } from '../os/motion';
 
 const NODES = [
   { id: 'java',     label: 'Java',        x: 200, y: 200, r: 28, color: '#f59e0b', cat: 'backend' },
@@ -211,7 +212,7 @@ export default function SkillsConstellation() {
                 initial={{ opacity: 0, scale: 0.88 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.88 }}
-                transition={{ duration: 0.18 }}
+                transition={T.base}
               >
                 <div className="text-xs font-mono font-bold mb-0.5" style={{ color: focusNode.color }}>
                   {focusNode.label}

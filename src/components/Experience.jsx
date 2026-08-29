@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { experience } from '../data/portfolio';
 import SectionHeader from './SectionHeader';
+import { T } from '../os/motion';
 
 const METRICS = [
   {
@@ -133,12 +134,6 @@ function ExperienceCard({ exp, color }) {
         <div className="absolute top-0 right-0 w-64 h-64 pointer-events-none"
           style={{ background: `radial-gradient(circle at 100% 0%, ${color}15 0%, transparent 65%)` }} />
 
-        <motion.div
-          className="absolute inset-0 pointer-events-none rounded-2xl"
-          style={{ background: `linear-gradient(105deg, transparent 40%, ${color}07 50%, transparent 60%)` }}
-          animate={{ x: ['-100%', '200%'] }}
-          transition={{ duration: 5, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
-        />
 
         <div className="relative z-10 p-6 lg:p-9">
           {/* Header */}
@@ -205,7 +200,7 @@ function ExperienceCard({ exp, color }) {
                   color: 'var(--text-3)',
                 }}
                 whileHover={{ color: '#fff', borderColor: `${color}45`, background: `${color}12` }}
-                transition={{ duration: 0.15 }}
+                transition={T.fast}
               >
                 {t}
               </motion.span>

@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import {
   MapPin, Compass, Clock, CheckCircle2, Activity, TrendingUp,
   BarChart2, Terminal,
-  Award, Coffee, GitBranch,
+  Award,
 } from 'lucide-react';
 import { personalInfo, techBadges } from '../data/portfolio';
 import SectionHeader from './SectionHeader';
@@ -27,22 +27,18 @@ export default function About() {
           description="Passionate about building distributed systems that handle real-world complexity with elegance and performance."
         />
 
-        <div className="grid @lg:grid-cols-2 gap-8 items-center mb-16">
+        <div className="grid @lg:grid-cols-2 gap-8 items-start mb-16">
           {/* Profile card */}
           <motion.div
             className="relative"
           >
             <div className="relative w-full max-w-sm sm:max-w-md mx-auto aspect-square">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-indigo-600/25 to-cyan-600/15 blur-3xl" />
               <div className="relative h-full rounded-3xl glass border border-white/10 overflow-hidden flex items-center justify-center">
                 <div className="text-center p-8 w-full">
                   {/* Avatar */}
                   <div
                     className="w-20 h-20 sm:w-28 sm:h-28 mx-auto mb-4 sm:mb-6 rounded-full flex items-center justify-center text-white text-3xl sm:text-4xl font-bold"
-                    style={{
-                      background: 'linear-gradient(135deg, #6366f1, #06b6d4)',
-                      boxShadow: '0 0 40px rgba(99,102,241,0.5), 0 0 80px rgba(99,102,241,0.2)',
-                    }}
+                    style={{ background: 'linear-gradient(135deg, #6366f1, #06b6d4)' }}
                   >
                     AK
                   </div>
@@ -66,23 +62,6 @@ export default function About() {
                 </div>
               </div>
 
-              {/* Floating badges */}
-              <motion.div
-                className="absolute -top-4 -right-4 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl glass border border-white/10 flex flex-col items-center justify-center shadow-lg"
-                animate={{ y: [0, -12, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                <Coffee size={20} className="text-amber-400 mb-1" />
-                <span className="text-[10px] text-slate-500">Coffee++</span>
-              </motion.div>
-              <motion.div
-                className="absolute -bottom-4 -left-4 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl glass border border-white/10 flex flex-col items-center justify-center shadow-lg"
-                animate={{ y: [0, -12, 0] }}
-                transition={{ duration: 5, delay: 2, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                <GitBranch size={20} className="text-indigo-400 mb-1" />
-                <span className="text-[10px] text-slate-500">Shipping</span>
-              </motion.div>
             </div>
           </motion.div>
 

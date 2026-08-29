@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Globe, ShieldCheck, Compass, Boxes, Zap, Database, Layers, ArrowRight,
 } from 'lucide-react';
+import { T } from '../os/motion';
 
 const NODES = [
   {
@@ -95,7 +96,7 @@ export default function ArchitectureLab() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.15 }}
+            transition={T.fast}
             className="rounded-xl p-5"
             style={{ background: `${activeNode.color}0a`, border: `1px solid ${activeNode.color}30` }}
           >

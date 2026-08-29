@@ -110,6 +110,20 @@ function reducer(state, action) {
         nextZ: state.nextZ + 1,
       };
     }
+    case 'CYCLE_WINDOWS': {
+      // Alt+` behaviour: send the bottom-most visible window to the top.
+      // Repeating it walks the whole stack and returns where it started,
+      // which is what makes it a cycle rather than a shuffle.
+      const visible = Object.entries(state.windows).filter(([, w]) => !w.minimized);
+      if (visible.length < 2) return state;
+      const [appId, win] = visible.reduce((lo, cur) => (cur[1].zIndex < lo[1].zIndex ? cur : lo));
+      return {
+        ...state,
+        windows: { ...state.windows, [appId]: { ...win, zIndex: state.nextZ } },
+        activeId: appId,
+        nextZ: state.nextZ + 1,
+      };
+    }
     case 'MINIMIZE_APP': {
       const { appId } = action;
       const existing = state.windows[appId];
@@ -205,6 +219,7 @@ export function WindowManagerProvider({ children }) {
     toggleMaximize: (appId) => dispatch({ type: 'TOGGLE_MAXIMIZE', appId }),
     updateWindowRect: (appId, rect) => dispatch({ type: 'UPDATE_RECT', appId, rect }),
     toggleRecruiterMode: () => dispatch({ type: 'TOGGLE_RECRUITER' }),
+    cycleWindows: () => dispatch({ type: 'CYCLE_WINDOWS' }),
   };
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>;

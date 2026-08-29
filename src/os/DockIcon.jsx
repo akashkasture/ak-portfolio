@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { AnimatePresence, motion, useSpring, useTransform } from 'framer-motion';
+import { T } from './motion';
 
 const TOOLTIP_POS = {
   bottom: { wrap: '-top-11 left-1/2 -translate-x-1/2', enter: { y: 6 } },
@@ -49,7 +50,7 @@ export default function DockIcon({ app, isOpen, isActive, mousePos, onClick, bas
             initial={{ opacity: 0, scale: 0.9, ...tooltip.enter }}
             animate={{ opacity: 1, scale: 1, x: tooltip.enter.x ? 0 : undefined, y: tooltip.enter.y ? 0 : undefined }}
             exit={{ opacity: 0, scale: 0.9, ...tooltip.enter }}
-            transition={{ duration: 0.14 }}
+            transition={T.fast}
           >
             {app.title}
           </motion.div>

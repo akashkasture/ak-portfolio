@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { skills } from '../data/portfolio';
+import { T } from '../os/motion';
 
 function skillLevel(category, name) {
   const cat = skills.find((s) => s.category === category);
@@ -398,7 +399,7 @@ export default function Terminal() {
               }`}
               initial={{ opacity: 0, x: -6 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.12 }}
+              transition={T.fast}
             >
               {entry.content}
             </motion.div>

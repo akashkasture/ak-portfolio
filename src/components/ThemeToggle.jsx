@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { T } from '../os/motion';
 
 export default function ThemeToggle() {
   const { theme, toggle } = useTheme();
@@ -24,7 +25,7 @@ export default function ThemeToggle() {
         initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
         animate={{ rotate: 0, opacity: 1, scale: 1 }}
         exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
-        transition={{ duration: 0.25 }}
+        transition={T.base}
       >
         {isDark ? <Sun size={16} /> : <Moon size={16} />}
       </motion.div>

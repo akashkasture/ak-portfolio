@@ -8,14 +8,16 @@ import { GithubIcon, LinkedinIcon } from '../components/SocialIcons';
 import { personalInfo } from '../data/portfolio';
 import { useWindowManager } from '../context/WindowManagerContext';
 import { trackEvent } from '../utils/analytics';
+import { T } from './motion';
 
 export default function TopBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { recruiterMode, toggleRecruiterMode } = useWindowManager();
 
   return (
-    <div
+    <header
       className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-3 sm:px-4 glass-strong"
+      aria-label="System bar"
       style={{
         height: 40,
         borderBottom: '1px solid var(--nav-border)',
@@ -48,7 +50,7 @@ export default function TopBar() {
                 initial={{ opacity: 0, y: -8, scale: 0.97 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.97 }}
-                transition={{ duration: 0.15 }}
+                transition={T.fast}
               >
                 <a
                   href={`mailto:${personalInfo.email}`}
@@ -108,6 +110,6 @@ export default function TopBar() {
         <NotificationCenter />
         <ThemeToggle />
       </div>
-    </div>
+    </header>
   );
 }

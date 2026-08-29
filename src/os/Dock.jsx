@@ -51,7 +51,8 @@ export default function Dock() {
           onMouseEnter={() => setRevealed(true)}
         />
       )}
-      <motion.div
+      <motion.nav
+        aria-label="Applications"
         className={`${CONTAINER[dockPosition] || CONTAINER.bottom} z-40 gap-2.5 rounded-[22px] dock-glass`}
         animate={hidden ? { ...HIDE_OFFSET[dockPosition], opacity: 0.4 } : { x: 0, y: 0, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
@@ -72,7 +73,7 @@ export default function Dock() {
             onClick={() => handleOpen(app.id)}
           />
         ))}
-      </motion.div>
+      </motion.nav>
     </>
   );
 }

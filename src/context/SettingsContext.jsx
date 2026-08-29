@@ -17,7 +17,15 @@ export const DEFAULT_SETTINGS = {
   dockMagnify: true,
   dockAutoHide: false,
   windowRadius: 14,
-  windowOpacity: 0.82,      // 0.55 – 1
+  /* Windows overlap by design, and at 0.82 the window underneath read as
+     sharp text straight through the one on top — two documents interleaved
+     on the same pixels. The backdrop blur doesn't rescue it: the drag
+     wrapper's transform limits how much it can sample, so it only softens a
+     fraction of the frame, and even 4% transparency still let headings read
+     through. So windows are opaque and the glass stays where it belongs —
+     the dock and the system bar. The slider still goes down to 0.55 for
+     anyone who wants it back. */
+  windowOpacity: 1,         // 0.55 – 1
   windowShadow: 'normal',   // soft | normal | strong
 
   // Solar system wallpaper

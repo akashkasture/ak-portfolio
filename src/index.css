@@ -138,7 +138,7 @@
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: background-color 0.4s ease, color 0.4s ease;
+    transition: background-color var(--dur-slow) var(--ease-standard), color var(--dur-slow) var(--ease-standard);
   }
 
   ::selection {
@@ -196,7 +196,7 @@
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--surface-border);
-    transition: background 0.4s ease, border-color 0.4s ease;
+    transition: background var(--dur-slow) var(--ease-standard), border-color var(--dur-slow) var(--ease-standard);
   }
 
   .glass-strong {
@@ -204,7 +204,7 @@
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
     border: 1px solid var(--nav-border);
-    transition: background 0.4s ease, border-color 0.4s ease;
+    transition: background var(--dur-slow) var(--ease-standard), border-color var(--dur-slow) var(--ease-standard);
   }
 
   /* ── AK OS chrome surfaces ─────────────────────────── */
@@ -376,7 +376,7 @@
 
 
   .card-hover {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform var(--dur-slow) var(--ease-out), box-shadow var(--dur-slow) var(--ease-out);
   }
 
   .card-hover:hover {

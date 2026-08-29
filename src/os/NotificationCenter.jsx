@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, FileText, Sparkles, X } from 'lucide-react';
 import { useNotifications } from '../context/NotificationContext';
+import { T } from './motion';
 
 function timeAgo(ts) {
   const mins = Math.round((Date.now() - ts) / 60000);
@@ -50,7 +51,7 @@ export default function NotificationCenter() {
               initial={{ opacity: 0, y: -8, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.97 }}
-              transition={{ duration: 0.15 }}
+              transition={T.fast}
             >
               <div className="flex items-center justify-between px-3.5 py-2.5 flex-shrink-0" style={{ borderBottom: '1px solid var(--surface-border)' }}>
                 <span className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>Notifications</span>

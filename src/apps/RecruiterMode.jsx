@@ -4,6 +4,7 @@ import { GithubIcon, LinkedinIcon } from '../components/SocialIcons';
 import { personalInfo, experience, projects, techBadges } from '../data/portfolio';
 import { useWindowManager } from '../context/WindowManagerContext';
 import { trackEvent } from '../utils/analytics';
+import { T } from '../os/motion';
 
 const WHY_HIRE_ME = [
   'Backend engineering — Java, Spring Boot, microservices in production',
@@ -31,7 +32,7 @@ export default function RecruiterMode() {
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.96 }}
-      transition={{ duration: 0.2 }}
+      transition={T.base}
     >
       <div
         className="flex items-center gap-2.5 px-4 py-3 flex-shrink-0"

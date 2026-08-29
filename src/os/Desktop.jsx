@@ -1,20 +1,24 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import Wallpaper from './Wallpaper';
 import DesktopWidgets from './DesktopWidgets';
-import CursorGlow from '../components/CursorGlow';
 import TopBar from './TopBar';
 import Dock from './Dock';
 import Window from './Window';
 import CommandPalette from './CommandPalette';
+import ShortcutsOverlay from './ShortcutsOverlay';
 import RecruiterMode from '../apps/RecruiterMode';
 import { APPS } from '../apps/registry';
 import { useWindowManager } from '../context/WindowManagerContext';
 import { useSettings } from '../context/SettingsContext';
 import { useIntroSequence } from '../hooks/useIntroSequence';
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
+import { EASE } from './motion';
 
 export default function Desktop() {
-  const { windows, activeId, recruiterMode } = useWindowManager();
+  const wm = useWindowManager();
+  const { windows, activeId, recruiterMode } = wm;
   const { settings } = useSettings();
+  useKeyboardShortcuts(wm);
   const { t: introT, done: introDone, skip: skipIntro } = useIntroSequence({
     enabled: settings.wallpaper === 'solarsystem',
   });
@@ -30,15 +34,15 @@ export default function Desktop() {
       <motion.div
         initial={false}
         animate={{ opacity: introDone ? 1 : 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
+        transition={{ duration: 0.6, ease: EASE.out }}
         style={{ pointerEvents: introDone ? 'auto' : 'none' }}
       >
-        <CursorGlow />
         <TopBar />
 
-        <div
+        <main
           className="absolute left-0 right-0 pointer-events-none"
           style={{ top: 40, bottom: 0 }}
+          aria-label="Workspace"
         >
           <DesktopWidgets />
           <AnimatePresence>
@@ -54,10 +58,11 @@ export default function Desktop() {
               );
             })}
           </AnimatePresence>
-        </div>
+        </main>
 
         <Dock />
         <CommandPalette />
+        <ShortcutsOverlay />
       </motion.div>
 
       <AnimatePresence>
@@ -67,7 +72,7 @@ export default function Desktop() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ delay: 0.4, duration: 0.4 }}
+            transition={{ delay: 0.4, duration: 0.4, ease: EASE.out }}
             className="fixed bottom-6 right-6 z-50 px-4 py-2 rounded-full text-xs font-mono uppercase tracking-widest dock-glass transition-colors"
             style={{ color: 'var(--text-3)' }}
           >

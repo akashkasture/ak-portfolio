@@ -1,8 +1,9 @@
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useDragControls, useMotionValue } from 'framer-motion';
 import { useWindowManager } from '../context/WindowManagerContext';
 import { useSettings } from '../context/SettingsContext';
 import { useWindowResize } from '../hooks/useWindowResize';
+import { T, DUR } from './motion';
 
 const SHADOWS = {
   soft: {
@@ -67,6 +68,8 @@ export default function Window({ app, win, isActive }) {
   const Icon = app.icon;
   const Content = app.component;
 
+  const shellRef = useRef(null);
+
   const mx = useMotionValue(win.x);
   const my = useMotionValue(win.y);
   const dragControls = useDragControls();
@@ -85,6 +88,12 @@ export default function Window({ app, win, isActive }) {
       my.set(win.y);
     }
   }, [win.x, win.y, win.maximized, mx, my]);
+
+  useEffect(() => {
+    if (!isActive || win.minimized) return;
+    const el = shellRef.current;
+    if (el && !el.contains(document.activeElement)) el.focus({ preventScroll: true });
+  }, [isActive, win.minimized]);
 
   const { onPointerDown: onResizePointerDown } = useWindowResize({
     width: win.width,
@@ -156,7 +165,7 @@ export default function Window({ app, win, isActive }) {
             initial={{ opacity: 0, scale: 0.985 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
+            transition={T.fast}
           />
         )}
       </AnimatePresence>
@@ -182,8 +191,13 @@ export default function Window({ app, win, isActive }) {
           ...minimizedStyle,
         }}
         aria-hidden={win.minimized}
+        role="dialog"
+        aria-modal="false"
+        aria-label={app.title}
+        tabIndex={-1}
+        ref={shellRef}
         initial={false}
-        exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.16 } }}
+        exit={{ opacity: 0, scale: 0.94, transition: T.base }}
       >
       <motion.div
         className="w-full h-full overflow-hidden flex flex-col os-window relative"
@@ -191,7 +205,7 @@ export default function Window({ app, win, isActive }) {
           borderRadius: maximized ? 0 : 'var(--os-window-radius, 14px)',
           boxShadow: (SHADOWS[settings.windowShadow] || SHADOWS.normal)[isActive ? 'active' : 'idle'].join(', '),
           filter: isActive ? 'none' : 'brightness(0.94)',
-          transition: 'box-shadow 0.25s ease, filter 0.25s ease, border-radius 0.2s ease',
+          transition: 'box-shadow var(--dur-base) var(--ease-standard), filter var(--dur-base) var(--ease-standard), border-radius var(--dur-base) var(--ease-standard)',
         }}
         initial={{ opacity: 0, scale: 0.9, y: 26 }}
         animate={
@@ -202,9 +216,9 @@ export default function Window({ app, win, isActive }) {
                 scale: 0.05,
                 opacity: [1, 0.9, 0],
                 transition: {
-                  duration: 0.45,
+                  duration: DUR.slow,
                   ease: [0.55, 0.06, 0.68, 0.19],
-                  opacity: { duration: 0.45, times: [0, 0.75, 1], ease: 'easeIn' },
+                  opacity: { duration: DUR.slow, times: [0, 0.75, 1], ease: 'easeIn' },
                 },
               }
             : {
@@ -225,7 +239,7 @@ export default function Window({ app, win, isActive }) {
         <div className="group/tl flex items-center gap-2">
           <button
             onClick={(e) => { e.stopPropagation(); closeApp(app.id); }}
-            aria-label="Close"
+            aria-label={`Close ${app.title}`}
             className="w-3 h-3 rounded-full flex items-center justify-center transition-all"
             style={{ background: isActive ? '#ff5f57' : 'rgba(255,255,255,0.18)', boxShadow: isActive ? 'inset 0 0 0 0.5px rgba(0,0,0,0.2)' : 'none' }}
           >
@@ -235,7 +249,7 @@ export default function Window({ app, win, isActive }) {
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); minimizeApp(app.id); }}
-            aria-label="Minimize"
+            aria-label={`Minimize ${app.title}`}
             className="w-3 h-3 rounded-full flex items-center justify-center transition-all"
             style={{ background: isActive ? '#febc2e' : 'rgba(255,255,255,0.18)', boxShadow: isActive ? 'inset 0 0 0 0.5px rgba(0,0,0,0.2)' : 'none' }}
           >
@@ -245,7 +259,7 @@ export default function Window({ app, win, isActive }) {
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); toggleMaximize(app.id); }}
-            aria-label="Maximize"
+            aria-label={`Maximize ${app.title}`}
             className="w-3 h-3 rounded-full flex items-center justify-center transition-all"
             style={{ background: isActive ? '#28c840' : 'rgba(255,255,255,0.18)', boxShadow: isActive ? 'inset 0 0 0 0.5px rgba(0,0,0,0.2)' : 'none' }}
           >

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowUpRight, ExternalLink } from 'lucide-react';
 import { GithubIcon } from './SocialIcons';
@@ -6,6 +6,7 @@ import { projects, personalInfo } from '../data/portfolio';
 import SectionHeader from './SectionHeader';
 import { useTheme } from '../context/ThemeContext';
 import { trackEvent } from '../utils/analytics';
+import { T } from '../os/motion';
 
 const CATEGORIES = ['All', ...new Set(projects.map((p) => p.category))];
 
@@ -33,7 +34,7 @@ function ProjectDetail({ project, color, onBack }) {
       initial={{ opacity: 0, x: 24 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 24 }}
-      transition={{ duration: 0.2 }}
+      transition={T.base}
     >
       <button
         onClick={onBack}
@@ -266,6 +267,17 @@ export default function Projects() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedId, setSelectedId] = useState(null);
 
+  // The command palette can search by tech and land straight on a project,
+  // so it needs a way to say which one after this window has mounted.
+  useEffect(() => {
+    const onOpenProject = (e) => {
+      const id = e.detail?.id;
+      if (projects.some((p) => p.id === id)) setSelectedId(id);
+    };
+    window.addEventListener('ak-os:open-project', onOpenProject);
+    return () => window.removeEventListener('ak-os:open-project', onOpenProject);
+  }, []);
+
   const filtered =
     activeCategory === 'All'
       ? projects
@@ -333,7 +345,7 @@ export default function Projects() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={T.base}
           >
             {filtered.map((project) => (
               <ProjectCard
