@@ -1,0 +1,758 @@
+<title>Trace</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  /* Dark-first: the product this describes is a dark 3D environment, and
+     the portfolio it replaces is dark-first too. Bare :root is therefore
+     the dark palette; light is the redefinition. */
+  :root {
+    --ground:   #08090c;
+    --surface:  #101218;
+    --surface-2:#161923;
+    --rule:     rgba(255,255,255,0.09);
+    --rule-firm:rgba(255,255,255,0.16);
+    --text-1:   #e8eaf0;
+    --text-2:   #9aa1b1;
+    --text-3:   #5c6478;
+    --accent:   #7c8cf8;
+    --edge:     #94a3b8;
+    --compute:  #a78bfa;
+    --backbone: #3fc7d4;
+    --state:    #f0837e;
+    --store:    #55b6ea;
+    --infra:    #5ec98a;
+    --time:     #e0a33a;
+    --good:     #5ec98a;
+    --warn:     #e0a33a;
+    --bad:      #f0837e;
+    --shadow:   0 1px 2px rgba(0,0,0,.5);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ground:   #fbfbfc;
+      --surface:  #ffffff;
+      --surface-2:#f3f4f7;
+      --rule:     rgba(10,12,20,0.11);
+      --rule-firm:rgba(10,12,20,0.22);
+      --text-1:   #14161d;
+      --text-2:   #4d5464;
+      --text-3:   #838b9c;
+      --accent:   #4a5bd4;
+      --edge:     #64748b;
+      --compute:  #7c5ad6;
+      --backbone: #0e8fa0;
+      --state:    #c9524d;
+      --store:    #1f7fb8;
+      --infra:    #2f8f5b;
+      --time:     #a3701a;
+      --good:     #2f8f5b;
+      --warn:     #a3701a;
+      --bad:      #c9524d;
+      --shadow:   0 1px 2px rgba(10,12,20,.08);
+    }
+  }
+  :root[data-theme="light"] {
+    --ground:   #fbfbfc;
+    --surface:  #ffffff;
+    --surface-2:#f3f4f7;
+    --rule:     rgba(10,12,20,0.11);
+    --rule-firm:rgba(10,12,20,0.22);
+    --text-1:   #14161d;
+    --text-2:   #4d5464;
+    --text-3:   #838b9c;
+    --accent:   #4a5bd4;
+    --edge:     #64748b;
+    --compute:  #7c5ad6;
+    --backbone: #0e8fa0;
+    --state:    #c9524d;
+    --store:    #1f7fb8;
+    --infra:    #2f8f5b;
+    --time:     #a3701a;
+    --good:     #2f8f5b;
+    --warn:     #a3701a;
+    --bad:      #c9524d;
+    --shadow:   0 1px 2px rgba(10,12,20,.08);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--text-1);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 5vw, 56px) 140px;
+  }
+
+  /* ── Masthead ─────────────────────────────────────────────────── */
+  .mast { padding: clamp(56px, 9vw, 104px) 0 0; }
+  .kicker {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+    letter-spacing: .17em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .kicker .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex: none; }
+  h1 {
+    font-family: Archivo, "IBM Plex Sans", sans-serif;
+    font-weight: 800;
+    font-size: clamp(46px, 9vw, 92px);
+    line-height: .94;
+    letter-spacing: -.035em;
+    margin: 22px 0 0;
+    text-wrap: balance;
+  }
+  .standfirst {
+    font-size: clamp(17px, 2.2vw, 21px);
+    line-height: 1.55;
+    color: var(--text-2);
+    max-width: 40ch;
+    margin: 24px 0 0;
+    text-wrap: pretty;
+  }
+  .verdict {
+    margin: 40px 0 0;
+    border-left: 2px solid var(--accent);
+    padding: 4px 0 4px 20px;
+    max-width: 62ch;
+  }
+  .verdict p { margin: 0; font-size: 16.5px; color: var(--text-1); }
+  .verdict p + p { margin-top: 10px; color: var(--text-2); }
+
+  /* ── Span sections ────────────────────────────────────────────── */
+  section {
+    margin-top: clamp(64px, 9vw, 104px);
+    padding-left: clamp(0px, 2.4vw, 26px);
+    border-left: 2px solid var(--sc, var(--rule-firm));
+  }
+  .span-id {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--sc, var(--text-3));
+    display: block;
+    margin-bottom: 12px;
+  }
+  h2 {
+    font-family: Archivo, sans-serif;
+    font-weight: 700;
+    font-size: clamp(27px, 4.2vw, 38px);
+    line-height: 1.1;
+    letter-spacing: -.024em;
+    margin: 0 0 18px;
+    text-wrap: balance;
+  }
+  h3 {
+    font-family: Archivo, sans-serif;
+    font-weight: 600;
+    font-size: 19px;
+    letter-spacing: -.012em;
+    margin: 38px 0 12px;
+  }
+  h4 {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin: 30px 0 10px;
+  }
+  p { margin: 0 0 16px; max-width: 68ch; text-wrap: pretty; }
+  .lede { font-size: 18px; color: var(--text-2); max-width: 60ch; }
+  strong { font-weight: 600; color: var(--text-1); }
+  em { font-style: italic; }
+  code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .875em;
+    background: var(--surface-2);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: .1em .38em;
+    color: var(--text-1);
+  }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+  ul { margin: 0 0 16px; padding: 0; list-style: none; max-width: 68ch; }
+  ul li { position: relative; padding-left: 20px; margin-bottom: 9px; }
+  ul li::before {
+    content: ""; position: absolute; left: 0; top: .72em;
+    width: 9px; height: 1px; background: var(--text-3);
+  }
+
+  /* ── Scroll containers ────────────────────────────────────────── */
+  .scroller { overflow-x: auto; margin: 22px 0 26px; }
+
+  /* ── Matrix ───────────────────────────────────────────────────── */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 760px;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--rule); }
+  thead th {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    font-weight: 500;
+    border-bottom-color: var(--rule-firm);
+    vertical-align: bottom;
+  }
+  tbody th { font-weight: 500; color: var(--text-1); white-space: nowrap; }
+  td.n { font-family: "IBM Plex Mono", monospace; text-align: center; width: 62px; color: var(--text-2); }
+  tr.winner th, tr.winner td { background: color-mix(in srgb, var(--accent) 11%, transparent); }
+  tr.winner th { color: var(--text-1); font-weight: 600; }
+  td.tot { font-family: "IBM Plex Mono", monospace; text-align: center; font-weight: 600; color: var(--text-1); }
+  .s1 { color: var(--bad); } .s2 { color: var(--bad); opacity: .8; }
+  .s4 { color: var(--good); opacity: .85; } .s5 { color: var(--good); font-weight: 600; }
+
+  /* ── Mapping list ─────────────────────────────────────────────── */
+  .map { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; margin: 22px 0 26px; }
+  .map > div { background: var(--ground); padding: 15px 18px; display: grid; grid-template-columns: minmax(0,7.5rem) minmax(0,10rem) minmax(0,1fr); gap: 6px 20px; align-items: baseline; }
+  .map .from { font-weight: 600; font-size: 14.5px; }
+  .map .to { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--accent); }
+  .map .why { font-size: 14px; color: var(--text-2); grid-column: 3; }
+  @media (max-width: 720px) {
+    .map > div { grid-template-columns: 1fr; gap: 3px; }
+    .map .why { grid-column: 1; }
+  }
+
+  /* ── Steps ────────────────────────────────────────────────────── */
+  .steps { counter-reset: s; display: grid; gap: 22px; margin: 24px 0 26px; max-width: 72ch; }
+  .step { display: grid; grid-template-columns: 34px 1fr; gap: 16px; }
+  .step .num {
+    counter-increment: s;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px; color: var(--text-3);
+    padding-top: 3px;
+    font-variant-numeric: tabular-nums;
+  }
+  .step .num::before { content: counter(s, decimal-leading-zero); }
+  .step h5 { font-family: Archivo, sans-serif; font-weight: 600; font-size: 16px; margin: 0 0 5px; }
+  .step p { margin: 0; font-size: 14.5px; color: var(--text-2); }
+
+  /* ── Cards ────────────────────────────────────────────────────── */
+  .cards { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(248px, 1fr)); margin: 22px 0 26px; }
+  .card { background: var(--surface); border: 1px solid var(--rule); border-radius: 9px; padding: 17px 18px; }
+  .card h5 { font-family: Archivo, sans-serif; font-weight: 600; font-size: 15.5px; margin: 0 0 7px; }
+  .card p { font-size: 14px; color: var(--text-2); margin: 0; max-width: none; }
+  .card .tag { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); display: block; margin-bottom: 9px; }
+
+  /* ── Callout ──────────────────────────────────────────────────── */
+  .callout {
+    background: var(--surface); border: 1px solid var(--rule);
+    border-left: 2px solid var(--cc, var(--warn));
+    border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 22px 0 26px; max-width: 72ch;
+  }
+  .callout .tag { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--cc, var(--warn)); display: block; margin-bottom: 7px; }
+  .callout p { margin: 0; font-size: 14.5px; color: var(--text-2); }
+  .callout p + p { margin-top: 9px; }
+  .callout strong { color: var(--text-1); }
+
+  /* ── Tree ─────────────────────────────────────────────────────── */
+  pre {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12.5px; line-height: 1.75;
+    background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 8px; padding: 18px 20px; margin: 0;
+    overflow-x: auto; color: var(--text-2);
+  }
+  pre b { color: var(--text-1); font-weight: 600; }
+  pre i { color: var(--text-3); font-style: normal; }
+
+  figure { margin: 26px 0; }
+  figcaption { font-size: 13px; color: var(--text-3); margin-top: 12px; max-width: 62ch; }
+  svg { display: block; max-width: 100%; height: auto; }
+
+  .foot { margin-top: 96px; padding-top: 26px; border-top: 1px solid var(--rule); font-size: 13.5px; color: var(--text-3); }
+</style>
+
+<div class="page">
+
+  <header class="mast">
+    <div class="kicker">
+      <span class="dot"></span><span>Design concept</span>
+      <span>·</span><span>Portfolio v3</span>
+      <span>·</span><span>branch redesign/trace</span>
+    </div>
+    <h1>Trace</h1>
+    <p class="standfirst">The portfolio is one request, moving through an engineer's system, observed.</p>
+
+    <div class="verdict">
+      <p>Five metaphors were evaluated. The winner is not a place — not a universe, not a city. It is a <strong>distributed trace</strong>: the artefact engineers already use to understand a system they cannot see.</p>
+      <p>It wins on one structural argument. Every other candidate carries either space or time. A trace carries both, natively, which is the only reason Experience, Projects, Skills and GitHub can live in one geometry without being forced.</p>
+    </div>
+  </header>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section style="--sc: var(--edge)">
+    <span class="span-id">01 · The question</span>
+    <h2>Why the solar system fails, precisely</h2>
+
+    <p class="lede">It isn't that the solar system is unrelated to software. It's that its structure encodes nothing.</p>
+
+    <p>A visual metaphor is doing its job when <em>moving an object changes what the page claims</em>. In the solar system, position is orbital radius — arbitrary. Size is arbitrary. Orbital period is arbitrary. You can shuffle every planet and lose no information, which is the proof that none was there. It is a backdrop that happens to be 3D.</p>
+
+    <p>So the bar for the replacement isn't "more relevant." It's <strong>load-bearing geometry</strong>: every axis must carry meaning, so that the scene is not an illustration of the portfolio but a <em>reading</em> of it.</p>
+
+    <div class="callout" style="--cc: var(--accent)">
+      <span class="tag">The test applied throughout</span>
+      <p>If an object can be moved without making the page say something different, the axis it moved along is decoration. Delete the axis, or give it a job.</p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section style="--sc: var(--compute)">
+    <span class="span-id">02 · Concept exploration</span>
+    <h2>Five metaphors, scored</h2>
+
+    <p>Three of these are yours; two are mine. Scored 1–5 on the criteria you set. The incumbent is included as the baseline it's fair to measure against.</p>
+
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr>
+            <th>Metaphor</th>
+            <th>Eng.<br>relevance</th>
+            <th>Visual<br>unique</th>
+            <th>Scales</th>
+            <th>Mobile</th>
+            <th>Perf</th>
+            <th>Story</th>
+            <th>Fits all<br>content</th>
+            <th>Scroll<br>meaning</th>
+            <th>Σ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Solar system <span style="color:var(--text-3);font-weight:400">(current)</span></th>
+            <td class="n s1">1</td><td class="n s1">1</td><td class="n s2">2</td><td class="n s2">2</td>
+            <td class="n s2">2</td><td class="n s2">2</td><td class="n s2">2</td><td class="n s2">2</td>
+            <td class="tot">14</td>
+          </tr>
+          <tr>
+            <th>Engineering universe</th>
+            <td class="n">3</td><td class="n s2">2</td><td class="n">3</td><td class="n s2">2</td>
+            <td class="n">3</td><td class="n">3</td><td class="n">3</td><td class="n">3</td>
+            <td class="tot">22</td>
+          </tr>
+          <tr>
+            <th>Digital city</th>
+            <td class="n s2">2</td><td class="n s2">2</td><td class="n s2">2</td><td class="n s1">1</td>
+            <td class="n s1">1</td><td class="n s4">4</td><td class="n s2">2</td><td class="n s4">4</td>
+            <td class="tot">18</td>
+          </tr>
+          <tr>
+            <th>Architecture world</th>
+            <td class="n s5">5</td><td class="n s4">4</td><td class="n s4">4</td><td class="n s4">4</td>
+            <td class="n s4">4</td><td class="n">3</td><td class="n">3</td><td class="n">3</td>
+            <td class="tot">30</td>
+          </tr>
+          <tr>
+            <th>Commit graph / DAG</th>
+            <td class="n s4">4</td><td class="n">3</td><td class="n s4">4</td><td class="n">3</td>
+            <td class="n s4">4</td><td class="n s4">4</td><td class="n">3</td><td class="n s4">4</td>
+            <td class="tot">29</td>
+          </tr>
+          <tr class="winner">
+            <th>Distributed trace</th>
+            <td class="n s5">5</td><td class="n s5">5</td><td class="n s5">5</td><td class="n s5">5</td>
+            <td class="n s5">5</td><td class="n s4">4</td><td class="n s5">5</td><td class="n s5">5</td>
+            <td class="tot">39</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Why each of the others loses</h3>
+
+    <div class="cards">
+      <div class="card">
+        <span class="tag">Rejected</span>
+        <h5>Engineering universe</h5>
+        <p>"Core, services, nodes, streams" is the solar system with the nouns swapped. Nothing constrains where a thing sits, so nothing is claimed. It fails the same test the incumbent fails.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Rejected</span>
+        <h5>Digital city</h5>
+        <p>The most common "impressive 3D portfolio" there is. A project is not shaped like a tower, so the mapping is costume. It scales badly — a new project means a new building — and it is the heaviest option to build, texture and ship, for the least meaning per polygon.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Absorbed, not rejected</span>
+        <h5>Architecture world</h5>
+        <p>Genuinely strong, and already half-built here as Signal Flow. Its ceiling is that a topology has no time axis, so career progression never fits — a timeline is not a layer. Trace keeps this entirely and adds the missing dimension.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Rejected</span>
+        <h5>Commit graph</h5>
+        <p>Real, and native to the GitHub section. But a DAG expresses history and nothing else — architecture and skills have to be bolted on. Strong for one section, thin as the whole world.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section style="--sc: var(--backbone)">
+    <span class="span-id">03 · Design concept</span>
+    <h2>The portfolio is a trace</h2>
+
+    <p class="lede">One request enters the system. It fans out across services, spends time in each, emits events, and returns. Reading that trace is how an engineer understands a system they cannot see directly — and it is how a visitor will understand this engineer.</p>
+
+    <p>The choice is not decorative. A trace is a <strong>first-class engineering artefact</strong>, not a metaphor borrowed from astronomy or urban planning. Zipkin is already listed on the gateway node of the existing graph — this is Akash's own instrumentation turned on his own career.</p>
+
+    <p>And the vocabulary maps without strain, because the interactions the brief asks for are things a trace viewer <em>already does</em>:</p>
+
+    <ul>
+      <li><strong>Span attributes.</strong> Every span carries key–value tags. "Click a technology, highlight every project that used it" is not a feature to invent — it is attribute filtering, which is what the primitive is for.</li>
+      <li><strong>Span events.</strong> Timestamped points inside a span. That is exactly a commit.</li>
+      <li><strong>Annotations.</strong> Notes attached to a span at a moment. That is exactly a blog post.</li>
+      <li><strong>The critical path.</strong> The chain of spans that determined the total duration — and, read the other way, the decisions that actually shaped a career.</li>
+    </ul>
+
+    <div class="callout" style="--cc: var(--bad)">
+      <span class="tag">The one real risk</span>
+      <p>A trace is an <em>analytical</em> object. Read carelessly it can feel clinical, and "trace" carries a whiff of debugging — of something having gone wrong. Two mitigations, both structural rather than cosmetic: the frame is <strong>observability, not incident response</strong> — the language throughout is "read the system", never "diagnose the fault"; and the warmth is carried by the writing in the panels, which is where a portfolio's voice belongs anyway.</p>
+      <p>The second risk is <strong>looking like a Gantt chart</strong>. That is a real failure mode and it is guarded against in §04: if the geometry is flat, this becomes project-management software.</p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section style="--sc: var(--time)">
+    <span class="span-id">04 · The geometry</span>
+    <h2>Three axes, all load-bearing</h2>
+
+    <p class="lede">This is the core of the design. A flat trace viewer is two-dimensional — time and nesting. The third axis is what makes this worth rendering in 3D at all, and it is borrowed from the architecture world we absorbed.</p>
+
+    <figure>
+      <svg viewBox="0 0 880 430" role="img" aria-label="Diagram: X axis is time from 2020 to 2026, Y axis is depth in the call tree, Z axis is architecture layer from edge to infrastructure. Two camera positions are shown: one looking along negative Z produces the waterfall view, one looking along negative X produces the service map view.">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--text-3)"/>
+          </marker>
+          <marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+          </marker>
+        </defs>
+
+        <!-- origin -->
+        <g transform="translate(210,250)">
+          <!-- Z axis (into scene, up-right) -->
+          <line x1="0" y1="0" x2="176" y2="-108" stroke="var(--text-3)" stroke-width="1.4" marker-end="url(#ah)"/>
+          <text x="186" y="-116" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--backbone)">Z — architecture layer</text>
+          <text x="186" y="-99" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--text-3)">edge → compute → backbone → state → infra</text>
+
+          <!-- X axis (time, right) -->
+          <line x1="0" y1="0" x2="430" y2="0" stroke="var(--text-3)" stroke-width="1.4" marker-end="url(#ah)"/>
+          <text x="252" y="26" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--time)">X — time</text>
+          <text x="252" y="43" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--text-3)">2020 → 2026+ (the career)</text>
+
+          <!-- Y axis (depth, down) -->
+          <line x1="0" y1="0" x2="0" y2="140" stroke="var(--text-3)" stroke-width="1.4" marker-end="url(#ah)"/>
+          <text x="-8" y="162" text-anchor="start" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--compute)">Y — depth in the call tree</text>
+          <text x="-8" y="179" text-anchor="start" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--text-3)">root span → child → sub-trace</text>
+
+          <!-- spans -->
+          <g opacity="0.95">
+            <rect x="14"  y="-96" width="300" height="13" rx="3" fill="var(--edge)" opacity=".55"/>
+            <rect x="52"  y="-74" width="150" height="13" rx="3" fill="var(--compute)" opacity=".75"/>
+            <rect x="214" y="-74" width="118" height="13" rx="3" fill="var(--compute)" opacity=".55"/>
+            <rect x="76"  y="-52" width="88"  height="13" rx="3" fill="var(--backbone)" opacity=".8"/>
+            <rect x="236" y="-52" width="140" height="13" rx="3" fill="var(--backbone)" opacity=".6"/>
+            <rect x="100" y="-30" width="66"  height="13" rx="3" fill="var(--store)" opacity=".7"/>
+          </g>
+          <text x="14" y="-104" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--text-3)">root span · Jul 2024 → present</text>
+        </g>
+
+        <!-- camera A -->
+        <g>
+          <circle cx="420" cy="392" r="5" fill="var(--accent)"/>
+          <line x1="420" y1="384" x2="420" y2="300" stroke="var(--accent)" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#ac)"/>
+          <text x="420" y="414" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" font-weight="600" fill="var(--accent)">camera A → waterfall</text>
+        </g>
+
+        <!-- camera B -->
+        <g>
+          <circle cx="836" cy="180" r="5" fill="var(--accent)"/>
+          <line x1="828" y1="180" x2="700" y2="180" stroke="var(--accent)" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#ac)"/>
+          <text x="836" y="160" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="11.5" font-weight="600" fill="var(--accent)">camera B → service map</text>
+        </g>
+
+        <!-- arc between -->
+        <path d="M 470 372 A 300 300 0 0 0 808 214" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="2 5" opacity=".6"/>
+        <text x="700" y="330" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--text-3)">90° orbit — not a page change</text>
+      </svg>
+      <figcaption>Every axis carries information, so nothing can be moved without changing what the page says. The two named views are not two scenes — they are the same objects from two camera positions on one arc.</figcaption>
+    </figure>
+
+    <p>That last point is the whole answer to <em>"there should be no hard page transitions."</em> Waterfall and service map are not separate scenes to cross-fade between. They are the same span geometry, seen from two angles ninety degrees apart. The user drags along that arc and time collapses into topology, or topology unfolds into time.</p>
+
+    <div class="callout" style="--cc: var(--good)">
+      <span class="tag">Why this beats a spline camera path</span>
+      <p>The common approach is to fly a camera along a pre-authored curve as the user scrolls. It looks cinematic and it means nothing — scroll position maps to an arbitrary point on an arbitrary path.</p>
+      <p>Here, <strong>scroll moves a playhead along the time axis</strong>. Spans illuminate as the playhead crosses their start and settle after their end. It is a control engineers already know from every trace viewer and every profiler, it is scrubbable in both directions, and it makes career progression literal instead of implied.</p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section style="--sc: var(--store)">
+    <span class="span-id">05 · Information architecture</span>
+    <h2>Every section, mapped to a trace primitive</h2>
+
+    <div class="map">
+      <div><span class="from">Identity</span><span class="to">root span</span><span class="why">Where the request enters. Name, role, the one-line thesis — the span that contains every other span.</span></div>
+      <div><span class="from">Experience</span><span class="to">span tree · X axis</span><span class="why">Each role is a top-level span with a real start and duration. The 8 existing timeline entries (2020 → 2026+) become the time axis itself, not a separate widget.</span></div>
+      <div><span class="from">Projects</span><span class="to">child spans → sub-traces</span><span class="why">Each of the 10 projects is a span. Entering one makes its internals the new root — a trace within a trace, with a breadcrumb back.</span></div>
+      <div><span class="from">Skills</span><span class="to">span attributes</span><span class="why">Not a node graph. Tags carried by spans. Selecting <code>Kafka</code> illuminates every span that carries it, across every project and role, and drops the rest.</span></div>
+      <div><span class="from">Architecture</span><span class="to">service map · Z axis</span><span class="why">The existing Signal Flow topology, preserved whole, now the depth axis of the same dataset rather than a separate mode.</span></div>
+      <div><span class="from">GitHub</span><span class="to">span events</span><span class="why">Commits are timestamped points inside spans. Repositories are services on the map. Activity reads as event density on the timeline.</span></div>
+      <div><span class="from">Writing</span><span class="to">annotations</span><span class="why">A post is a note attached to a span at a moment — "this is what I learned here". Anchors the blog to the work instead of floating it in a separate section.</span></div>
+      <div><span class="from">Contact</span><span class="to">the response</span><span class="why">The trace completes and returns to the client. The end of the request is the end of the read.</span></div>
+    </div>
+
+    <div class="callout" style="--cc: var(--warn)">
+      <span class="tag">Content gap — blocks §07 Scene 03</span>
+      <p>The brief asks each project to show <strong>Problem · Architecture · Contribution · Challenges · Results</strong>. Those four fields do not exist in <code>portfolio.js</code> — a project currently has <code>description</code>, <code>tech</code>, <code>metrics</code>, <code>category</code>.</p>
+      <p>No amount of geometry substitutes for them. A sub-trace with nothing inside it is an empty room with good lighting. This is the single largest dependency in the plan, and it is content only Akash can supply.</p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section style="--sc: var(--edge)">
+    <span class="span-id">06 · User journey</span>
+    <h2>First load to contact</h2>
+
+    <div class="steps">
+      <div class="step"><span class="num"></span><div>
+        <h5>Load — the trace is already resolved</h5>
+        <p>No boot sequence, no gate, no "press to enter". The waterfall renders complete and legible in the first paint, as semantic HTML. The root span is labelled with the headline answer. A recruiter who never moves the page has still read the thing they came for.</p>
+      </div></div>
+      <div class="step"><span class="num"></span><div>
+        <h5>Upgrade — WebGL arrives in place</h5>
+        <p>Once the 2D trace is interactive, the 3D layer loads and takes over the same geometry, animating from the flat layout into depth. If it never arrives — no WebGL, low-power device, a slow network — nothing is missing, because the DOM version <em>is</em> the content.</p>
+      </div></div>
+      <div class="step"><span class="num"></span><div>
+        <h5>Scroll — the playhead moves</h5>
+        <p>Time advances from 2020. Spans illuminate as they begin, connections activate, particles start moving along the paths between them. Career progression is watched rather than read.</p>
+      </div></div>
+      <div class="step"><span class="num"></span><div>
+        <h5>Hover — the span answers</h5>
+        <p>A span lifts slightly, its attribute chips appear, its parent chain illuminates, and every other span sharing a hovered attribute picks up a rim light. You see what a thing is and what it is related to before committing to a click.</p>
+      </div></div>
+      <div class="step"><span class="num"></span><div>
+        <h5>Select an attribute — the hot path</h5>
+        <p>Click <code>PostgreSQL</code>. Every span carrying it illuminates across the whole trace, everything else drops to 8% opacity. This is the "which projects used this" question, answered spatially in one gesture.</p>
+      </div></div>
+      <div class="step"><span class="num"></span><div>
+        <h5>Enter a project — descend into a sub-trace</h5>
+        <p>Camera dollies to the span, siblings dim, and the span's internals unfold as a new trace with its own root. Problem, architecture, contribution, results, links. Breadcrumb up in the HUD, Escape to leave.</p>
+      </div></div>
+      <div class="step"><span class="num"></span><div>
+        <h5>Orbit — time becomes topology</h5>
+        <p>Drag along the arc. The trace rotates ninety degrees, time foreshortens, and the same spans resolve into the service map. Now the question changes from <em>when</em> to <em>what talks to what</em>. Drag back to return.</p>
+      </div></div>
+      <div class="step"><span class="num"></span><div>
+        <h5>Complete — the response returns</h5>
+        <p>The playhead reaches the present. Spans settle, the trace closes, and the response path lights up back toward the client — where contact lives. The end of the request, not a footer.</p>
+      </div></div>
+    </div>
+
+    <div class="callout" style="--cc: var(--bad)">
+      <span class="tag">Direct conflict with your own brief — resolved</span>
+      <p>The brief asks for a cinematic scroll journey. Your standing rule says a recruiter must understand in thirty seconds. <strong>These are in genuine tension</strong>, and most 3D portfolios lose the recruiter to the cinema.</p>
+      <p>The resolution is steps 1 and 2: the trace opens <em>already resolved</em>, and 3D is an upgrade layered onto content that was complete without it. Depth is opt-in. <strong>The 3D must never become a toll booth on the content</strong> — that principle outranks every effect in §09.</p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section style="--sc: var(--compute)">
+    <span class="span-id">07 · Scene map</span>
+    <h2>One scene, six stations</h2>
+
+    <p>A note on framing: the brief describes six scenes. Six scenes means six transitions, which contradicts <em>"everything should feel like the same continuous universe."</em> So there is <strong>one persistent scene graph holding one dataset</strong>, and what changes is camera, filter and level of detail. Nothing is ever torn down and rebuilt.</p>
+
+    <div class="cards">
+      <div class="card"><span class="tag">Station 00</span><h5>Overview</h5><p>Three-quarter view, whole trace in frame, playhead at present. The default and the home state. Everything readable, nothing selected.</p></div>
+      <div class="card"><span class="tag">Station 01</span><h5>Identity</h5><p>Playhead at origin. Root span dominant, children collapsed to hairlines. Name, role, thesis. The quietest station.</p></div>
+      <div class="card"><span class="tag">Station 02</span><h5>Journey</h5><p>Waterfall face-on. Playhead scrubs 2020 → present. Roles and milestones resolve as the time cursor crosses them.</p></div>
+      <div class="card"><span class="tag">Station 03</span><h5>Ecosystem</h5><p>Project spans expanded, sub-trace available on select. The deepest station and the one gated on the missing content fields.</p></div>
+      <div class="card"><span class="tag">Station 04</span><h5>Attributes</h5><p>Skills as a filter surface rather than a place. Selecting a tag re-lights the whole trace — the station you can reach from any other.</p></div>
+      <div class="card"><span class="tag">Station 05</span><h5>Service map</h5><p>Orbited ninety degrees. Time collapsed, topology dominant. This is Signal Flow, preserved, now a viewing angle instead of a mode.</p></div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section style="--sc: var(--time)">
+    <span class="span-id">08 · Camera &amp; interaction</span>
+    <h2>How the camera and the hands work</h2>
+
+    <h4>Camera states</h4>
+    <ul>
+      <li><strong>Overview</strong> — three-quarter, whole trace framed. Home. Escape always returns here.</li>
+      <li><strong>Waterfall</strong> — looking down <code>−Z</code>, near-orthographic so span lengths stay comparable across depth. Time reading.</li>
+      <li><strong>Service map</strong> — looking down <code>−X</code>, perspective restored for depth cueing. Topology reading.</li>
+      <li><strong>Span focus</strong> — dolly toward one span, siblings dim, children expand.</li>
+      <li><strong>Sub-trace</strong> — the selected span becomes the new root; the parent trace remains behind it at low opacity so you never lose your place.</li>
+    </ul>
+    <p>The orbit between Waterfall and Service map is <strong>constrained to that 90° arc</strong> — you can be anywhere on it, but never off it. That single constraint is what makes free camera control safe: the user can explore without ever getting lost or ending up under the floor.</p>
+
+    <h4>Input map</h4>
+    <ul>
+      <li><strong>Scroll / swipe</strong> — playhead along time. Never camera dolly; conflating the two is what makes scroll-jacked sites feel broken.</li>
+      <li><strong>Drag / two-finger drag</strong> — position on the projection arc.</li>
+      <li><strong>Hover / long-press</strong> — span preview, attribute chips, related-span rim light.</li>
+      <li><strong>Click / tap</strong> — focus. On an attribute chip, hot-path filter.</li>
+      <li><strong>Pinch / wheel+modifier</strong> — zoom, clamped to keep labels legible.</li>
+      <li><strong>Keyboard</strong> — <code>↑↓</code> siblings, <code>←→</code> playhead, <code>Enter</code> descend, <code>Esc</code> ascend, <code>/</code> palette. Full parity, no mouse-only capability.</li>
+    </ul>
+
+    <h4>Motion system</h4>
+    <ul>
+      <li><strong>Camera</strong> — critically damped spring, never a fixed-duration tween. A camera that arrives with a bounce reads as a toy; one that eases to rest reads as an instrument.</li>
+      <li><strong>Spans</strong> — staggered by <em>tree depth</em>, not array index. Children resolve after parents, which is causally correct and reads as the system settling rather than a list animating in.</li>
+      <li><strong>Tokens</strong> — the existing <code>src/os/motion.js</code> scale carries over unchanged for UI. 3D gets its own spring constants; the two must not be forced to share.</li>
+      <li><strong>Reduced motion</strong> — playhead jumps instead of sweeping, camera cuts instead of flying, particles are not rendered. The information is identical; only the transitions go.</li>
+    </ul>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section style="--sc: var(--infra)">
+    <span class="span-id">09 · Performance</span>
+    <h2>What makes this cheap to render</h2>
+
+    <p class="lede">A trace is the rare visualisation whose natural form is also its fast form. Spans are boxes; boxes instance.</p>
+
+    <ul>
+      <li><strong>One InstancedMesh for every span.</strong> 10 projects + 8 timeline entries + repositories + sub-trace children lands around 150–300 instances. Per-instance colour and opacity ride as buffer attributes. This is a single draw call for the entire trace.</li>
+      <li><strong>Edges batched, particles GPU-side.</strong> One points system, path progress as an attribute — the technique already working in Signal Flow.</li>
+      <li><strong>Labels are the actual cost, not geometry.</strong> Never render 300 labels. Always-on for the ~12 top-level spans, frustum-and-distance culled below that, and a DOM overlay for the focused span only.</li>
+      <li><strong>LOD is semantic.</strong> Distant spans collapse into their parent — which is what a trace viewer does anyway when you zoom out. The performance optimisation and the information design are the same mechanism.</li>
+    </ul>
+
+    <h4>Budget</h4>
+    <ul>
+      <li>R3F currently costs <strong>864 kB raw</strong> in this repo. It stays lazy and off the critical path — fetched only after the 2D trace is interactive, or on explicit opt-in over a metered connection.</li>
+      <li>Main bundle must not regress from its current ~272 kB / ~82 kB gzipped.</li>
+      <li>Tier detection via <code>hardwareConcurrency</code>, <code>deviceMemory</code> and a one-second frame probe. Degrade in order: post-processing → particle count → shadows → label count → static.</li>
+    </ul>
+
+    <div class="callout" style="--cc: var(--bad)">
+      <span class="tag">Cut from the brief — path tracing</span>
+      <p>Real-time path tracing should be dropped, not tiered. Progressive path tracers accumulate samples over many frames and <strong>reset on every camera movement</strong> — and camera movement is the entire interaction model here. It would be permanently noisy, precisely while being used.</p>
+      <p>The quality tiers should govern <em>shading and particle budget</em>, not swap renderers. A second renderer is a second set of materials, lights and bugs for an effect the user cannot see moving.</p>
+    </div>
+
+    <div class="callout" style="--cc: var(--warn)">
+      <span class="tag">GitHub API</span>
+      <p>The current app fetches <code>api.github.com</code> client-side. Unauthenticated that is <strong>60 requests per hour per IP</strong> — fine for one visitor, rate-limited under any real traffic, and it puts a network round-trip in the render path of a scene.</p>
+      <p>Snapshot repositories and commit activity at build time into a committed JSON file; refresh live only as an enhancement after paint.</p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section style="--sc: var(--store)">
+    <span class="span-id">10 · Mobile</span>
+    <h2>Where this concept pays for itself</h2>
+
+    <p class="lede">A trace waterfall is a vertical list. On a tall screen it is not a degraded desktop view — it is the canonical form of the visualisation.</p>
+
+    <p>This is the strongest practical argument for the metaphor. Every other candidate needs a mobile compromise; a city especially, which is unreadable in portrait. Here the phone gets the <em>textbook</em> rendering: spans stacked top to bottom, time running down, depth as indentation. Exactly what Jaeger shows on a narrow viewport, because that is the shape the data wants.</p>
+
+    <ul>
+      <li><strong>No WebGL on phones by default.</strong> The DOM trace is the real thing, not a fallback — same dataset, same IA, same interactions, zero of the 864 kB.</li>
+      <li><strong>Swipe</strong> drives the playhead. <strong>Tap</strong> focuses a span. <strong>Tap an attribute</strong> runs the same hot-path filter as desktop.</li>
+      <li><strong>The service map</strong> is the flat SVG topology already shipped on the phone — which is exactly camera B's projection, drawn in 2D. The two views the desktop reaches by orbiting, mobile reaches by a toggle.</li>
+      <li><strong>3D remains reachable</strong> on capable phones behind an explicit opt-in that names the cost.</li>
+    </ul>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section style="--sc: var(--infra)">
+    <span class="span-id">11 · Component architecture</span>
+    <h2>Five layers, one direction of dependency</h2>
+
+    <div class="scroller">
+<pre>src/trace/
+├─ <b>data/</b>            <i>content engine — pure, no React, no THREE</i>
+│   ├─ trace.js       <i>builds the span tree from portfolio + posts + gh snapshot</i>
+│   ├─ attributes.js  <i>tech → attribute index, powers the hot path</i>
+│   └─ layout.js      <i>span → (x,y,z); the only place geometry is decided</i>
+│
+├─ <b>state/</b>           <i>interaction engine — no THREE</i>
+│   ├─ useTrace.js    <i>playhead, focus, filter, projection, breadcrumb</i>
+│   └─ input.js       <i>scroll / pointer / touch / key → intent</i>
+│
+├─ <b>scene/</b>           <i>3D engine — imports data + state, never the reverse</i>
+│   ├─ SpanField.jsx  <i>one InstancedMesh for all spans</i>
+│   ├─ EdgeField.jsx  ·  ParticleField.jsx
+│   ├─ CameraRig.jsx  <i>the constrained 90° arc lives here</i>
+│   └─ Effects.jsx    <i>tier-gated post-processing</i>
+│
+├─ <b>dom/</b>             <i>the semantic trace — always rendered, always first</i>
+│   └─ Waterfall.jsx  <i>real HTML tree; mobile, no-WebGL and screen readers</i>
+│
+└─ <b>ui/</b>              <i>presentation — HUD, breadcrumb, inspector, palette</i>
+</pre>
+    </div>
+
+    <p>The rule that keeps content decoupled from the scene: <strong><code>scene/</code> may import from <code>data/</code> and <code>state/</code>; neither may import from <code>scene/</code>.</strong> Adding a project adds a span, and the geometry follows from <code>layout.js</code> with no scene edit — which is the data-driven requirement, enforced by dependency direction rather than by discipline.</p>
+
+    <p>One consequence worth stating plainly: <strong><code>dom/Waterfall.jsx</code> is not a fallback.</strong> It is the primary rendering, it ships first, and WebGL is an enhancement layered over it. That single decision satisfies the accessibility requirement, the no-WebGL requirement, the mobile requirement and "no information may exist only inside WebGL" — with one mechanism instead of four parallel implementations that drift apart.</p>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section style="--sc: var(--state)">
+    <span class="span-id">12 · Migration</span>
+    <h2>What survives, and one decision for you</h2>
+
+    <p>The brief says to retire the fake macOS. Agreed — but the costume and the machinery are different things, and only one of them should go.</p>
+
+    <div class="cards">
+      <div class="card"><span class="tag">Retired</span><h5>The macOS costume</h5><p>Traffic lights, menu bar, dock magnification, the desktop-and-wallpaper frame. This is what makes it read as an imitation rather than a product — including the dock work shipped this week.</p></div>
+      <div class="card"><span class="tag">Kept whole</span><h5>The machinery</h5><p>Window manager, command palette, keyboard shortcuts, settings, notifications, boot. Weeks of real work, none of it macOS-specific. The palette becomes the primary navigation the brief asks for.</p></div>
+      <div class="card"><span class="tag">Promoted</span><h5>Signal Flow</h5><p>Becomes camera B of the trace rather than a separate mode. <code>src/flow/graph.js</code> survives largely intact as the Z-axis source.</p></div>
+      <div class="card"><span class="tag">Kept</span><h5>Everything content</h5><p><code>portfolio.js</code>, <code>posts.js</code>, the mobile flow map, Figures, PostBody, the CSP and headers. The content engine is already data-driven and is what the trace is built from.</p></div>
+    </div>
+
+    <div class="callout" style="--cc: var(--accent)">
+      <span class="tag">The decision I need from you</span>
+      <p>The brief reads as <strong>Trace replaces everything</strong>. I'd argue for one variation: Trace becomes the front door and the primary navigation, and the windowed workspace survives underneath as the <em>reference</em> surface.</p>
+      <p>The reasoning is that these are two different jobs. A trace is a narrative surface — superb for a first-time visitor, a recruiter, a story. A windowed workspace is a reference surface — superb for someone who wants to open four projects side by side and keep a terminal running. Killing it throws away the depth that makes a developer stay past ten minutes.</p>
+      <p>Either way the macOS costume goes and Trace is the shell. Say which and I'll build to it.</p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <section style="--sc: var(--warn)">
+    <span class="span-id">13 · Blocking</span>
+    <h2>What has to exist before this can be built</h2>
+
+    <ul>
+      <li><strong>Project case-study fields.</strong> Problem, architecture, contribution, challenges, results — for at least the 3 flagship projects. Station 03 is the deepest part of the experience and it is empty without them. This has now come up three times; it is the real critical path.</li>
+      <li><strong>Milestone dates.</strong> The time axis needs start and end per role and per project. <code>timeline[]</code> has years; spans need enough granularity to have length, not just position.</li>
+      <li><strong>The migration decision</strong> in §12.</li>
+      <li><strong>A GitHub snapshot step</strong> in the build, replacing the live client fetch.</li>
+    </ul>
+
+    <p>Nothing else blocks. The geometry, the camera, the layout function and the DOM waterfall can all be built against the data that exists today, and will light up as the content lands.</p>
+  </section>
+
+  <p class="foot">Design concept for the portfolio at <code>github.com/akashkasture/ak-portfolio</code>. Written on branch <code>redesign/trace</code>, before implementation, because the metaphor had to be settled first.</p>
+
+</div>
