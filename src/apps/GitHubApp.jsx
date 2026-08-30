@@ -1,29 +1,42 @@
 import { useEffect, useState } from 'react';
 import { Star, GitFork, ExternalLink, Users, BookOpen } from 'lucide-react';
-import { GithubIcon } from '../components/SocialIcons';
-import { personalInfo } from '../data/portfolio';
+import { github } from '../data/github';
 
-const USERNAME = 'akashkasture';
-const CACHE_KEY = `ak-os-github-cache-${USERNAME}`;
-const CACHE_TTL_MS = 5 * 60 * 1000;
+const USERNAME = github.username;
 
-function loadCache() {
-  try {
-    const raw = sessionStorage.getItem(CACHE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (Date.now() - parsed.fetchedAt > CACHE_TTL_MS) return null;
-    return parsed;
-  } catch {
-    return null;
-  }
-}
+/* The committed snapshot is the source of truth here.
 
-function saveCache(data) {
-  try {
-    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ...data, fetchedAt: Date.now() }));
-  } catch { /* ignore */ }
-}
+   This used to call api.github.com on mount and show a spinner while it
+   waited. Unauthenticated that is 60 requests an hour per IP: fine for
+   one visitor, rate-limited the moment the link is shared, and a network
+   round-trip in front of content that was already known at build time.
+
+   So the snapshot renders immediately and a live refresh runs *after*
+   paint, purely as an enhancement. If it is rate-limited, offline or
+   fails, nothing changes and there is no error state to show — what is
+   on screen is real data, just from `npm run snapshot:github` rather
+   than from this second. */
+const SNAPSHOT = {
+  profile: {
+    login: github.profile.login,
+    name: github.profile.name,
+    bio: github.profile.bio,
+    avatar_url: github.profile.avatarUrl,
+    html_url: github.profile.htmlUrl,
+    public_repos: github.profile.publicRepos,
+    followers: github.profile.followers,
+    following: github.profile.following,
+  },
+  repos: github.repos.map((r) => ({
+    id: r.name,
+    name: r.name,
+    description: r.description,
+    html_url: r.htmlUrl,
+    language: r.language,
+    stargazers_count: r.stars,
+    forks_count: r.forks,
+  })),
+};
 
 const LANG_COLORS = {
   JavaScript: '#f1e05a', TypeScript: '#3178c6', Java: '#b07219', Python: '#3572A5',
@@ -31,16 +44,9 @@ const LANG_COLORS = {
 };
 
 export default function GitHubApp() {
-  const [state, setState] = useState(() => {
-    const cached = loadCache();
-    return cached
-      ? { status: 'ready', profile: cached.profile, repos: cached.repos }
-      : { status: 'loading', profile: null, repos: [] };
-  });
+  const [state, setState] = useState(SNAPSHOT);
 
   useEffect(() => {
-    if (state.status !== 'loading') return;
-
     let cancelled = false;
     (async () => {
       try {
@@ -48,58 +54,21 @@ export default function GitHubApp() {
           fetch(`https://api.github.com/users/${USERNAME}`),
           fetch(`https://api.github.com/users/${USERNAME}/repos?sort=updated&per_page=6`),
         ]);
-
-        if (profileRes.status === 403 || reposRes.status === 403) {
-          if (!cancelled) setState({ status: 'rate-limited', profile: null, repos: [] });
-          return;
-        }
-        if (!profileRes.ok || !reposRes.ok) {
-          if (!cancelled) setState({ status: 'error', profile: null, repos: [] });
-          return;
-        }
-
+        if (!profileRes.ok || !reposRes.ok) return; // keep the snapshot
         const profile = await profileRes.json();
         const repos = await reposRes.json();
-        if (cancelled) return;
-        saveCache({ profile, repos });
-        setState({ status: 'ready', profile, repos });
+        if (!cancelled) setState({ profile, repos });
       } catch {
-        if (!cancelled) setState({ status: 'error', profile: null, repos: [] });
+        // Offline, blocked or rate-limited — the snapshot already shows.
       }
     })();
-
     return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run once on mount; state.status is only read to skip a redundant fetch when hydrated from cache
   }, []);
 
-  if (state.status === 'loading') {
-    return (
-      <div className="p-8 flex items-center justify-center h-full">
-        <div className="w-6 h-6 rounded-full border-2 border-white/15 border-t-indigo-400 animate-spin" />
-      </div>
-    );
-  }
-
-  if (state.status === 'error' || state.status === 'rate-limited') {
-    return (
-      <div className="p-8 flex flex-col items-center justify-center h-full text-center gap-3">
-        <GithubIcon size={28} style={{ color: 'var(--text-3)' }} />
-        <p className="text-sm" style={{ color: 'var(--text-2)' }}>
-          {state.status === 'rate-limited'
-            ? "GitHub's API rate limit was hit for this browser — try again in a bit."
-            : "Couldn't reach GitHub's API right now."}
-        </p>
-        <a
-          href={personalInfo.github}
-          target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
-        >
-          View profile directly <ExternalLink size={12} />
-        </a>
-      </div>
-    );
-  }
-
+  /* No loading, error or rate-limited branch any more. There is always
+     something real to render, so none of those states can occur — and a
+     spinner in front of data the build already had was never honest
+     about how much work was actually happening. */
   const { profile, repos } = state;
 
   return (

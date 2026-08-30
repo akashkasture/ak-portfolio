@@ -235,6 +235,32 @@ function Bar({ span, lit, open }) {
   const l = LAYOUT[span.id];
   const dim = lit === false;
   return (
+    <>
+    {/* Span events — a timestamped point inside a span, which is what a
+        commit is. Drawn on the bar at its own moment rather than in the
+        milestone lane, because it belongs to this span and not to the
+        trace as a whole. */}
+    {span.events.map((e) => {
+      const x = (e.at - TRACE.start) / TRACE.durationMs;
+      if (x < l.x || x > l.x + l.width) return null;
+      return (
+        <span
+          key={e.id}
+          title={e.detail || e.label}
+          className="absolute rounded-full pointer-events-none z-[2]"
+          style={{
+            left: `${x * 100}%`,
+            top: '50%',
+            width: 4,
+            height: 4,
+            transform: 'translate(-50%, -50%)',
+            background: e.color || 'var(--text-1)',
+            outline: '1.5px solid var(--bg)',
+            opacity: dim ? 0.15 : 1,
+          }}
+        />
+      );
+    })}
     <div
       className="absolute rounded-sm"
       style={{
@@ -254,6 +280,7 @@ function Bar({ span, lit, open }) {
         transition: 'opacity 180ms var(--ease-standard, ease)',
       }}
     />
+    </>
   );
 }
 

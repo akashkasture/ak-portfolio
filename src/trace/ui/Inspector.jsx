@@ -162,6 +162,19 @@ export default function Inspector() {
         </p>
       )}
 
+      {d.type === 'repo' && (
+        <div className="flex items-center gap-4 mt-3.5 text-[12px] font-mono" style={{ color: 'var(--text-3)' }}>
+          <span>★ {d.stars}</span>
+          <span>forks {d.forks}</span>
+          {span.events.map((e) => (
+            <span key={e.id} className="flex items-center gap-1.5">
+              <span className="w-1 h-1 rounded-full" style={{ background: e.color }} />
+              {e.label} {e.at.toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
+            </span>
+          ))}
+        </div>
+      )}
+
       {span.attributes.length > 0 && (
         <div className="mt-5 pt-4" style={{ borderTop: '1px solid var(--surface-border)' }}>
           <div

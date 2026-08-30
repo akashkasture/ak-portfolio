@@ -2,6 +2,7 @@ import { personalInfo, experience, projects, timeline, skills } from '../../data
 import { POSTS } from '../../data/posts';
 import { NODES } from '../../flow/graph';
 import { subsystemOf } from './subtrace';
+import { github as githubSnapshot } from '../../data/github';
 
 /* The content engine.
 
@@ -227,9 +228,16 @@ function makeSpan(fields) {
 
 // ── Build ──────────────────────────────────────────────────────────
 
-const CAREER_START =
-  timeline.map((t) => parsePoint(t.year)).filter(Boolean).sort((a, b) => a - b)[0] ||
-  new Date(2020, 0, 1);
+const REPOS = (githubSnapshot.repos || [])
+  .map((r) => ({ ...r, start: new Date(r.createdAt), end: new Date(r.pushedAt) }))
+  .filter((r) => !Number.isNaN(r.start.getTime()));
+
+const CAREER_START = [
+  ...timeline.map((t) => parsePoint(t.year)),
+  ...REPOS.map((r) => r.start),
+]
+  .filter(Boolean)
+  .sort((a, b) => a - b)[0] || new Date(2020, 0, 1);
 
 const roleSpans = experience.map((exp) => {
   const { start, end } = parsePeriod(exp.period);
@@ -339,6 +347,72 @@ for (const span of projectSpans) {
   if (parent) parent.children.push(span);
 }
 
+/* Public repositories, from the committed snapshot.
+
+   These are the only spans in the whole trace with precise, recorded
+   dates that nobody had to infer — GitHub knows exactly when a repo was
+   created and last pushed to. Everything else is a period from a résumé
+   or an unrecorded project window, so these are the one branch that is
+   never drawn as indeterminate.
+
+   The last push is carried as a span *event*: a timestamped point inside
+   the span, which is what a commit is. Only the pushes the snapshot
+   actually records appear — no commit history is fetched or synthesised,
+   so a repo shows one honest event rather than a plausible-looking
+   scatter of activity. */
+const repoSpans = REPOS.map((repo, i) => {
+  const span = makeSpan({
+    id: `repo-${repo.name}`,
+    name: repo.name,
+    subtitle: repo.language || 'Repository',
+    layer: layerFor({ tech: [repo.language, ...repo.topics].filter(Boolean), title: repo.name }),
+    start: repo.start,
+    end: repo.end > repo.start ? repo.end : new Date(repo.start.getTime() + 86400000),
+    depth: 2,
+    attributes: attributesFor([repo.language, ...repo.topics].filter(Boolean)),
+    detail: {
+      type: 'repo',
+      description: repo.description || null,
+      github: repo.htmlUrl,
+      stars: repo.stars,
+      forks: repo.forks,
+    },
+  });
+  span.events = [
+    {
+      id: `push-${repo.name}`,
+      at: repo.end,
+      precision: 'month',
+      index: i,
+      label: 'last push',
+      detail: `Last push to ${repo.name}`,
+      color: '#4ade80',
+    },
+  ];
+  return span;
+});
+
+const sourceSpan =
+  repoSpans.length > 0
+    ? makeSpan({
+        id: 'open-source',
+        name: 'Open source',
+        subtitle: `${repoSpans.length} public ${repoSpans.length === 1 ? 'repository' : 'repositories'}`,
+        layer: 'edge',
+        start: repoSpans.reduce((a, s) => (s.start < a ? s.start : a), repoSpans[0].start),
+        end: repoSpans.reduce((a, s) => (s.end > a ? s.end : a), repoSpans[0].end),
+        depth: 1,
+        children: repoSpans,
+        detail: {
+          type: 'source',
+          description: `Public repositories on GitHub, snapshotted ${new Date(
+            githubSnapshot.fetchedAt
+          ).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}.`,
+          github: githubSnapshot.profile?.htmlUrl,
+        },
+      })
+    : null;
+
 // Milestones are moments, not durations — in trace terms, events on the
 // root span rather than spans of their own.
 const milestones = timeline
@@ -388,7 +462,7 @@ export const ROOT = makeSpan({
   end: NOW,
   depth: 0,
   root: true,
-  children: roleSpans,
+  children: sourceSpan ? [...roleSpans, sourceSpan] : roleSpans,
   events: milestones,
   annotations,
   detail: { type: 'root', description: personalInfo.description },
