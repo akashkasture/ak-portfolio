@@ -96,6 +96,16 @@ export const IconBriefing = makeIcon(
   </>
 );
 
+/* Writing — a nib on a baseline. Deliberately not another sheet of
+   paper: Briefing is already a document, and two documents in one dock
+   is a dock you have to read twice. */
+export const IconWriting = makeIcon(
+  <>
+    <path d="M4.4 20.4h15.2" />
+    <path d="M7 15.6 15.9 6.7a2.2 2.2 0 1 1 3.1 3.1L10.1 18.7l-4 .9.9-4Z" />
+  </>
+);
+
 /* Settings — gear */
 export const IconGear = makeIcon(
   <>

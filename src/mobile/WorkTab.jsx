@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { experience, projects } from '../data/portfolio';
+import Figures from '../components/Figures';
 
 /* Experience and Projects answer the same question — "what has this
    person actually done" — so on a phone they're one scroll rather than
@@ -51,7 +52,7 @@ function Role({ exp, defaultOpen }) {
                 className="absolute left-0 top-[0.6em] w-1.5 h-px"
                 style={{ background: 'var(--text-4)' }}
               />
-              {a}
+              <Figures text={a} />
             </li>
           ))}
         </ul>

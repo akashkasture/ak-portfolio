@@ -2,6 +2,7 @@ import { MapPin, ArrowUpRight } from 'lucide-react';
 import { GithubIcon, LinkedinIcon } from '../components/SocialIcons';
 import { personalInfo, experience, projects, techBadges } from '../data/portfolio';
 import { trackEvent } from '../utils/analytics';
+import Figures from '../components/Figures';
 
 /* The thirty-second answer. Everything on this screen is something a
    recruiter needs before they decide whether to keep reading — no
@@ -35,7 +36,11 @@ function Section({ label, children }) {
   );
 }
 
-export default function Briefing() {
+/* `flow` is a slot rather than an import so the phone can put its
+   architecture map here — high on the page, where it does the most work —
+   without the desktop Briefing window paying for a diagram it already has
+   a whole 3D mode for. */
+export default function Briefing({ flow = null }) {
   return (
     <div className="@container">
       <div className="max-w-2xl mx-auto px-5 py-7 sm:px-8 sm:py-9">
@@ -75,6 +80,8 @@ export default function Briefing() {
           {personalInfo.description}
         </p>
 
+        {flow && <Section label="The system I work on">{flow}</Section>}
+
         <Section label="What I've shipped">
           <ul className="space-y-3">
             {PROOF.map((point) => (
@@ -87,7 +94,7 @@ export default function Briefing() {
                   className="absolute left-0 top-[0.6em] w-1.5 h-px"
                   style={{ background: 'var(--text-4)' }}
                 />
-                {point}
+                <Figures text={point} />
               </li>
             ))}
           </ul>

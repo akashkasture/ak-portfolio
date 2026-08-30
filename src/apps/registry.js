@@ -1,11 +1,11 @@
 import { lazy } from 'react';
 import {
   IconPerson, IconCareer, IconRocket, IconPrompt, IconConstellation, IconPlane,
-  IconTopology, IconGear, IconBriefing,
+  IconTopology, IconGear, IconBriefing, IconWriting,
 } from '../os/icons';
 import { GithubIcon } from '../components/SocialIcons';
 
-/* Nine apps, ordered the way someone reads a portfolio: who → where they've
+/* Ten apps, ordered the way someone reads a portfolio: who → where they've
    worked → what they built → how they build it → prove it → reach them.
    Anything that was only furniture (Files, Notes, Trash, Calendar, Dev
    Toolbox, Chat, Trade, System Monitor) is gone — a dock full of empty
@@ -64,6 +64,16 @@ export const APPS = {
     defaultSize: { width: 820, height: 520 },
     defaultPosition: { x: 160, y: 100 },
     minSize: { width: 520, height: 400 },
+  },
+  writing: {
+    id: 'writing',
+    tint: ['#a1554e', '#7d3f39'],
+    title: 'Writing',
+    icon: IconWriting,
+    component: lazy(() => import('./Writing')),
+    defaultSize: { width: 720, height: 660 },
+    defaultPosition: { x: 200, y: 70 },
+    minSize: { width: 420, height: 400 },
   },
   skills: {
     id: 'skills',

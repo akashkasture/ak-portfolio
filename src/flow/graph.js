@@ -11,7 +11,13 @@ import { projects, experience, skills } from '../data/portfolio';
    Layout is a downward flow: requests enter at the top, fan through the
    services, cross the event backbone, and land in storage. X spreads the
    branches, Z gives the graph enough depth that flying into it reads as
-   travel rather than a zoom on a flat diagram. */
+   travel rather than a zoom on a flat diagram.
+
+   `position` is that 3D placement. `flat` is the same topology laid out
+   for a phone, in a 340x440 design space — a portrait diagram, because a
+   phone is tall and this graph already flows top to bottom. It lives here
+   rather than in the mobile component so a node can never exist in one
+   layout and not the other. */
 
 // Case-insensitive: a node claims a project when the project's stack
 // mentions any of the node's technologies.
@@ -31,6 +37,7 @@ export const NODES = [
     label: 'Clients',
     kind: 'Edge',
     position: [0, 9, 0],
+    flat: [115, 26],
     color: '#94a3b8',
     radius: 0.85,
     summary:
@@ -43,6 +50,7 @@ export const NODES = [
     label: 'API Gateway',
     kind: 'Edge',
     position: [0, 5.5, 0],
+    flat: [115, 108],
     color: '#818cf8',
     radius: 0.95,
     summary:
@@ -57,6 +65,7 @@ export const NODES = [
     label: 'Microservices',
     kind: 'Compute',
     position: [-4.6, 1.6, 1.2],
+    flat: [68, 200],
     color: '#6366f1',
     radius: 1.05,
     summary:
@@ -70,6 +79,7 @@ export const NODES = [
     label: 'AI Layer',
     kind: 'Compute',
     position: [4.6, 1.6, 1.2],
+    flat: [210, 200],
     color: '#a78bfa',
     radius: 1.0,
     summary:
@@ -82,6 +92,7 @@ export const NODES = [
     label: 'Market Feed',
     kind: 'Trading',
     position: [8.6, 4.4, -1.4],
+    flat: [272, 112],
     color: '#f59e0b',
     radius: 0.85,
     summary:
@@ -95,6 +106,7 @@ export const NODES = [
     label: 'Kafka',
     kind: 'Event Backbone',
     position: [0, -2.4, 0],
+    flat: [168, 292],
     color: '#22d3ee',
     radius: 1.35,
     summary:
@@ -108,6 +120,7 @@ export const NODES = [
     label: 'Redis',
     kind: 'State',
     position: [-6.2, -5.4, -1.0],
+    flat: [60, 400],
     color: '#f87171',
     radius: 1.0,
     summary:
@@ -120,6 +133,7 @@ export const NODES = [
     label: 'PostgreSQL',
     kind: 'Storage',
     position: [1.6, -8.4, 0.4],
+    flat: [242, 400],
     color: '#38bdf8',
     radius: 1.1,
     summary:
@@ -132,6 +146,7 @@ export const NODES = [
     label: 'Platform',
     kind: 'Infrastructure',
     position: [-9.0, 0.6, -3.4],
+    flat: [44, 292],
     color: '#4ade80',
     radius: 0.9,
     summary:
@@ -142,14 +157,18 @@ export const NODES = [
 ];
 
 /* from → to, with a `weight` that only sets how many particles ride the
-   edge. It is a visual density, not a throughput claim. */
+   edge. It is a visual density, not a throughput claim.
+
+   `bow` bends the phone layout's edge sideways by that many design units,
+   used only where a straight line would run under a node it has nothing
+   to do with. */
 export const EDGES = [
   { from: 'client', to: 'gateway', weight: 3 },
   { from: 'gateway', to: 'services', weight: 3 },
   { from: 'gateway', to: 'ai', weight: 2 },
   { from: 'services', to: 'kafka', weight: 4 },
   { from: 'ai', to: 'kafka', weight: 2 },
-  { from: 'feed', to: 'kafka', weight: 3, trader: true },
+  { from: 'feed', to: 'kafka', weight: 3, trader: true, bow: -78 },
   { from: 'kafka', to: 'redis', weight: 3 },
   { from: 'kafka', to: 'postgres', weight: 3 },
   { from: 'ai', to: 'postgres', weight: 2 },

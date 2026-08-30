@@ -1,13 +1,15 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { FileText, Briefcase, Layers, TerminalSquare, Mail } from 'lucide-react';
+import { FileText, Briefcase, Layers, PenLine, TerminalSquare, Mail } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
 import Briefing from '../apps/Briefing';
 import StackTab from './StackTab';
 import WorkTab from './WorkTab';
+import FlowMap from './FlowMap';
 import { trackEvent } from '../utils/analytics';
 
 const Terminal = lazy(() => import('../components/Terminal'));
 const Contact = lazy(() => import('../components/Contact'));
+const Writing = lazy(() => import('../apps/Writing'));
 
 /* Phones don't get the desktop. There are no windows here, no dock, no
    wallpaper and no boot sequence — dragging a title bar with a thumb is
@@ -15,13 +17,14 @@ const Contact = lazy(() => import('../components/Contact'));
    several megabytes charged to someone's mobile data for pixels behind
    an opaque panel.
 
-   What's left is a workspace: five labelled places, one scroll each,
+   What's left is a workspace: six labelled places, one scroll each,
    Briefing first because that's the answer most visitors came for. */
 
 const TABS = [
-  { id: 'briefing', label: 'Briefing', icon: FileText, render: () => <Briefing /> },
+  { id: 'briefing', label: 'Briefing', icon: FileText, render: () => <Briefing flow={<FlowMap />} /> },
   { id: 'work', label: 'Work', icon: Briefcase, render: () => <WorkTab /> },
   { id: 'stack', label: 'Stack', icon: Layers, render: () => <StackTab /> },
+  { id: 'writing', label: 'Writing', icon: PenLine, render: () => <Writing /> },
   { id: 'terminal', label: 'Shell', icon: TerminalSquare, fills: true, render: () => <Terminal /> },
   { id: 'contact', label: 'Contact', icon: Mail, render: () => <Contact compact /> },
 ];

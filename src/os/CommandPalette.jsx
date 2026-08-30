@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  Search, Sun, Moon, Sparkles, Mail, Keyboard, RotateCcw, FolderGit2, Building2, Layers,
+  Search, Sun, Moon, Sparkles, Mail, Keyboard, RotateCcw, FolderGit2, Building2, Layers, PenLine,
 } from 'lucide-react';
 import { APP_LIST } from '../apps/registry';
 import { useWindowManager } from '../context/WindowManagerContext';
 import { useTheme } from '../context/ThemeContext';
 import { GithubIcon, LinkedinIcon } from '../components/SocialIcons';
 import { personalInfo, projects, experience, skills } from '../data/portfolio';
+import { POSTS_BY_RECENCY } from '../data/posts';
 import { trackEvent } from '../utils/analytics';
 import { IconSignalFlow } from './icons';
 import { T } from './motion';
@@ -74,6 +75,19 @@ export default function CommandPalette() {
         terms: [e.role, e.company, e.period, ...(e.achievements || [])].join(' '),
         icon: Building2,
         action: () => openApp('experience'),
+      })),
+      /* Posts are indexed by tag and summary too, so "postgres" or
+         "bottleneck" reaches an essay and not only a skill chip. A post
+         that isn't written yet is left out — the palette should not
+         offer to open something with nothing in it. */
+      ...POSTS_BY_RECENCY.filter((p) => p.published).map((p) => ({
+        id: `post-${p.slug}`,
+        group: 'Writing',
+        label: p.title,
+        hint: `${p.readingMinutes} min · ${p.tags.join(' · ')}`,
+        terms: [p.title, p.summary, ...p.tags].join(' '),
+        icon: PenLine,
+        action: () => openApp('writing'),
       })),
       ...skills.flatMap((g) =>
         g.items.map((s) => ({

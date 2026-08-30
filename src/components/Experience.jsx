@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { experience } from '../data/portfolio';
 import SectionHeader from './SectionHeader';
+import Figures from './Figures';
 import { T } from '../os/motion';
 
 const METRICS = [
@@ -88,7 +89,9 @@ function AchievementChip({ text, color }) {
       whileHover={{ borderColor: `${color}50`, background: `${color}14` }}
     >
       <CheckCircle2 size={14} className="flex-shrink-0 mt-0.5" style={{ color }} />
-      <span className="text-sm leading-relaxed" style={{ color: 'var(--text-2)' }}>{text}</span>
+      <span className="text-sm leading-relaxed" style={{ color: 'var(--text-2)' }}>
+        <Figures text={text} />
+      </span>
     </motion.div>
   );
 }
