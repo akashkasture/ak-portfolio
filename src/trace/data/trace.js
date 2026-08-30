@@ -350,6 +350,18 @@ export const ROOT = makeSpan({
   detail: { type: 'root', description: personalInfo.description },
 });
 
+/* Roles were built before the root existed, so they carry no parentId
+   until the tree is assembled. Stamping it from the finished tree means
+   `parentId` is complete for every span but the root — which
+   `ancestorsOf` and the scene's link set both rely on, rather than each
+   reconstructing parentage from `children` in its own way. */
+(function stampParents(span) {
+  for (const child of span.children) {
+    child.parentId = span.id;
+    stampParents(child);
+  }
+})(ROOT);
+
 export function flatten(span, out = []) {
   out.push(span);
   for (const child of span.children) flatten(child, out);
@@ -374,10 +386,9 @@ export const TRACE = {
 export function ancestorsOf(id) {
   const chain = [];
   let current = SPAN_BY_ID[id];
-  while (current && current.parentId) {
+  while (current?.parentId) {
     current = SPAN_BY_ID[current.parentId];
     if (current) chain.unshift(current);
   }
-  if (current !== ROOT && SPAN_BY_ID[id] !== ROOT) chain.unshift(ROOT);
   return chain;
 }

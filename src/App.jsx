@@ -1,13 +1,19 @@
-import { useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { AnimatePresence, MotionConfig } from 'framer-motion';
 import { ThemeProvider } from './context/ThemeContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { SettingsProvider } from './context/SettingsContext';
 import { WindowManagerProvider } from './context/WindowManagerContext';
-import LoadingScreen from './components/LoadingScreen';
 import TraceStage from './trace/ui/TraceStage';
-import Desktop from './os/Desktop';
-import MobileWorkspace from './mobile/MobileWorkspace';
+
+/* Trace is the front door, so it is the only surface on the critical
+   path. The workspace and the phone workspace are each a whole app's
+   worth of code, and importing them eagerly meant a desktop visitor who
+   only ever reads the trace still downloaded the mobile tab bar, the
+   Briefing app and the window manager. */
+const LoadingScreen = lazy(() => import('./components/LoadingScreen'));
+const Desktop = lazy(() => import('./os/Desktop'));
+const MobileWorkspace = lazy(() => import('./mobile/MobileWorkspace'));
 import { useIsMobile } from './hooks/useIsMobile';
 
 function AppInner() {
@@ -41,14 +47,18 @@ function AppInner() {
   // Phones skip the boot sequence entirely. A BIOS readout is a desktop
   // joke, and making someone on a phone watch one before they can read
   // anything is the opposite of what they came for.
-  if (isMobile) return <MobileWorkspace />;
+  if (isMobile) return (
+    <Suspense fallback={null}>
+      <MobileWorkspace />
+    </Suspense>
+  );
 
   // The trace needs no boot sequence — it is the thing someone came to
   // read, and a BIOS readout in front of it is a toll booth.
   if (!inWorkspace) return <TraceStage onEnterWorkspace={enterWorkspace} />;
 
   return (
-    <>
+    <Suspense fallback={null}>
       <AnimatePresence>
         {loading && (
           <LoadingScreen key={bootKey} force={bootForce} onDone={() => setLoading(false)} />
@@ -60,7 +70,7 @@ function AppInner() {
           <Desktop />
         </WindowManagerProvider>
       )}
-    </>
+    </Suspense>
   );
 }
 

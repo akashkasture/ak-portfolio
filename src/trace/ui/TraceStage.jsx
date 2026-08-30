@@ -3,7 +3,7 @@ import { ArrowUpRight, Terminal } from 'lucide-react';
 import { TRACE } from '../data/trace';
 import { playheadDate } from '../data/layout';
 import { useTrace, actions } from '../state/store';
-import Waterfall from '../dom/Waterfall';
+import SpatialTrace from './SpatialTrace';
 import Inspector from './Inspector';
 import AttributeRail from './AttributeRail';
 import { personalInfo } from '../../data/portfolio';
@@ -112,7 +112,7 @@ export default function TraceStage({ onEnterWorkspace }) {
                 })}
               </span>
             </div>
-            <Waterfall />
+            <SpatialTrace />
             <p className="text-[11.5px] mt-4" style={{ color: 'var(--text-4)' }}>
               Drag the year axis to move the playhead. Select a span for detail,
               an attribute to light every span that carries it.
