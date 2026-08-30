@@ -131,11 +131,58 @@ function packRows(items, widthPx) {
 
 const ROW_H = 17;
 
-function Milestones({ playhead, width }) {
+function Milestones({ playhead, width, compact = false }) {
   const marks = TRACE.milestones.map((m) => ({
     ...m,
     x: (m.at - TRACE.start) / TRACE.durationMs,
   }));
+
+  /* Eight labels will not pack into 390px — they would need eight rows
+     and push the trace itself off the screen. So the phone shows the
+     ticks and names only the one the playhead has reached, revealing
+     them one at a time as you scrub. That is what a playhead is for, and
+     it turns a layout problem into the interaction. */
+  if (compact) {
+    /* `upcoming` marks an aspiration, not something that happened — the
+       2026 "Next Chapter" entry. Its date is already in the past, so a
+       plain date comparison named it as the milestone reached, which
+       reads as a claim that it is done. It is excluded from the pick and
+       only ever drawn as a dashed tick. */
+    const reached = marks.filter((m) => m.x <= playhead && !m.upcoming);
+    const current = reached[reached.length - 1] ?? marks.find((m) => !m.upcoming) ?? marks[0];
+    return (
+      <div>
+        <div className="relative h-3">
+          {marks.map((m) => (
+            <span
+              key={m.id}
+              className="absolute top-1"
+              style={{
+                left: `${m.x * 100}%`,
+                transform: 'translateX(-50%)',
+                width: m.precision === 'year' ? 9 : 4,
+                height: 4,
+                borderRadius: 2,
+                background: m.color,
+                opacity: m.upcoming ? 0.35 : m.x <= playhead ? 1 : 0.4,
+                border: m.upcoming ? `1px dashed ${m.color}` : 'none',
+              }}
+            />
+          ))}
+        </div>
+        <div className="flex items-center gap-1.5 h-5 min-w-0">
+          <span
+            className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+            style={{ background: current.color }}
+          />
+          <span className="text-[11px] font-mono truncate" style={{ color: 'var(--text-3)' }}>
+            {current.label}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
   const { rowCount } = packRows(marks, Math.max(320, width));
 
   return (
@@ -210,7 +257,7 @@ function Bar({ span, lit, open }) {
   );
 }
 
-function SpanRow({ span, playhead, litIds, state, depth = 0 }) {
+function SpanRow({ span, playhead, litIds, state, depth = 0, compact = false }) {
   const l = LAYOUT[span.id];
   const hasChildren = span.children.length > 0;
   const isExpanded = state.expanded.has(span.id);
@@ -218,17 +265,25 @@ function SpanRow({ span, playhead, litIds, state, depth = 0 }) {
   const lit = litIds ? litIds.has(span.id) : null;
   const open = playhead >= l.x && playhead <= l.x + l.width;
 
+  /* Compact stacks the name over a full-width track instead of putting
+     it in a gutter. On a 390px screen a 17rem gutter leaves about 150px
+     of timeline, which is too little for a duration to mean anything —
+     and a phone has the vertical room to spend a second line on it. */
   return (
     <li role="treeitem" aria-expanded={hasChildren ? isExpanded : undefined} aria-level={depth + 1}>
       <div
-        className="grid items-center"
+        className={compact ? 'py-1.5' : 'grid items-center'}
         style={{
-          gridTemplateColumns: 'minmax(0, 17rem) 1fr',
-          height: ROW,
+          ...(compact
+            ? { paddingLeft: depth * 12 }
+            : { gridTemplateColumns: 'minmax(0, 17rem) 1fr', height: ROW }),
           background: isFocused ? 'var(--surface-alt)' : 'transparent',
         }}
       >
-        <div className="flex items-center min-w-0 gap-1 pr-3" style={{ paddingLeft: depth * 14 }}>
+        <div
+          className="flex items-center min-w-0 gap-1 pr-3"
+          style={{ paddingLeft: compact ? 0 : depth * 14 }}
+        >
           {hasChildren ? (
             <button
               onClick={() => actions.toggleExpanded(span.id)}
@@ -266,7 +321,7 @@ function SpanRow({ span, playhead, litIds, state, depth = 0 }) {
           </button>
         </div>
 
-        <div className="relative h-full">
+        <div className={compact ? 'relative h-4' : 'relative h-full'}>
           <Bar span={span} lit={lit} open={open} />
         </div>
       </div>
@@ -281,6 +336,7 @@ function SpanRow({ span, playhead, litIds, state, depth = 0 }) {
               litIds={litIds}
               state={state}
               depth={depth + 1}
+              compact={compact}
             />
           ))}
         </ul>
@@ -289,7 +345,7 @@ function SpanRow({ span, playhead, litIds, state, depth = 0 }) {
   );
 }
 
-export default function Waterfall() {
+export default function Waterfall({ compact = false }) {
   const state = useTrace();
   const litIds = litSpanIds(state);
   const containerRef = useRef(null);
@@ -326,20 +382,28 @@ export default function Waterfall() {
   }, []);
 
   const focused = state.focusId ? SPAN_BY_ID[state.focusId] : null;
+  // The label gutter only exists in the wide layout; compact gives the
+  // whole width to the timeline, so the playhead spans the whole width.
+  const gutter = compact ? '0rem' : '17rem';
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="grid" style={{ gridTemplateColumns: 'minmax(0, 17rem) 1fr' }}>
-        <div className="flex items-end pb-1.5 pr-3">
-          <span
-            className="text-[10.5px] font-mono uppercase tracking-[0.12em]"
-            style={{ color: 'var(--text-4)' }}
-          >
-            {focused ? LAYER_LABEL[focused.layer] : 'Trace'}
-          </span>
-        </div>
+      <div
+        className="grid"
+        style={{ gridTemplateColumns: compact ? '1fr' : 'minmax(0, 17rem) 1fr' }}
+      >
+        {!compact && (
+          <div className="flex items-end pb-1.5 pr-3">
+            <span
+              className="text-[10.5px] font-mono uppercase tracking-[0.12em]"
+              style={{ color: 'var(--text-4)' }}
+            >
+              {focused ? LAYER_LABEL[focused.layer] : 'Trace'}
+            </span>
+          </div>
+        )}
         <div ref={trackRef}>
-          <Milestones playhead={state.playhead} width={trackWidth} />
+          <Milestones playhead={state.playhead} width={trackWidth} compact={compact} />
           <TimeAxis playhead={state.playhead} onScrub={actions.setPlayhead} />
         </div>
       </div>
@@ -350,14 +414,20 @@ export default function Waterfall() {
         <div
           className="absolute top-0 bottom-0 pointer-events-none z-10"
           style={{
-            left: `calc(17rem + ${state.playhead} * (100% - 17rem))`,
+            left: `calc(${gutter} + ${state.playhead} * (100% - ${gutter}))`,
             width: 1,
             background: 'var(--os-accent)',
             opacity: 0.55,
           }}
         />
         <ul role="tree" aria-label={`Trace of ${TRACE.root.name}'s work`}>
-          <SpanRow span={TRACE.root} playhead={state.playhead} litIds={litIds} state={state} />
+          <SpanRow
+            span={TRACE.root}
+            playhead={state.playhead}
+            litIds={litIds}
+            state={state}
+            compact={compact}
+          />
         </ul>
       </div>
     </div>

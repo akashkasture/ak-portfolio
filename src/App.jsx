@@ -5,6 +5,7 @@ import { NotificationProvider } from './context/NotificationContext';
 import { SettingsProvider } from './context/SettingsContext';
 import { WindowManagerProvider } from './context/WindowManagerContext';
 import TraceStage from './trace/ui/TraceStage';
+import MobileTrace from './trace/ui/MobileTrace';
 
 /* Trace is the front door, so it is the only surface on the critical
    path. The workspace and the phone workspace are each a whole app's
@@ -47,15 +48,23 @@ function AppInner() {
   // Phones skip the boot sequence entirely. A BIOS readout is a desktop
   // joke, and making someone on a phone watch one before they can read
   // anything is the opposite of what they came for.
+  /* The trace needs no boot sequence — it is the thing someone came to
+     read, and a BIOS readout in front of it is a toll booth. Both
+     surfaces get the same front door and the same way down into the
+     workspace; only the layout differs. */
+  if (!inWorkspace) {
+    return isMobile ? (
+      <MobileTrace onEnterWorkspace={enterWorkspace} />
+    ) : (
+      <TraceStage onEnterWorkspace={enterWorkspace} />
+    );
+  }
+
   if (isMobile) return (
     <Suspense fallback={null}>
       <MobileWorkspace />
     </Suspense>
   );
-
-  // The trace needs no boot sequence — it is the thing someone came to
-  // read, and a BIOS readout in front of it is a toll booth.
-  if (!inWorkspace) return <TraceStage onEnterWorkspace={enterWorkspace} />;
 
   return (
     <Suspense fallback={null}>

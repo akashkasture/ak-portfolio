@@ -59,16 +59,21 @@ export default function Inspector() {
           {chain.length > 0 && (
             <nav className="flex items-center gap-1.5 flex-wrap mb-2" aria-label="Breadcrumb">
               {chain.map((a) => (
-                <button
-                  key={a.id}
-                  onClick={() => actions.focus(a.id)}
-                  className="text-[11px] font-mono"
-                  style={{ color: 'var(--text-4)' }}
-                >
-                  {a.name}
-                </button>
+                // Separator after each crumb, so the trail reads as a
+                // path rather than as one run-on string of names.
+                <span key={a.id} className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => actions.focus(a.id)}
+                    className="text-[11px] font-mono"
+                    style={{ color: 'var(--text-4)' }}
+                  >
+                    {a.name}
+                  </button>
+                  <span className="text-[11px] font-mono" style={{ color: 'var(--text-4)' }}>
+                    /
+                  </span>
+                </span>
               ))}
-              <span className="text-[11px] font-mono" style={{ color: 'var(--text-4)' }}>/</span>
             </nav>
           )}
           <h2 className="text-[17px] font-medium leading-snug" style={{ color: 'var(--text-1)' }}>
