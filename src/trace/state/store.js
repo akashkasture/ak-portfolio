@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import { SPAN_BY_ID, ancestorsOf } from '../data/trace';
+import { SPAN_BY_ID, ancestorsOf, ROOT, flatten } from '../data/trace';
 import { spanIdsFor } from '../data/attributes';
 
 /* The interaction engine.
@@ -18,6 +18,7 @@ const EMPTY = Object.freeze(new Set());
 
 let state = {
   playhead: 1, // starts at the present: the trace opens already resolved
+  drillId: null, // which span is acting as root — null means the whole trace
   focusId: null,
   filter: null, // an attribute key — the hot path
   projection: 0, // 0 = waterfall (time), 1 = service map (topology)
@@ -66,11 +67,34 @@ export function litSpanIds(s = state) {
   return s.filter ? spanIdsFor(s.filter) : null;
 }
 
-/** A span is visible when every ancestor above it is expanded. */
+/** The span acting as root right now. */
+export function rootSpan(s = state) {
+  return (s.drillId && SPAN_BY_ID[s.drillId]) || ROOT;
+}
+
+/** A span is visible when it is under the current root and every
+    ancestor between them is expanded. */
 export function isVisible(spanId, s = state) {
   const span = SPAN_BY_ID[spanId];
-  if (!span || span.root) return true;
-  return ancestorsOf(spanId).every((a) => s.expanded.has(a.id));
+  if (!span) return false;
+  const root = rootSpan(s);
+  if (spanId === root.id) return true;
+  const chain = ancestorsOf(spanId);
+  const from = chain.indexOf(root);
+  if (from === -1) return false; // not under the current root at all
+  return chain.slice(from).every((a) => s.expanded.has(a.id));
+}
+
+/* The set the renderers draw. The 3D scene needs this as much as the
+   tree does: without it a collapsed project still contributed five
+   boxes to the field, so expanding a row changed the HTML and nothing
+   in the scene. */
+export function visibleSpanIds(s = state) {
+  const out = new Set();
+  for (const span of flatten(rootSpan(s))) {
+    if (isVisible(span.id, s)) out.add(span.id);
+  }
+  return out;
 }
 
 // ── Actions ────────────────────────────────────────────────────────
@@ -102,6 +126,27 @@ export const actions = {
     set({ focusId: parent && !parent.root ? parent.id : null });
   },
 
+  /* Descending re-roots the view on one span — the concept's "a trace
+     within a trace". The time axis deliberately does *not* rescale to
+     the span's window: the flat view and the scene would then disagree
+     about what x means, and a project's real position in the career is
+     information worth keeping on screen. */
+  descend(spanId) {
+    const span = SPAN_BY_ID[spanId];
+    if (!span || span.children.length === 0) return;
+    const expanded = new Set(state.expanded);
+    expanded.add(spanId);
+    for (const a of ancestorsOf(spanId)) expanded.add(a.id);
+    set({ drillId: spanId, focusId: null, expanded });
+  },
+
+  /** Up one level of drill, or all the way out. */
+  surface() {
+    const current = state.drillId ? SPAN_BY_ID[state.drillId] : null;
+    const parent = current?.parentId ? SPAN_BY_ID[current.parentId] : null;
+    set({ drillId: parent && !parent.root ? parent.id : null, focusId: null });
+  },
+
   toggleExpanded(spanId) {
     const expanded = new Set(state.expanded);
     if (expanded.has(spanId)) expanded.delete(spanId);
@@ -122,6 +167,7 @@ export const actions = {
   /** Escape: shed one layer of state at a time, never everything at once. */
   escape() {
     if (state.focusId) return actions.ascend();
+    if (state.drillId) return actions.surface();
     if (state.filter) return set({ filter: null });
     if (state.projection > 0.5) return set({ projection: 0 });
     return undefined;

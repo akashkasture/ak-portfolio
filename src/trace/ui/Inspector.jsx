@@ -1,4 +1,4 @@
-import { X, ArrowUpRight } from 'lucide-react';
+import { X, ArrowUpRight, CornerRightDown } from 'lucide-react';
 import { SPAN_BY_ID, ancestorsOf } from '../data/trace';
 import { LAYOUT, LAYER_LABEL } from '../data/layout';
 import { useTrace, actions } from '../state/store';
@@ -95,12 +95,25 @@ export default function Inspector() {
         </button>
       </div>
 
+      {span.children.length > 0 && !span.root && (
+        <button
+          onClick={() => actions.descend(span.id)}
+          className="flex items-center gap-1.5 mt-3.5 text-[12px] font-mono"
+          style={{ color: 'var(--os-accent)' }}
+        >
+          <CornerRightDown size={13} />
+          Descend · {span.children.length} inside
+        </button>
+      )}
+
       {span.indeterminate && (
         <p
           className="mt-3 text-[11.5px] leading-relaxed pl-2.5"
           style={{ color: 'var(--text-4)', borderLeft: '2px solid var(--surface-border)' }}
         >
-          Dates not recorded — drawn across the role it was built during.
+          {span.structural
+            ? 'Part of this project’s architecture, derived from its stack. Structural — nothing records when it ran.'
+            : 'Dates not recorded — drawn across the role it was built during.'}
         </p>
       )}
 

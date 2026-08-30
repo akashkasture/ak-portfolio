@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, CornerLeftUp } from 'lucide-react';
 import { TRACE, SPAN_BY_ID } from '../data/trace';
 import { LAYOUT, LAYER_LABEL, TICKS, playheadDate } from '../data/layout';
-import { useTrace, actions, litSpanIds } from '../state/store';
+import { useTrace, actions, litSpanIds, rootSpan } from '../state/store';
 
 /* The trace, as HTML.
 
@@ -382,12 +382,26 @@ export default function Waterfall({ compact = false }) {
   }, []);
 
   const focused = state.focusId ? SPAN_BY_ID[state.focusId] : null;
+  const root = rootSpan(state);
+  const drilled = root !== TRACE.root;
   // The label gutter only exists in the wide layout; compact gives the
   // whole width to the timeline, so the playhead spans the whole width.
   const gutter = compact ? '0rem' : '17rem';
 
   return (
     <div ref={containerRef} className="relative">
+      {/* Drilled in, the way back has to be visible at all times — the
+          tree no longer shows its own context. */}
+      {drilled && (
+        <button
+          onClick={() => actions.surface()}
+          className="flex items-center gap-1.5 mb-2 text-[11.5px] font-mono"
+          style={{ color: 'var(--os-accent)' }}
+        >
+          <CornerLeftUp size={13} />
+          {root.parentId ? SPAN_BY_ID[root.parentId].name : TRACE.root.name}
+        </button>
+      )}
       <div
         className="grid"
         style={{ gridTemplateColumns: compact ? '1fr' : 'minmax(0, 17rem) 1fr' }}
@@ -422,7 +436,7 @@ export default function Waterfall({ compact = false }) {
         />
         <ul role="tree" aria-label={`Trace of ${TRACE.root.name}'s work`}>
           <SpanRow
-            span={TRACE.root}
+            span={root}
             playhead={state.playhead}
             litIds={litIds}
             state={state}

@@ -1,6 +1,7 @@
 import { personalInfo, experience, projects, timeline, skills } from '../../data/portfolio';
 import { POSTS } from '../../data/posts';
 import { NODES } from '../../flow/graph';
+import { subsystemOf } from './subtrace';
 
 /* The content engine.
 
@@ -289,6 +290,49 @@ const projectSpans = projects.map((project) => {
     },
   });
 });
+
+/* Each project's own subsystem, hung beneath it. These are structural
+   spans: they say which parts of the system the project touches and how
+   those connect, not when anything ran — nothing records that — so they
+   inherit the project's window and stay marked indeterminate. Their real
+   payoff is the Z axis, where they resolve into their actual layers and
+   the project's architecture reads directly off the service map. */
+for (const span of projectSpans) {
+  for (const { node, parentId, level } of subsystemOf(span.source.tech)) {
+    span.subsystem = span.subsystem || new Map();
+    const child = makeSpan({
+      id: `${span.id}-${node.id}`,
+      name: node.label,
+      subtitle: node.kind,
+      layer: LAYER_OF_KIND[node.kind] || 'compute',
+      start: span.start,
+      end: span.end,
+      indeterminate: true,
+      structural: true,
+      depth: span.depth + 1 + level,
+      /* Only the project's *own* technologies that put this node in its
+         subsystem — never the node's full stack. The Microservices node
+         lists Multithreading among its technologies; attaching that to
+         ChatStream would claim ChatStream uses it, which its own tech
+         list does not say. */
+      attributes: attributesFor(
+        (span.source.tech || []).filter((t) =>
+          node.match.some((term) => t.toLowerCase().includes(term))
+        )
+      ),
+      detail: {
+        type: 'service',
+        description: node.summary,
+        // Verbatim from the graph; never a generated claim about how
+        // this particular project uses the service.
+        proof: node.proof || [],
+      },
+    });
+    span.subsystem.set(node.id, child);
+    const parent = parentId ? span.subsystem.get(parentId) : span;
+    (parent || span).children.push(child);
+  }
+}
 
 for (const span of projectSpans) {
   const parent = roleSpans.find((r) => r.id === span.parentId);

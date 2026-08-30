@@ -19,18 +19,29 @@ for (const span of SPANS) {
   for (const attr of span.attributes) {
     const key = attr.key.toLowerCase();
     if (!index.has(key)) {
-      index.set(key, { key: attr.key, category: attr.category, spanIds: [] });
+      index.set(key, { key: attr.key, category: attr.category, spanIds: [], workCount: 0 });
     }
     const entry = index.get(key);
     entry.spanIds.push(span.id);
+    /* Two different questions, two different numbers.
+
+       `spanIds` is what the hot path lights: everything carrying the
+       attribute, structural subsystem spans included, so filtering on
+       Redis illuminates the Redis service inside each project too.
+
+       `workCount` is what gets *shown*, and counts only real work.
+       A structural span exists because its project already listed that
+       technology, so counting both would report Redis appearing in
+       sixteen places when it appears in six pieces of work. */
+    if (!span.structural) entry.workCount += 1;
     // A span may know a category the first one to claim the key didn't.
     if (!entry.category && attr.category) entry.category = attr.category;
   }
 }
 
-export const ATTRIBUTES = [...index.values()].sort(
-  (a, b) => b.spanIds.length - a.spanIds.length || a.key.localeCompare(b.key)
-);
+export const ATTRIBUTES = [...index.values()]
+  .filter((a) => a.workCount > 0)
+  .sort((a, b) => b.workCount - a.workCount || a.key.localeCompare(b.key));
 
 export const ATTRIBUTE_BY_KEY = Object.fromEntries(
   ATTRIBUTES.map((a) => [a.key.toLowerCase(), a])

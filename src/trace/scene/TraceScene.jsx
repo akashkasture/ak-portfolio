@@ -5,8 +5,8 @@ import SpanField from './SpanField';
 import LinkField from './LinkField';
 import CameraRig from './CameraRig';
 import { LAYERS, TICKS } from '../data/layout';
-import { SPAN_W, LAYER_D, ROW_H } from './geometry';
-import { useTrace, actions, litSpanIds } from '../state/store';
+import { SPAN_W, LAYER_D, ROW_H, boxOf } from './geometry';
+import { useTrace, actions, litSpanIds, visibleSpanIds } from '../state/store';
 
 /* The 3D field.
 
@@ -84,6 +84,7 @@ function Playhead({ playhead }) {
 export default function TraceScene({ quality, reduced }) {
   const state = useTrace();
   const litIds = litSpanIds(state);
+  const visibleIds = visibleSpanIds(state);
 
   /* Time literally collapses as the camera rotates to the service map.
      Squeezing X is what makes the topology readable from that angle —
@@ -91,6 +92,19 @@ export default function TraceScene({ quality, reduced }) {
      it is a continuous transform of the same objects rather than a
      second scene, so the two views stay one thing rotating. */
   const timeScale = THREE.MathUtils.lerp(1, 0.07, state.projection);
+
+  // Vertical extent of what is currently drawn, so the camera frames the
+  // tree as it stands rather than as it could be fully expanded.
+  const bounds = (() => {
+    let minY = Infinity;
+    let maxY = -Infinity;
+    for (const id of visibleIds) {
+      const y = boxOf(id).position[1];
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+    }
+    return Number.isFinite(minY) ? { minY, maxY } : { minY: 0, maxY: 0 };
+  })();
 
   return (
     <Canvas
@@ -108,6 +122,7 @@ export default function TraceScene({ quality, reduced }) {
           focusId={state.focusId}
           reduced={reduced}
           timeScale={timeScale}
+          bounds={bounds}
         />
         <group scale={[timeScale, 1, 1]}>
           <Grid projection={state.projection} />
@@ -118,6 +133,7 @@ export default function TraceScene({ quality, reduced }) {
             litIds={litIds}
             playhead={state.playhead}
             hovered={state.hoverId}
+            visibleIds={visibleIds}
           />
         </group>
       </Suspense>

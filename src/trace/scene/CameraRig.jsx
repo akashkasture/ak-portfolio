@@ -1,8 +1,8 @@
 import { useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
-import { CENTER, boxOf, SPAN_W, LAYER_D, ROW_H } from './geometry';
-import { LAYERS, MAX_DEPTH } from '../data/layout';
+import { CENTER, boxOf, SPAN_W, LAYER_D } from './geometry';
+import { LAYERS } from '../data/layout';
 
 /* The camera, and the one constraint the whole concept rests on.
 
@@ -45,11 +45,11 @@ const PITCH_DEG = 6;
    camera and the viewport's real aspect instead of being guessed. */
 const HALF_TIME = SPAN_W / 2;
 const HALF_DEPTH = ((LAYERS.length - 1) * LAYER_D) / 2;
-const HALF_HEIGHT = (MAX_DEPTH * ROW_H) / 2 + 1.6;
 const FIT_MARGIN = 1.16;
 const CLEARANCE = 9;
+const Y_PAD = 1.6;
 
-function fitDistance(camera, projection, timeScale) {
+function fitDistance(camera, projection, timeScale, halfHeight) {
   const halfTime = HALF_TIME * timeScale;
   // What faces the camera, and what recedes from it, swap over the arc.
   const halfAcross = THREE.MathUtils.lerp(halfTime, HALF_DEPTH, projection);
@@ -63,7 +63,7 @@ function fitDistance(camera, projection, timeScale) {
      plane, not its centre — solving for the centre let the closest row
      (the root span, on the front layer) overhang both edges. */
   const forWidth = halfAcross / Math.tan(hFov / 2) + halfAlong;
-  const forHeight = HALF_HEIGHT / Math.tan(vFov / 2) + halfAlong;
+  const forHeight = halfHeight / Math.tan(vFov / 2) + halfAlong;
 
   /* Toward the service map the camera looks *down* the time axis, so a
      span's length recedes toward it. Without a floor the camera ends up
@@ -75,12 +75,19 @@ const goalPos = new THREE.Vector3();
 const goalTarget = new THREE.Vector3();
 const center = new THREE.Vector3(...CENTER);
 
-export default function CameraRig({ projection, focusId, reduced, timeScale }) {
+export default function CameraRig({ projection, focusId, reduced, timeScale, bounds }) {
   const target = useRef(new THREE.Vector3(...CENTER));
   const settled = useRef(false);
 
   useFrame(({ camera }, delta) => {
     const angle = REST_YAW + projection * (Math.PI / 2 - REST_YAW);
+
+    /* Frame what is actually on screen, not the tree's deepest possible
+       row. Sizing to MAX_DEPTH meant that with most of the tree
+       collapsed the camera stood back far enough for rows that were not
+       being drawn, and the visible spans sat high in an empty frame. */
+    const midY = (bounds.minY + bounds.maxY) / 2;
+    const halfHeight = (bounds.maxY - bounds.minY) / 2 + Y_PAD;
 
     // The field is scaled along X as time collapses, so the camera has to
     // aim at where a span actually is, not where it would be unscaled.
@@ -88,10 +95,12 @@ export default function CameraRig({ projection, focusId, reduced, timeScale }) {
       const { position } = boxOf(focusId);
       goalTarget.set(position[0] * timeScale, position[1], position[2]);
     } else {
-      goalTarget.set(center.x * timeScale, center.y, center.z);
+      goalTarget.set(center.x * timeScale, midY, center.z);
     }
 
-    const radius = focusId ? FOCUS_RADIUS : fitDistance(camera, projection, timeScale);
+    const radius = focusId
+      ? FOCUS_RADIUS
+      : fitDistance(camera, projection, timeScale, halfHeight);
     const lift = radius * Math.sin(THREE.MathUtils.degToRad(PITCH_DEG));
     goalPos.set(
       goalTarget.x + Math.sin(angle) * radius,

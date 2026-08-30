@@ -70,7 +70,7 @@ export default function AttributeRail() {
                         fontSize: 10,
                       }}
                     >
-                      {attr.spanIds.length}
+                      {attr.workCount}
                     </span>
                   </button>
                 );

@@ -28,23 +28,30 @@ const tmpColor = new THREE.Color();
 // thing that quietly costs more than the render.
 const BASE_COLORS = INSTANCES.map((id) => new THREE.Color(LAYOUT[id].color));
 
-export default function SpanField({ focusId, litIds, playhead, hovered }) {
+export default function SpanField({ focusId, litIds, playhead, hovered, visibleIds }) {
   const meshRef = useRef(null);
 
-  // Positions never change — the layout is static — so the matrices are
-  // written once rather than every frame.
+  /* Positions are static, but *visibility* is not: collapsing a project
+     has to remove its subsystem from the field, or expanding a row
+     changes the HTML tree and nothing in the scene.
+
+     Hidden instances are scaled to zero rather than removed. Keeping the
+     instance count fixed means one buffer and one draw call for every
+     state of the tree, and this runs on expand/collapse — an
+     interaction, not a frame. */
   useLayoutEffect(() => {
     const mesh = meshRef.current;
     if (!mesh) return;
     INSTANCES.forEach((id, i) => {
       const { position, scale } = boxOf(id);
+      const shown = !visibleIds || visibleIds.has(id);
       tmpObj.position.set(...position);
-      tmpObj.scale.set(...scale);
+      tmpObj.scale.set(shown ? scale[0] : 0, shown ? scale[1] : 0, shown ? scale[2] : 0);
       tmpObj.updateMatrix();
       mesh.setMatrixAt(i, tmpObj.matrix);
     });
     mesh.instanceMatrix.needsUpdate = true;
-  }, []);
+  }, [visibleIds]);
 
   // Colour is the only thing that varies, and it varies on interaction
   // rather than per frame, so it is written on state change.
@@ -82,9 +89,11 @@ export default function SpanField({ focusId, litIds, playhead, hovered }) {
       rank.set(s.id, siblings.indexOf(s));
     }
     return SPANS.filter(
-      (s) => s.depth <= 1 || s.id === focusId || s.id === hovered
+      (s) =>
+        (!visibleIds || visibleIds.has(s.id)) &&
+        (s.depth <= 1 || s.id === focusId || s.id === hovered)
     ).map((s) => ({ span: s, lift: 0.9 + (rank.get(s.id) % 2) * 1.25 }));
-  }, [focusId, hovered]);
+  }, [focusId, hovered, visibleIds]);
 
   return (
     <group>
@@ -94,13 +103,18 @@ export default function SpanField({ focusId, litIds, playhead, hovered }) {
         onPointerMove={(e) => {
           e.stopPropagation();
           const id = INSTANCES[e.instanceId];
-          if (id) actions.hover(id);
+          // A zero-scaled instance is still in the raycaster's list, so
+          // visibility has to be checked here too or collapsed spans stay
+          // hoverable as invisible points.
+          if (id && (!visibleIds || visibleIds.has(id))) actions.hover(id);
         }}
         onPointerOut={() => actions.hover(null)}
         onClick={(e) => {
           e.stopPropagation();
           const id = INSTANCES[e.instanceId];
-          if (id) actions.focus(focusId === id ? null : id);
+          if (id && (!visibleIds || visibleIds.has(id))) {
+            actions.focus(focusId === id ? null : id);
+          }
         }}
       >
         <boxGeometry args={[1, 1, 1]} />
