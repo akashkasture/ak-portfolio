@@ -1,7 +1,10 @@
-import { X, ArrowUpRight, CornerRightDown } from 'lucide-react';
+import { useState } from 'react';
+import { X, ArrowUpRight, CornerRightDown, Link2, Check } from 'lucide-react';
 import { SPAN_BY_ID, ancestorsOf } from '../data/trace';
 import { LAYOUT, LAYER_LABEL } from '../data/layout';
 import { useTrace, actions } from '../state/store';
+import { CRITICAL_IDS, SELF_MS } from '../data/critical';
+import { linkFor } from '../state/url';
 import Figures from '../../components/Figures';
 
 /* Everything known about one span.
@@ -18,6 +21,67 @@ function fmtRange(span) {
   const a = span.start.toLocaleDateString(undefined, opts);
   const b = span.end.toLocaleDateString(undefined, opts);
   return a === b ? a : `${a} — ${b}`;
+}
+
+const MONTH_MS = 2629800000;
+
+/* Where this span sits relative to the critical path.
+
+   Worth stating in words as well as drawing, because the honest reading
+   is counter-intuitive: falling off the critical path is a statement
+   about concurrency, not about importance. Three projects running inside
+   one role are not lesser for it — the role would have been the same
+   length with any one of them removed, which is exactly what parallel
+   work means. */
+function CriticalNote({ span }) {
+  if (span.indeterminate) return null;
+  const onPath = CRITICAL_IDS.has(span.id);
+  const months = Math.round((SELF_MS[span.id] || 0) / MONTH_MS);
+  return (
+    <p
+      className="mt-3 text-[11.5px] leading-relaxed pl-2.5"
+      style={{
+        color: onPath ? 'var(--text-2)' : 'var(--text-4)',
+        borderLeft: `2px solid ${onPath ? 'var(--text-1)' : 'var(--surface-border)'}`,
+      }}
+    >
+      {onPath
+        ? `On the critical path${months ? ` — ${months} month${months === 1 ? '' : 's'} of the trace that nothing else accounts for` : ''}.`
+        : 'Ran concurrently — off the critical path. Removing it would not have made the trace any shorter, which is what parallel work means, not a judgement about the work.'}
+    </p>
+  );
+}
+
+/* A link straight to this span. The whole point of the URL sync: what
+   you found is only worth finding if you can send it to someone. */
+function CopyLink() {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(linkFor());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    } catch {
+      // Clipboard access can be refused outright (insecure context, or
+      // a permissions policy). The address bar already holds the link,
+      // so there is nothing to recover — and a thrown error here would
+      // take the inspector down with it.
+    }
+  };
+  return (
+    <button
+      onClick={copy}
+      className="p-1 -mt-1"
+      aria-label={copied ? 'Link copied' : 'Copy a link to this span'}
+      title={copied ? 'Copied' : 'Copy link to this span'}
+    >
+      {copied ? (
+        <Check size={15} style={{ color: 'var(--os-accent)' }} />
+      ) : (
+        <Link2 size={15} style={{ color: 'var(--text-4)' }} />
+      )}
+    </button>
+  );
 }
 
 function Field({ label, value }) {
@@ -90,9 +154,12 @@ export default function Inspector() {
             </span>
           </div>
         </div>
-        <button onClick={() => actions.focus(null)} aria-label="Close" className="p-1 -mt-1 -mr-1">
-          <X size={15} style={{ color: 'var(--text-4)' }} />
-        </button>
+        <div className="flex items-center gap-0.5 -mr-1">
+          <CopyLink />
+          <button onClick={() => actions.focus(null)} aria-label="Close" className="p-1 -mt-1">
+            <X size={15} style={{ color: 'var(--text-4)' }} />
+          </button>
+        </div>
       </div>
 
       {span.children.length > 0 && !span.root && (
@@ -113,9 +180,11 @@ export default function Inspector() {
         >
           {span.structural
             ? 'Part of this project’s architecture, derived from its stack. Structural — nothing records when it ran.'
-            : 'Dates not recorded — drawn across the role it was built during.'}
+            : 'Dates not recorded — drawn across the role it was built during. Not eligible for the critical path, which is computed only over spans with recorded dates.'}
         </p>
       )}
+
+      <CriticalNote span={span} />
 
       {d.description && (
         <p className="text-[13.5px] leading-relaxed mt-4" style={{ color: 'var(--text-2)' }}>

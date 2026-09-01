@@ -3,9 +3,11 @@ import { ArrowUpRight, Terminal, X } from 'lucide-react';
 import { TRACE, SPAN_BY_ID } from '../data/trace';
 import { playheadDate } from '../data/layout';
 import { useTrace } from '../state/store';
+import { useTraceUrl } from '../state/url';
 import Waterfall from '../dom/Waterfall';
 import Inspector from './Inspector';
 import AttributeRail from './AttributeRail';
+import TraceSummary from './TraceSummary';
 import { personalInfo } from '../../data/portfolio';
 import { trackEvent } from '../../utils/analytics';
 
@@ -35,6 +37,7 @@ const VIEWS = [
 ];
 
 export default function MobileTrace({ onEnterWorkspace }) {
+  useTraceUrl();
   const state = useTrace();
   const [view, setView] = useState('trace');
   const [showAttributes, setShowAttributes] = useState(false);
@@ -69,6 +72,8 @@ export default function MobileTrace({ onEnterWorkspace }) {
         <p className="text-[14px] leading-relaxed mt-4" style={{ color: 'var(--text-2)' }}>
           {personalInfo.description}
         </p>
+
+        <TraceSummary />
 
         <div className="flex items-center gap-1.5 mt-6 flex-wrap">
           {VIEWS.map((v) => {
@@ -125,6 +130,8 @@ export default function MobileTrace({ onEnterWorkspace }) {
             <Waterfall compact />
             <p className="text-[11px] mt-3" style={{ color: 'var(--text-4)' }}>
               Drag the year axis to move the playhead. Tap a span for detail.
+              The pale rule under a bar is the critical path — the stretch of the
+              trace that span alone accounts for.
             </p>
           </div>
         ) : (

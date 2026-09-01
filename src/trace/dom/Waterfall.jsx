@@ -3,6 +3,7 @@ import { ChevronRight, CornerLeftUp } from 'lucide-react';
 import { TRACE, SPAN_BY_ID } from '../data/trace';
 import { LAYOUT, LAYER_LABEL, TICKS, playheadDate } from '../data/layout';
 import { useTrace, actions, litSpanIds, rootSpan } from '../state/store';
+import { SEGMENTS_BY_SPAN } from '../data/critical';
 
 /* The trace, as HTML.
 
@@ -234,6 +235,7 @@ function Milestones({ playhead, width, compact = false }) {
 function Bar({ span, lit, open }) {
   const l = LAYOUT[span.id];
   const dim = lit === false;
+  const critical = SEGMENTS_BY_SPAN[span.id];
   return (
     <>
     {/* Span events — a timestamped point inside a span, which is what a
@@ -280,6 +282,35 @@ function Bar({ span, lit, open }) {
         transition: 'opacity 180ms var(--ease-standard, ease)',
       }}
     />
+
+    {/* The critical path, drawn the way a trace viewer draws it: a rule
+        under the part of this span that nothing else was accounting for.
+        Because the segments tile the trace exactly once, the rules on
+        consecutive rows meet end to end and read as one line stepping
+        down into the tree and back out — which is literally what the
+        walk computed. */}
+    {critical?.map((seg) =>
+      /* Sub-pixel segments are dropped here rather than in the data. The
+         walk has to tile the window exactly to be provably correct, and
+         it does produce a genuine one-day sliver between two adjacent
+         roles — real, and worth nothing to look at. */
+      seg.width < 0.002 ? null : (
+        <span
+          key={seg.x}
+          className="absolute pointer-events-none"
+          style={{
+            left: `${seg.x * 100}%`,
+            width: `${seg.width * 100}%`,
+            top: '50%',
+            height: 2,
+            transform: `translateY(${span.root ? 6 : 8.5}px)`,
+            background: 'var(--text-1)',
+            opacity: dim ? 0.12 : 0.85,
+          }}
+          title={`Critical path · ${fmt(seg.from)} → ${fmt(seg.to)} · time this span alone accounts for`}
+        />
+      )
+    )}
     </>
   );
 }

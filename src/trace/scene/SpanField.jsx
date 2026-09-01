@@ -5,6 +5,7 @@ import { SPANS, SPAN_BY_ID } from '../data/trace';
 import { LAYOUT } from '../data/layout';
 import { boxOf, INSTANCES } from './geometry';
 import { actions } from '../state/store';
+import { CRITICAL_IDS } from '../data/critical';
 
 /* Every span in the trace, as one InstancedMesh — a single draw call for
    the whole field.
@@ -71,6 +72,11 @@ export default function SpanField({ focusId, litIds, playhead, hovered, visibleI
       // A span with no recorded dates shouldn't read as confidently as
       // one that has them, the same way the flat view hatches it.
       if (span.indeterminate) strength *= 0.72;
+      /* Both renderers have to agree about the critical path or the
+         orbit stops reading as one object seen from two angles. In the
+         flat view it is a rule under the bar; here there is no room for
+         a second mark, so it is carried as brightness. */
+      if (CRITICAL_IDS.has(id)) strength *= 1.3;
 
       tmpColor.copy(BG).lerp(BASE_COLORS[i], Math.min(1, strength));
       mesh.setColorAt(i, tmpColor);

@@ -22,7 +22,12 @@ let state = {
   focusId: null,
   filter: null, // an attribute key — the hot path
   projection: 0, // 0 = waterfall (time), 1 = service map (topology)
-  expanded: new Set(['root']),
+  /* Root and its direct children — the roles and the open-source
+     branch — are open on arrival. Opening on a collapsed tree meant a
+     recruiter's first screen was four rows and a lot of black: the
+     projects, which are the actual work, were one click away and
+     therefore invisible to someone giving the page thirty seconds. */
+  expanded: new Set(['root', ...ROOT.children.map((c) => c.id)]),
   hoverId: null,
 };
 

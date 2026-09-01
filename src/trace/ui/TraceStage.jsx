@@ -3,9 +3,11 @@ import { ArrowUpRight, Terminal } from 'lucide-react';
 import { TRACE } from '../data/trace';
 import { playheadDate } from '../data/layout';
 import { useTrace, actions } from '../state/store';
+import { useTraceUrl } from '../state/url';
 import SpatialTrace from './SpatialTrace';
 import Inspector from './Inspector';
 import AttributeRail from './AttributeRail';
+import TraceSummary from './TraceSummary';
 import { personalInfo } from '../../data/portfolio';
 import { trackEvent } from '../../utils/analytics';
 
@@ -23,6 +25,7 @@ import { trackEvent } from '../../utils/analytics';
 
 export default function TraceStage({ onEnterWorkspace }) {
   const state = useTrace();
+  useTraceUrl();
 
   useEffect(() => {
     const onKey = (e) => {
@@ -90,6 +93,8 @@ export default function TraceStage({ onEnterWorkspace }) {
           {personalInfo.description}
         </p>
 
+        <TraceSummary />
+
         <div
           className="grid gap-8 mt-10"
           style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 20rem)' }}
@@ -113,10 +118,26 @@ export default function TraceStage({ onEnterWorkspace }) {
               </span>
             </div>
             <SpatialTrace />
-            <p className="text-[11.5px] mt-4" style={{ color: 'var(--text-4)' }}>
-              Drag the year axis to move the playhead. Select a span for detail,
-              an attribute to light every span that carries it.
-            </p>
+            <div className="mt-4 space-y-1.5">
+              <p className="text-[11.5px]" style={{ color: 'var(--text-4)' }}>
+                Drag the year axis to move the playhead. Select a span for detail,
+                an attribute to light every span that carries it.
+              </p>
+              <p
+                className="text-[11.5px] flex items-start gap-2"
+                style={{ color: 'var(--text-4)' }}
+              >
+                <span
+                  className="flex-shrink-0 mt-[0.55em]"
+                  style={{ width: 14, height: 2, background: 'var(--text-1)', opacity: 0.85 }}
+                />
+                <span>
+                  The critical path — the stretch of the trace each span alone
+                  accounts for. Anything without it ran in parallel, which made
+                  it concurrent, not lesser.
+                </span>
+              </p>
+            </div>
           </div>
 
           <div className="min-w-0">{state.focusId ? <Inspector /> : <AttributeRail />}</div>
