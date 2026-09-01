@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { ArrowUpRight, Terminal } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { ArrowUpRight, Search, Terminal } from 'lucide-react';
 import { TRACE } from '../data/trace';
 import { playheadDate } from '../data/layout';
 import { useTrace, actions } from '../state/store';
@@ -8,6 +8,7 @@ import SpatialTrace from './SpatialTrace';
 import Inspector from './Inspector';
 import AttributeRail from './AttributeRail';
 import TraceSummary from './TraceSummary';
+import SpanPalette from './SpanPalette';
 import { personalInfo } from '../../data/portfolio';
 import { trackEvent } from '../../utils/analytics';
 
@@ -25,15 +26,39 @@ import { trackEvent } from '../../utils/analytics';
 
 export default function TraceStage({ onEnterWorkspace }) {
   const state = useTrace();
+  const [palette, setPalette] = useState(false);
   useTraceUrl();
 
+  const openPalette = useCallback(() => {
+    setPalette(true);
+    trackEvent('trace_palette_open', {});
+  }, []);
+
+  /* One keydown listener for the page. `/` is the convention in trace
+     and log tooling and ⌘K is the convention everywhere else, so both
+     open the palette; neither may fire while someone is typing into a
+     field, which is how a search shortcut usually breaks. */
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === 'Escape') actions.escape();
+      const el = document.activeElement;
+      const typing =
+        el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
+      if (e.key === 'Escape') {
+        // The palette is the outermost layer, so it closes first rather
+        // than letting Escape also shed a layer of trace state on the
+        // way out.
+        if (palette) setPalette(false);
+        else actions.escape();
+        return;
+      }
+      if ((e.key === '/' && !typing) || (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey))) {
+        e.preventDefault();
+        openPalette();
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  }, [palette, openPalette]);
 
   const enter = () => {
     trackEvent('trace_enter_workspace', {});
@@ -66,6 +91,17 @@ export default function TraceStage({ onEnterWorkspace }) {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* A shortcut nobody is told about is a shortcut nobody uses,
+                so the key is printed on the control that triggers it. */}
+            <button
+              onClick={openPalette}
+              className="flex items-center gap-2 px-3 py-2 rounded-md text-[13px]"
+              style={{ border: '1px solid var(--surface-border)', color: 'var(--text-3)' }}
+            >
+              <Search size={14} />
+              Find
+              <kbd className="text-[10.5px] font-mono" style={{ color: 'var(--text-4)' }}>/</kbd>
+            </button>
             <a
               href={`mailto:${personalInfo.email}`}
               onClick={() => trackEvent('trace_link', { target: 'email' })}
@@ -143,6 +179,8 @@ export default function TraceStage({ onEnterWorkspace }) {
           <div className="min-w-0">{state.focusId ? <Inspector /> : <AttributeRail />}</div>
         </div>
       </div>
+
+      {palette && <SpanPalette onClose={() => setPalette(false)} />}
     </div>
   );
 }

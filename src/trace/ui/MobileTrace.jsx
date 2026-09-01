@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState } from 'react';
-import { ArrowUpRight, Terminal, X } from 'lucide-react';
+import { ArrowUpRight, Search, Terminal, X } from 'lucide-react';
 import { TRACE, SPAN_BY_ID } from '../data/trace';
 import { playheadDate } from '../data/layout';
 import { useTrace } from '../state/store';
@@ -8,6 +8,7 @@ import Waterfall from '../dom/Waterfall';
 import Inspector from './Inspector';
 import AttributeRail from './AttributeRail';
 import TraceSummary from './TraceSummary';
+import SpanPalette from './SpanPalette';
 import { personalInfo } from '../../data/portfolio';
 import { trackEvent } from '../../utils/analytics';
 
@@ -41,6 +42,7 @@ export default function MobileTrace({ onEnterWorkspace }) {
   const state = useTrace();
   const [view, setView] = useState('trace');
   const [showAttributes, setShowAttributes] = useState(false);
+  const [palette, setPalette] = useState(false);
   const focused = state.focusId ? SPAN_BY_ID[state.focusId] : null;
 
   const pick = (id) => {
@@ -95,9 +97,19 @@ export default function MobileTrace({ onEnterWorkspace }) {
               </button>
             );
           })}
+          {/* No keyboard here, so the shortcut that opens this on the
+              desktop has to exist as a control. */}
+          <button
+            onClick={() => setPalette(true)}
+            aria-label="Find a span or an attribute"
+            className="ml-auto px-2 py-1 rounded"
+            style={{ color: 'var(--text-3)', border: '1px solid var(--surface-border)' }}
+          >
+            <Search size={13} />
+          </button>
           <button
             onClick={() => setShowAttributes(true)}
-            className="px-2.5 py-1 rounded text-[11.5px] font-mono ml-auto"
+            className="px-2.5 py-1 rounded text-[11.5px] font-mono"
             style={{
               color: state.filter ? '#fff' : 'var(--text-3)',
               background: state.filter ? 'var(--os-accent)' : 'transparent',
@@ -221,6 +233,8 @@ export default function MobileTrace({ onEnterWorkspace }) {
           Workspace
         </button>
       </nav>
+
+      {palette && <SpanPalette onClose={() => setPalette(false)} />}
     </div>
   );
 }
