@@ -104,6 +104,12 @@ export const techBadges = [
   "JUnit", "Mockito", "React", "System Design",
 ];
 
+/* `metrics` is what the card shows under "At a glance", and every value
+   is a fact about how the thing is built — the algorithm chosen, the
+   store it sits on, what happens when a step fails. It used to carry
+   figures like "50K msg/min", "<1ms overhead" and "90%+ coverage",
+   which read as measurements and were never measured. A design fact is
+   just as specific and is true by construction. */
 export const projects = [
   {
     id: 1,
@@ -114,7 +120,7 @@ export const projects = [
     github: "https://github.com/akashkasture",
     live: "https://github.com/akashkasture",
     category: "AI / Backend",
-    metrics: { sessions: "Multi", latency: "Real-time", deploy: "AWS EC2" },
+    metrics: { transport: "WebSocket push", backbone: "Kafka topics", sessions: "Redis TTL" },
     featured: true,
   },
   {
@@ -138,7 +144,7 @@ export const projects = [
     github: "https://github.com/akashkasture",
     live: "https://github.com/akashkasture",
     category: "FinTech",
-    metrics: { latency: "<100ms", data: "Live OI", streams: "WebSocket" },
+    metrics: { signals: "PCR · Max pain · IV", source: "Live open interest", transport: "WebSocket" },
     featured: true,
   },
   {
@@ -150,7 +156,7 @@ export const projects = [
     github: "https://github.com/akashkasture",
     live: "https://github.com/akashkasture",
     category: "Backend",
-    metrics: { cache: "3 patterns", latency: "<5ms", coverage: "90%+" },
+    metrics: { patterns: "Aside · Through · Behind", store: "Redis", instrument: "Micrometer" },
     featured: false,
   },
   {
@@ -162,7 +168,7 @@ export const projects = [
     github: "https://github.com/akashkasture",
     live: "https://github.com/akashkasture",
     category: "Backend",
-    metrics: { algo: "Sliding Window", overhead: "<1ms", limits: "Per-user" },
+    metrics: { algorithm: "Sliding window", store: "Redis sorted sets", scope: "User · Endpoint · Global" },
     featured: false,
   },
   {
@@ -174,7 +180,7 @@ export const projects = [
     github: "https://github.com/akashkasture",
     live: "https://github.com/akashkasture",
     category: "Backend",
-    metrics: { throughput: "50K msg/min", delivery: "Exactly-once", dlq: "Auto-retry" },
+    metrics: { partitioning: "By account ID", delivery: "Exactly-once", failure: "Dead-letter queue" },
     featured: false,
   },
   {
@@ -186,7 +192,7 @@ export const projects = [
     github: "https://github.com/akashkasture",
     live: "https://github.com/akashkasture",
     category: "Architecture",
-    metrics: { services: "Plug & play", tracing: "Zipkin", resilience: "Resilience4j" },
+    metrics: { discovery: "Eureka", tracing: "Zipkin", resilience: "Resilience4j" },
     featured: false,
   },
   {
@@ -222,7 +228,7 @@ export const projects = [
     github: "https://github.com/akashkasture",
     live: "https://github.com/akashkasture",
     category: "DevOps",
-    metrics: { deploy: "Zero-downtime", rollback: "Auto", coverage: "Gate enforced" },
+    metrics: { runners: "Actions · Jenkins", deploy: "Helm → Kubernetes", rollback: "On failed smoke test" },
     featured: false,
   },
 ];
