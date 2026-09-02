@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RotateCcw, Sparkles } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Sparkles } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
 import SystemStats from './SystemStats';
 import NotificationCenter from './NotificationCenter';
@@ -79,9 +79,16 @@ export default function TopBar() {
                   <LinkedinIcon size={14} /> LinkedIn
                 </a>
                 <button
-                  onClick={() => { window.dispatchEvent(new CustomEvent('ak-os:replay-boot')); trackEvent('replay_boot_click'); }}
+                  onClick={() => { window.dispatchEvent(new CustomEvent('ak-os:exit-workspace')); trackEvent('topbar_menu_click', { item: 'trace' }); }}
                   className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm hover:bg-white/5 transition-colors text-left"
                   style={{ color: 'var(--text-2)', borderTop: '1px solid var(--surface-border)' }}
+                >
+                  <ArrowLeft size={14} /> Back to Trace
+                </button>
+                <button
+                  onClick={() => { window.dispatchEvent(new CustomEvent('ak-os:replay-boot')); trackEvent('replay_boot_click'); }}
+                  className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm hover:bg-white/5 transition-colors text-left"
+                  style={{ color: 'var(--text-2)' }}
                 >
                   <RotateCcw size={14} /> Replay Boot Sequence
                 </button>

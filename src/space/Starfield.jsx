@@ -2,11 +2,11 @@ import { useRef } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { Stars } from '@react-three/drei';
 import * as THREE from 'three';
-import { TEXTURES } from './textures';
+import { texturesFor } from './textures';
 
 export default function Starfield({ quality = 'high', timeScale = 1 }) {
   const skyRef = useRef();
-  const milkyWay = useLoader(THREE.TextureLoader, TEXTURES.milkyWay);
+  const milkyWay = useLoader(THREE.TextureLoader, texturesFor(quality).milkyWay);
   const starCount = quality === 'low' ? 1200 : quality === 'medium' ? 2600 : 4200;
 
   useFrame((_, delta) => {

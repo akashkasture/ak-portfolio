@@ -2,10 +2,10 @@ import { useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const DEFAULT_POS = new THREE.Vector3(0, 15, 32);
+const DEFAULT_POS = [0, 15, 32];
 const ORIGIN = new THREE.Vector3(0, 0, 0);
 
-export default function CameraRig({ parallax = true, focusPoint = null }) {
+export default function CameraRig({ parallax = true, focusPoint = null, home = DEFAULT_POS }) {
   const { camera, pointer } = useThree();
   const lookTarget = useRef(new THREE.Vector3(0, 0, 0));
 
@@ -19,7 +19,7 @@ export default function CameraRig({ parallax = true, focusPoint = null }) {
       goalPos = focusPoint.clone().add(dir.multiplyScalar(dist)).add(new THREE.Vector3(0, dist * 0.4, 0));
       goalLook = focusPoint;
     } else {
-      goalPos = DEFAULT_POS.clone();
+      goalPos = new THREE.Vector3(...home);
       if (parallax) {
         goalPos.x += pointer.x * 1.6;
         goalPos.y += pointer.y * 1.0;

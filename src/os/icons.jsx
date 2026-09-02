@@ -114,6 +114,15 @@ export const IconGear = makeIcon(
   </>
 );
 
+/* Home / Orrery — a body on an inclined orbit around a centre */
+export const IconOrbit = makeIcon(
+  <>
+    <circle cx="12" cy="12" r="2.6" />
+    <ellipse cx="12" cy="12" rx="9.4" ry="4.6" transform="rotate(-24 12 12)" />
+    <circle cx="19.4" cy="8.2" r="1.5" fill="currentColor" stroke="none" />
+  </>
+);
+
 /* Signal Flow — three nodes and the edges between them */
 export const IconSignalFlow = makeIcon(
   <>

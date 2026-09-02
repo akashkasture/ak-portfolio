@@ -35,14 +35,30 @@ function AppInner() {
     try { sessionStorage.setItem('ak:surface', 'workspace'); } catch { /* private mode */ }
   };
 
+  /* The way back. Until now the workspace was a one-way door: entering
+     it wrote the session key, so even a reload came back into the
+     workspace and the trace was unreachable for the rest of the visit. */
+  const exitWorkspace = () => {
+    setInWorkspace(false);
+    try { sessionStorage.removeItem('ak:surface'); } catch { /* private mode */ }
+  };
+
   useEffect(() => {
     const onReplay = () => {
       setBootForce(true);
       setBootKey((k) => k + 1);
       setLoading(true);
     };
+    /* The desktop's exit lives four levels down inside the OS chrome, so
+       it travels as an event rather than as a prop threaded through the
+       window manager. Same idiom the boot replay already uses. */
+    const onExit = () => exitWorkspace();
     window.addEventListener('ak-os:replay-boot', onReplay);
-    return () => window.removeEventListener('ak-os:replay-boot', onReplay);
+    window.addEventListener('ak-os:exit-workspace', onExit);
+    return () => {
+      window.removeEventListener('ak-os:replay-boot', onReplay);
+      window.removeEventListener('ak-os:exit-workspace', onExit);
+    };
   }, []);
 
   // Phones skip the boot sequence entirely. A BIOS readout is a desktop
@@ -62,7 +78,7 @@ function AppInner() {
 
   if (isMobile) return (
     <Suspense fallback={null}>
-      <MobileWorkspace />
+      <MobileWorkspace onExitWorkspace={exitWorkspace} />
     </Suspense>
   );
 

@@ -1,7 +1,7 @@
 import { useRef, useMemo } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import * as THREE from 'three';
-import { TEXTURES } from './textures';
+import { texturesFor } from './textures';
 
 /* Additive-blended sprite behind the sun stands in for a bloom post-process
    pass (skipped — the postprocessing package's three.js peer range collides
@@ -26,7 +26,7 @@ function makeGlowTexture() {
 export default function Sun({ quality = 'high', reveal = 1, ambientGlow = true }) {
   const meshRef = useRef();
   const glowTexture = useMemo(() => makeGlowTexture(), []);
-  const sunTexture = useLoader(THREE.TextureLoader, TEXTURES.sun);
+  const sunTexture = useLoader(THREE.TextureLoader, texturesFor(quality).sun);
   const segments = quality === 'low' ? 24 : quality === 'medium' ? 40 : 64;
   const revealScale = Math.max(0.001, reveal);
 

@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import * as THREE from 'three';
-import { TEXTURES } from './textures';
+import { texturesFor } from './textures';
 import { PLANETS, MOON } from './planetData';
 import OrbitPath from './OrbitPath';
 import AtmosphereGlow from './AtmosphereGlow';
@@ -41,11 +41,12 @@ export default function Earth({ quality = 'high', timeScale = 1, onHover, onSele
   const moonOrbitRef = useRef();
   const [hovered, setHovered] = useState(false);
 
+  const tex = texturesFor(quality);
   const [dayMap, nightMap, cloudsMap, moonMap] = useLoader(THREE.TextureLoader, [
-    TEXTURES.earthDay,
-    TEXTURES.earthNight,
-    TEXTURES.earthClouds,
-    TEXTURES.moon,
+    tex.earthDay,
+    tex.earthNight,
+    tex.earthClouds,
+    tex.moon,
   ]);
 
   const segments = quality === 'low' ? 24 : quality === 'medium' ? 36 : 56;

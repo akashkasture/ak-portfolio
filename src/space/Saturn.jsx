@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import * as THREE from 'three';
-import { TEXTURES } from './textures';
+import { texturesFor } from './textures';
 import OrbitPath from './OrbitPath';
 import AtmosphereGlow from './AtmosphereGlow';
 
@@ -25,7 +25,8 @@ export default function Saturn({ data, quality = 'high', timeScale = 1, onHover,
   const orbitGroup = useRef();
   const spinRef = useRef();
   const [hovered, setHovered] = useState(false);
-  const [planetTex, ringTex] = useLoader(THREE.TextureLoader, [TEXTURES.saturn, TEXTURES.saturnRing]);
+  const tex = texturesFor(quality);
+  const [planetTex, ringTex] = useLoader(THREE.TextureLoader, [tex.saturn, tex.saturnRing]);
   const segments = quality === 'low' ? 20 : quality === 'medium' ? 32 : 48;
   const ringGeo = useRingGeometry(data.size * 1.35, data.size * 2.3, quality === 'low' ? 64 : 128);
   const startAngle = useMemo(() => (data.orbitRadius * 29) % (Math.PI * 2), [data.orbitRadius]);
