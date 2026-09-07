@@ -25,9 +25,40 @@ import { SEGMENTS_BY_SPAN } from '../data/critical';
    that outranks every effect in the concept. */
 
 const ROW = 34;
+const MONTH = 2629800000;
 
 function fmt(date) {
   return date.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+}
+
+function humanDuration(ms) {
+  const months = Math.round(ms / MONTH);
+  // A real span shorter than half a month rounds to zero, and "0mo" next
+  // to a bar that is visibly there reads as a bug rather than as brevity.
+  if (months < 1) return '<1mo';
+  const y = Math.floor(months / 12);
+  const m = months % 12;
+  if (!y) return `${m}mo`;
+  return m ? `${y}y ${m}mo` : `${y}y`;
+}
+
+/* What a row says about itself when the bar is too small to say it.
+
+   On a 390px screen the timeline is the full width and the work still
+   only occupies its right third, because the career genuinely starts in
+   2024 — so a project's bar is about a hundred pixels and its duration
+   is unreadable as a length. Text carries what the pixels cannot. This
+   is the same information the bar encodes, not an extra claim.
+
+   Only dated spans get one. Forty-two of the forty-nine are
+   indeterminate, and labelling each of them "window not recorded" put
+   the same eight words down the screen eight times and squeezed every
+   project name into an ellipsis — repeating the caveat cost more than
+   it told anyone. The hatched bar already says it, and the inspector
+   says it in full. */
+function spanMeta(span) {
+  if (span.indeterminate || !span.start || !span.end) return null;
+  return `${fmt(span.start)} → ${fmt(span.end)} · ${humanDuration(span.end - span.start)}`;
 }
 
 function TimeAxis({ playhead, onScrub }) {
@@ -232,10 +263,46 @@ function Milestones({ playhead, width, compact = false }) {
   );
 }
 
-function Bar({ span, lit, open }) {
+/* Chronological entrance. A span's delay is its own position on the
+   time axis, so the field fills left to right in the order the work
+   actually happened rather than in DOM order — which would run down the
+   tree and cross back over time on every branch. Capped so a trace that
+   grows a longer tail never turns the entrance into a wait. */
+const drawDelay = (x) => `${Math.round(Math.min(0.8, x) * 620)}ms`;
+
+/* Year rules carried down through the whole field.
+
+   The ticks used to live only in the 28px axis strip, so a bar four
+   hundred pixels below it floated in undifferentiated black and its
+   position was unreadable — you could see that a span was long without
+   being able to say when it ran. Every real trace viewer rules its
+   field for exactly this reason. Drawn behind the rows and inert to the
+   pointer, at an opacity that reads as structure rather than as
+   content. */
+function YearGrid() {
+  return (
+    <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+      {TICKS.map((tick) => (
+        <span
+          key={tick.year}
+          className="absolute top-0 bottom-0"
+          style={{
+            left: `${tick.x * 100}%`,
+            width: 1,
+            background: 'var(--surface-border)',
+            opacity: 0.5,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function Bar({ span, lit, open, hot }) {
   const l = LAYOUT[span.id];
   const dim = lit === false;
   const critical = SEGMENTS_BY_SPAN[span.id];
+  const height = span.root ? 6 : 11;
   return (
     <>
     {/* Span events — a timestamped point inside a span, which is what a
@@ -264,22 +331,29 @@ function Bar({ span, lit, open }) {
       );
     })}
     <div
-      className="absolute rounded-sm"
+      className="absolute rounded-sm ak-span-draw"
       style={{
         left: `${l.x * 100}%`,
         width: `${l.width * 100}%`,
         top: '50%',
-        height: span.root ? 6 : 11,
+        height,
         transform: 'translateY(-50%)',
+        '--ak-delay': drawDelay(l.x),
         // An indeterminate span has no recorded schedule, so it is drawn
         // as an open outline across its parent's window. A solid bar
         // would assert a start and a duration that were never recorded.
         background: span.indeterminate
           ? `repeating-linear-gradient(115deg, ${l.color}2e 0 5px, transparent 5px 10px)`
-          : l.color,
+          : // A solid bar is lit from above rather than filled flat, so a
+            // row of them reads as objects sitting in the field instead
+            // of as swatches. One stop, no glow.
+            `linear-gradient(${l.color}, ${l.color}) padding-box, linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 62%)`,
         border: span.indeterminate ? `1px solid ${l.color}66` : 'none',
-        opacity: dim ? 0.13 : open ? 1 : 0.72,
-        transition: 'opacity 180ms var(--ease-standard, ease)',
+        // Hovering the name lifts its bar out of the field. Feedback for
+        // an aimed action, so it survives the animation rule.
+        boxShadow: hot && !dim ? `0 0 0 1px var(--bg), 0 0 0 2px ${l.color}` : 'none',
+        opacity: dim ? 0.13 : open || hot ? 1 : 0.72,
+        transition: 'opacity 180ms var(--ease-standard, ease), box-shadow 140ms var(--ease-standard, ease)',
       }}
     />
 
@@ -297,15 +371,16 @@ function Bar({ span, lit, open }) {
       seg.width < 0.002 ? null : (
         <span
           key={seg.x}
-          className="absolute pointer-events-none"
+          className="absolute pointer-events-none ak-rule-draw"
           style={{
             left: `${seg.x * 100}%`,
             width: `${seg.width * 100}%`,
             top: '50%',
             height: 2,
-            transform: `translateY(${span.root ? 6 : 8.5}px)`,
+            '--rule-y': `${span.root ? 6 : 8.5}px`,
+            '--rule-o': dim ? 0.12 : 0.85,
+            '--ak-delay': drawDelay(seg.x),
             background: 'var(--text-1)',
-            opacity: dim ? 0.12 : 0.85,
           }}
           title={`Critical path · ${fmt(seg.from)} → ${fmt(seg.to)} · time this span alone accounts for`}
         />
@@ -322,6 +397,8 @@ function SpanRow({ span, playhead, litIds, state, depth = 0, compact = false }) 
   const isFocused = state.focusId === span.id;
   const lit = litIds ? litIds.has(span.id) : null;
   const open = playhead >= l.x && playhead <= l.x + l.width;
+  const hot = state.hoverId === span.id;
+  const meta = compact ? spanMeta(span) : null;
 
   /* Compact stacks the name over a full-width track instead of putting
      it in a gutter. On a 390px screen a 17rem gutter leaves about 150px
@@ -335,8 +412,15 @@ function SpanRow({ span, playhead, litIds, state, depth = 0, compact = false }) 
           ...(compact
             ? { paddingLeft: depth * 12 }
             : { gridTemplateColumns: 'minmax(0, 17rem) 1fr', height: ROW }),
-          background: isFocused ? 'var(--surface-alt)' : 'transparent',
+          background: isFocused
+            ? 'var(--surface-alt)'
+            : hot
+              ? 'rgba(255,255,255,0.035)'
+              : 'transparent',
+          transition: 'background 140ms var(--ease-standard, ease)',
         }}
+        onMouseEnter={() => actions.hover(span.id)}
+        onMouseLeave={() => actions.hover(null)}
       >
         <div
           className="flex items-center min-w-0 gap-1 pr-3"
@@ -366,8 +450,6 @@ function SpanRow({ span, playhead, litIds, state, depth = 0, compact = false }) 
           />
           <button
             onClick={() => actions.focus(isFocused ? null : span.id)}
-            onMouseEnter={() => actions.hover(span.id)}
-            onMouseLeave={() => actions.hover(null)}
             className="truncate text-left text-[13px]"
             style={{
               color: lit === false ? 'var(--text-4)' : open ? 'var(--text-1)' : 'var(--text-2)',
@@ -377,10 +459,19 @@ function SpanRow({ span, playhead, litIds, state, depth = 0, compact = false }) 
           >
             {span.name}
           </button>
+
+          {compact && meta && (
+            <span
+              className="ml-auto pl-2 flex-shrink-0 text-[10px] font-mono tabular-nums whitespace-nowrap"
+              style={{ color: lit === false ? 'var(--text-4)' : 'var(--text-3)', opacity: 0.85 }}
+            >
+              {meta}
+            </span>
+          )}
         </div>
 
         <div className={compact ? 'relative h-4' : 'relative h-full'}>
-          <Bar span={span} lit={lit} open={open} />
+          <Bar span={span} lit={lit} open={open} hot={hot} />
         </div>
       </div>
 
@@ -460,11 +551,26 @@ export default function Waterfall({ compact = false }) {
           {root.parentId ? SPAN_BY_ID[root.parentId].name : TRACE.root.name}
         </button>
       )}
-      <div
-        className="grid"
-        style={{ gridTemplateColumns: compact ? '1fr' : 'minmax(0, 17rem) 1fr' }}
-      >
-        {!compact && (
+      {/* On a phone the tree runs several screens deep, so the axis has
+          to come with it — scrolled past, every bar below is a length
+          with no position, which is most of what a bar is for.
+
+          It is a direct child of the tall container rather than of the
+          two-column grid: a sticky element can only travel inside its
+          own parent's box, and the grid row here is exactly as tall as
+          the axis, so nesting it there pinned it to nothing. The desktop
+          keeps the grid, because that is where the gutter label lives. */}
+      {compact ? (
+        <div
+          ref={trackRef}
+          className="sticky top-0 z-20 pb-0.5"
+          style={{ background: 'var(--bg)' }}
+        >
+          <Milestones playhead={state.playhead} width={trackWidth} compact />
+          <TimeAxis playhead={state.playhead} onScrub={actions.setPlayhead} />
+        </div>
+      ) : (
+        <div className="grid" style={{ gridTemplateColumns: 'minmax(0, 17rem) 1fr' }}>
           <div className="flex items-end pb-1.5 pr-3">
             <span
               className="text-[10.5px] font-mono uppercase tracking-[0.12em]"
@@ -473,16 +579,28 @@ export default function Waterfall({ compact = false }) {
               {focused ? LAYER_LABEL[focused.layer] : 'Trace'}
             </span>
           </div>
-        )}
-        <div ref={trackRef}>
-          <Milestones playhead={state.playhead} width={trackWidth} compact={compact} />
-          <TimeAxis playhead={state.playhead} onScrub={actions.setPlayhead} />
+          <div ref={trackRef}>
+            <Milestones playhead={state.playhead} width={trackWidth} />
+            <TimeAxis playhead={state.playhead} onScrub={actions.setPlayhead} />
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="relative">
+        {/* Structure first, behind everything: the year rules occupy the
+            timeline half of the grid, so they start where the gutter
+            ends and never run under the labels. */}
+        <div
+          className="absolute top-0 bottom-0 pointer-events-none"
+          style={{ left: gutter, right: 0 }}
+        >
+          <YearGrid />
+        </div>
+
         {/* The playhead sits above the rows but must never intercept a
-            click meant for a span. */}
+            click meant for a span. It carries a head at the top now —
+            a 1px line with nothing on it read as a rendering artefact
+            rather than as something you could take hold of. */}
         <div
           className="absolute top-0 bottom-0 pointer-events-none z-10"
           style={{
@@ -491,7 +609,20 @@ export default function Waterfall({ compact = false }) {
             background: 'var(--os-accent)',
             opacity: 0.55,
           }}
-        />
+        >
+          <span
+            className="absolute"
+            style={{
+              top: -3,
+              left: -3,
+              width: 7,
+              height: 7,
+              borderRadius: 2,
+              background: 'var(--os-accent)',
+              transform: 'rotate(45deg)',
+            }}
+          />
+        </div>
         <ul role="tree" aria-label={`Trace of ${TRACE.root.name}'s work`}>
           <SpanRow
             span={root}

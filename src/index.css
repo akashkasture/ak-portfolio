@@ -415,3 +415,53 @@
 .terminal-scroll::-webkit-scrollbar { width: 4px; }
 .terminal-scroll::-webkit-scrollbar-track { background: transparent; }
 .terminal-scroll::-webkit-scrollbar-thumb { background: #6366f140; border-radius: 2px; }
+
+/* ── The trace, in motion ────────────────────────────────────────────
+   Three animations, all of them mount-once, none of them looping.
+
+   A trace viewer fills in as spans complete, so the bars draw from their
+   own start edge in chronological order and the critical-path rules
+   follow once the bars they annotate exist. That ordering is the point:
+   it is the shape of the data, played back, not decoration laid over it.
+   Delay is computed per span from its position on the time axis, which
+   is why it is passed in as a custom property rather than hard-coded.
+
+   The reduced-motion block above collapses all of these to 0.01ms, and
+   every one uses `both` fill so the collapsed version is the finished
+   state rather than the starting one. */
+
+@keyframes ak-span-draw {
+  from { transform: translateY(-50%) scaleX(0); }
+  to   { transform: translateY(-50%) scaleX(1); }
+}
+
+@keyframes ak-rule-draw {
+  from { transform: translateY(var(--rule-y)) scaleX(0); opacity: 0; }
+  to   { transform: translateY(var(--rule-y)) scaleX(1); opacity: var(--rule-o); }
+}
+
+@keyframes ak-rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@layer utilities {
+  .ak-span-draw {
+    transform-origin: left center;
+    animation: ak-span-draw 420ms var(--ease-out) both;
+    animation-delay: var(--ak-delay, 0ms);
+  }
+
+  .ak-rule-draw {
+    transform-origin: left center;
+    animation: ak-rule-draw 340ms var(--ease-out) both;
+    /* Always after the bar it sits under — the walk cannot annotate a
+       span that has not been drawn yet. */
+    animation-delay: calc(var(--ak-delay, 0ms) + 420ms);
+  }
+
+  .ak-rise {
+    animation: ak-rise 420ms var(--ease-out) both;
+    animation-delay: var(--ak-delay, 0ms);
+  }
+}

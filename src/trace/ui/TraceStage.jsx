@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowUpRight, Search, Terminal } from 'lucide-react';
+import { ArrowUpRight, Pause, Play, Search, Terminal } from 'lucide-react';
 import { TRACE } from '../data/trace';
 import { playheadDate } from '../data/layout';
 import { useTrace, actions } from '../state/store';
 import { useTraceUrl } from '../state/url';
+import { useReplay } from '../state/replay';
 import SpatialTrace from './SpatialTrace';
 import Inspector from './Inspector';
 import AttributeRail from './AttributeRail';
@@ -27,6 +28,7 @@ import { trackEvent } from '../../utils/analytics';
 export default function TraceStage({ onEnterWorkspace }) {
   const state = useTrace();
   const [palette, setPalette] = useState(false);
+  const [playing, toggleReplay] = useReplay();
   useTraceUrl();
 
   const openPalette = useCallback(() => {
@@ -71,7 +73,7 @@ export default function TraceStage({ onEnterWorkspace }) {
       style={{ background: 'var(--bg)', color: 'var(--text-1)' }}
     >
       <div className="max-w-[1400px] mx-auto px-5 sm:px-8 py-8 sm:py-12">
-        <header className="flex items-start justify-between gap-6 flex-wrap">
+        <header className="flex items-start justify-between gap-6 flex-wrap ak-rise">
           <div className="min-w-0">
             <div
               className="text-[10.5px] font-mono uppercase tracking-[0.16em] mb-3"
@@ -122,14 +124,19 @@ export default function TraceStage({ onEnterWorkspace }) {
           </div>
         </header>
 
+        {/* The page arrives in reading order — identity, then the
+            claim, then the counts that back it — rather than all at
+            once. One pass, on mount, ~200ms apart. */}
         <p
-          className="text-[15px] leading-relaxed mt-6 max-w-[62ch]"
-          style={{ color: 'var(--text-2)' }}
+          className="text-[15px] leading-relaxed mt-6 max-w-[62ch] ak-rise"
+          style={{ color: 'var(--text-2)', '--ak-delay': '110ms' }}
         >
           {personalInfo.description}
         </p>
 
-        <TraceSummary />
+        <div className="ak-rise" style={{ '--ak-delay': '220ms' }}>
+          <TraceSummary />
+        </div>
 
         <div
           className="grid gap-8 mt-10"
@@ -143,15 +150,34 @@ export default function TraceStage({ onEnterWorkspace }) {
               >
                 {state.filter ? `filtered · ${state.filter}` : 'span tree'}
               </span>
-              <span
-                className="text-[11px] font-mono tabular-nums"
-                style={{ color: 'var(--text-3)' }}
-              >
-                {playheadDate(state.playhead).toLocaleDateString(undefined, {
-                  month: 'short',
-                  year: 'numeric',
-                })}
-              </span>
+              {/* The date the playhead is standing on, and the control
+                  that moves it. They belong together: a readout with no
+                  transport beside it is why nobody found the time axis. */}
+              <div className="flex items-center gap-2">
+                <span
+                  className="text-[11px] font-mono tabular-nums"
+                  style={{ color: 'var(--text-3)' }}
+                >
+                  {playheadDate(state.playhead).toLocaleDateString(undefined, {
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </span>
+                <button
+                  onClick={toggleReplay}
+                  aria-pressed={playing}
+                  aria-label={playing ? 'Pause the trace' : 'Play the trace'}
+                  className="flex items-center gap-1 px-2 py-0.5 rounded text-[10.5px] font-mono"
+                  style={{
+                    color: playing ? 'var(--text-1)' : 'var(--text-3)',
+                    border: '1px solid var(--surface-border)',
+                    background: playing ? 'var(--surface-alt)' : 'transparent',
+                  }}
+                >
+                  {playing ? <Pause size={11} /> : <Play size={11} />}
+                  {playing ? 'playing' : 'play'}
+                </button>
+              </div>
             </div>
             <SpatialTrace />
             <div className="mt-4 space-y-1.5">

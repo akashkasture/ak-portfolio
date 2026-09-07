@@ -1,9 +1,10 @@
 import { lazy, Suspense, useState } from 'react';
-import { ArrowUpRight, Search, Terminal, X } from 'lucide-react';
+import { ArrowUpRight, Pause, Play, Search, Terminal, X } from 'lucide-react';
 import { TRACE, SPAN_BY_ID } from '../data/trace';
 import { playheadDate } from '../data/layout';
 import { useTrace } from '../state/store';
 import { useTraceUrl } from '../state/url';
+import { useReplay } from '../state/replay';
 import Waterfall from '../dom/Waterfall';
 import Inspector from './Inspector';
 import AttributeRail from './AttributeRail';
@@ -43,6 +44,7 @@ export default function MobileTrace({ onEnterWorkspace }) {
   const [view, setView] = useState('trace');
   const [showAttributes, setShowAttributes] = useState(false);
   const [palette, setPalette] = useState(false);
+  const [playing, toggleReplay] = useReplay();
   const focused = state.focusId ? SPAN_BY_ID[state.focusId] : null;
 
   const pick = (id) => {
@@ -63,7 +65,7 @@ export default function MobileTrace({ onEnterWorkspace }) {
           trace · {TRACE.start.getFullYear()} → present
         </div>
         <h1
-          className="font-display text-[30px] leading-[1.05]"
+          className="font-display text-[30px] leading-[1.05] ak-rise"
           style={{ color: 'var(--text-1)' }}
         >
           {personalInfo.name}
@@ -71,11 +73,16 @@ export default function MobileTrace({ onEnterWorkspace }) {
         <p className="text-[14px] mt-1.5" style={{ color: 'var(--text-2)' }}>
           {TRACE.root.subtitle}
         </p>
-        <p className="text-[14px] leading-relaxed mt-4" style={{ color: 'var(--text-2)' }}>
+        <p
+          className="text-[14px] leading-relaxed mt-4 ak-rise"
+          style={{ color: 'var(--text-2)', '--ak-delay': '110ms' }}
+        >
           {personalInfo.description}
         </p>
 
-        <TraceSummary />
+        <div className="ak-rise" style={{ '--ak-delay': '220ms' }}>
+          <TraceSummary />
+        </div>
 
         <div className="flex items-center gap-1.5 mt-6 flex-wrap">
           {VIEWS.map((v) => {
@@ -129,15 +136,34 @@ export default function MobileTrace({ onEnterWorkspace }) {
               >
                 span tree
               </span>
-              <span
-                className="text-[11px] font-mono tabular-nums"
-                style={{ color: 'var(--text-3)' }}
-              >
-                {playheadDate(state.playhead).toLocaleDateString(undefined, {
-                  month: 'short',
-                  year: 'numeric',
-                })}
-              </span>
+              {/* Dragging a 28px axis strip with a thumb is the worst
+                  version of this interaction, so the phone gets the
+                  transport more than the desktop does. */}
+              <div className="flex items-center gap-2">
+                <span
+                  className="text-[11px] font-mono tabular-nums"
+                  style={{ color: 'var(--text-3)' }}
+                >
+                  {playheadDate(state.playhead).toLocaleDateString(undefined, {
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </span>
+                <button
+                  onClick={toggleReplay}
+                  aria-pressed={playing}
+                  aria-label={playing ? 'Pause the trace' : 'Play the trace'}
+                  className="flex items-center gap-1 px-2 py-1 rounded text-[10.5px] font-mono"
+                  style={{
+                    color: playing ? 'var(--text-1)' : 'var(--text-3)',
+                    border: '1px solid var(--surface-border)',
+                    background: playing ? 'var(--surface-alt)' : 'transparent',
+                  }}
+                >
+                  {playing ? <Pause size={11} /> : <Play size={11} />}
+                  {playing ? 'playing' : 'play'}
+                </button>
+              </div>
             </div>
             <Waterfall compact />
             <p className="text-[11px] mt-3" style={{ color: 'var(--text-4)' }}>
