@@ -164,7 +164,7 @@ const COMMANDS = {
       { t: 'white', v: '  Role     →  Software Engineer | Trader' },
       { t: 'white', v: '  Stack    →  Java · Spring Boot · Kafka · Oracle SQL · Docker' },
       { t: 'muted', v: '' },
-      { t: 'cyan',  v: '  Download →  Contact me for the latest resume PDF' },
+      { t: 'cyan',  v: '  Download →  /Akash_Kasture_Resume.pdf' },
       { t: 'muted', v: '  Email    →  akashkasture4884@gmail.com' },
     ],
   },

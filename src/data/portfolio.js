@@ -9,7 +9,10 @@ export const personalInfo = {
   linkedin: "https://linkedin.com/in/akashkasture",
   location: "Pune, India",
   available: true,
-  resumeUrl: "mailto:akashkasture4884@gmail.com?subject=Resume%20Request",
+  // A real file in /public, not a request form. This was a mailto asking
+  // the visitor to email and wait, which is a toll booth in front of the
+  // one artifact a recruiter actually came for.
+  resumeUrl: "/Akash_Kasture_Resume.pdf",
   currentlyLearning: ["Rust", "Kubernetes Operators", "Apache Flink", "Algorithmic Trading"],
   funFacts: [
     "Debugged a production issue at 3 AM with just logs and intuition",

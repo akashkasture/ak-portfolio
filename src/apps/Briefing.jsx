@@ -132,11 +132,13 @@ export default function Briefing({ flow = null }) {
           <div className="flex flex-col gap-px">
             <a
               href={personalInfo.resumeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => trackEvent('briefing_link', { target: 'resume' })}
               className="flex items-center justify-between py-3 text-[14px] transition-colors"
               style={{ color: 'var(--text-1)', borderBottom: '1px solid var(--surface-border)' }}
             >
-              Request résumé
+              Résumé · PDF
               <ArrowUpRight size={15} style={{ color: 'var(--text-4)' }} />
             </a>
             <a

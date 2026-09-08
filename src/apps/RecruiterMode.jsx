@@ -131,12 +131,14 @@ export default function RecruiterMode() {
             <h2 className="text-xs font-mono uppercase tracking-widest mb-3" style={{ color: 'var(--text-4)' }}>Contact</h2>
             <div className="flex flex-wrap gap-2">
               <a
-                href={`mailto:${personalInfo.email}?subject=Resume%20Request`}
-                onClick={() => trackEvent('recruiter_resume_request')}
+                href={personalInfo.resumeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent('recruiter_resume_open')}
                 className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
                 style={{ background: 'linear-gradient(135deg, var(--os-accent), var(--os-accent-2))' }}
               >
-                <FileText size={14} /> Request Resume
+                <FileText size={14} /> Resume (PDF)
               </a>
               <a
                 href={`mailto:${personalInfo.email}`}
