@@ -93,17 +93,34 @@ export default function TraceScene({ quality, reduced }) {
      second scene, so the two views stay one thing rotating. */
   const timeScale = THREE.MathUtils.lerp(1, 0.07, state.projection);
 
-  // Vertical extent of what is currently drawn, so the camera frames the
-  // tree as it stands rather than as it could be fully expanded.
+  /* Extent of what is currently drawn, so the camera frames the tree as
+     it stands rather than as it could be. Y has been measured this way
+     all along; X is the same argument and was missing.
+
+     At the top level it changes nothing — the root span runs the whole
+     career by definition, so the drawn extent and the axis extent are
+     the same 46 units. It matters once that stops being true: drilled
+     into a role, or with the tree collapsed to a couple of branches, the
+     camera used to keep framing 2020 whether or not anything was drawn
+     there.
+
+     Measured as each span's full extent rather than its centre, or a
+     long bar hangs off the edge by half its own length. */
   const bounds = (() => {
+    let minX = Infinity;
+    let maxX = -Infinity;
     let minY = Infinity;
     let maxY = -Infinity;
     for (const id of visibleIds) {
-      const y = boxOf(id).position[1];
-      if (y < minY) minY = y;
-      if (y > maxY) maxY = y;
+      const { position, scale } = boxOf(id);
+      if (position[0] - scale[0] / 2 < minX) minX = position[0] - scale[0] / 2;
+      if (position[0] + scale[0] / 2 > maxX) maxX = position[0] + scale[0] / 2;
+      if (position[1] < minY) minY = position[1];
+      if (position[1] > maxY) maxY = position[1];
     }
-    return Number.isFinite(minY) ? { minY, maxY } : { minY: 0, maxY: 0 };
+    return Number.isFinite(minY)
+      ? { minX, maxX, minY, maxY }
+      : { minX: 0, maxX: SPAN_W, minY: 0, maxY: 0 };
   })();
 
   return (
@@ -127,7 +144,11 @@ export default function TraceScene({ quality, reduced }) {
         <group scale={[timeScale, 1, 1]}>
           <Grid projection={state.projection} />
           <Playhead playhead={state.playhead} />
-          <LinkField litIds={litIds} reduced={reduced || quality === 'low'} />
+          <LinkField
+            litIds={litIds}
+            reduced={reduced || quality === 'low'}
+            visibleIds={visibleIds}
+          />
           <SpanField
             focusId={state.focusId}
             litIds={litIds}

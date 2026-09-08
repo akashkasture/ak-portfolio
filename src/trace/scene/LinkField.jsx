@@ -19,16 +19,24 @@ import { boxOf, LINKS } from './geometry';
 
 const PER_LINK = 3;
 
-export default function LinkField({ litIds, reduced }) {
+export default function LinkField({ litIds, reduced, visibleIds }) {
   const pointsRef = useRef(null);
 
   /* A link leaves the parent's right edge and enters the child's left
      edge — the call site and the entry point, rather than centre to
-     centre, which would draw lines straight through the boxes. */
+     centre, which would draw lines straight through the boxes.
+
+     Only between two spans that are both actually drawn. The span field
+     has always filtered on visibility and this layer never did, so a
+     collapsed project still contributed five edges reaching down to
+     boxes nobody could see — a mesh of lines converging on empty space,
+     outside the bounds the camera fits to, and therefore running off the
+     bottom of the frame. */
   const { linePositions, paths } = useMemo(() => {
     const verts = [];
     const list = [];
     for (const link of LINKS) {
+      if (visibleIds && !(visibleIds.has(link.from) && visibleIds.has(link.to))) continue;
       const a = boxOf(link.from);
       const b = boxOf(link.to);
       const from = new THREE.Vector3(a.position[0] - a.scale[0] / 2, a.position[1], a.position[2]);
@@ -37,7 +45,7 @@ export default function LinkField({ litIds, reduced }) {
       list.push({ ...link, from3: from, to3: to });
     }
     return { linePositions: new Float32Array(verts), paths: list };
-  }, []);
+  }, [visibleIds]);
 
   const packetGeom = useMemo(() => {
     const g = new THREE.BufferGeometry();

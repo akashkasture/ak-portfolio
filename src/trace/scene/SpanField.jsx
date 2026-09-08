@@ -87,7 +87,16 @@ export default function SpanField({ focusId, litIds, playhead, hovered, visibleI
   /* Siblings sit at the same Y by definition, so two roles a few months
      apart put their labels on top of each other. Alternating the lift by
      position among siblings separates them without moving the box, which
-     would change what the picture claims. */
+     would change what the picture claims.
+
+     The gap has to be measured in the projection, not in world units. At
+     1.25 apart, "Software Engineer" and "Software Engineering Intern" —
+     siblings that both start in 2024 — still landed within a few pixels
+     of each other once the camera stood back far enough to frame the
+     field. It cannot go much further than this either: the camera sits
+     far closer in the service map, and a lift that merely separates two
+     labels in the waterfall floats them clear of their own boxes
+     there. */
   const labelled = useMemo(() => {
     const rank = new Map();
     for (const s of SPANS) {
@@ -98,7 +107,7 @@ export default function SpanField({ focusId, litIds, playhead, hovered, visibleI
       (s) =>
         (!visibleIds || visibleIds.has(s.id)) &&
         (s.depth <= 1 || s.id === focusId || s.id === hovered)
-    ).map((s) => ({ span: s, lift: 0.9 + (rank.get(s.id) % 2) * 1.25 }));
+    ).map((s) => ({ span: s, lift: 0.9 + (rank.get(s.id) % 2) * 1.75 }));
   }, [focusId, hovered, visibleIds]);
 
   return (

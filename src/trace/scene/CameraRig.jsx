@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
-import { CENTER, boxOf, SPAN_W, LAYER_D } from './geometry';
+import { CENTER, boxOf, LAYER_D } from './geometry';
 import { LAYERS } from '../data/layout';
 
 /* The camera, and the one constraint the whole concept rests on.
@@ -37,20 +37,30 @@ const FOCUS_RADIUS = 22;
    the camera has to stand. */
 const PITCH_DEG = 6;
 
-/* Half-extents of the whole field. The width facing the camera changes
-   completely across the arc — 46 units of time at one end, 20 units of
-   architecture depth at the other — so a fixed radius that frames one
-   projection leaves the other stranded in the middle of an empty canvas.
-   The distance is solved per frame from the extent actually facing the
-   camera and the viewport's real aspect instead of being guessed. */
-const HALF_TIME = SPAN_W / 2;
+/* Half-extents of the field. The width facing the camera changes
+   completely across the arc — time at one end, architecture depth at the
+   other — so a fixed radius that frames one projection leaves the other
+   stranded in the middle of an empty canvas. The distance is solved per
+   frame from the extent actually facing the camera and the viewport's
+   real aspect instead of being guessed.
+
+   The time half-extent is measured from the drawn spans rather than
+   taken as half the axis. With the whole tree in view those are the same
+   number, since the root span is the career; they diverge as soon as the
+   view is drilled or collapsed, and then framing the axis means framing
+   years in which nothing is drawn. */
 const HALF_DEPTH = ((LAYERS.length - 1) * LAYER_D) / 2;
-const FIT_MARGIN = 1.16;
+/* Breathing room around the fitted extent, and it has to survive both
+   ends of the arc. 1.05 filled the waterfall nicely and then clipped the
+   service map off the right and bottom edges, because the two
+   projections present completely different shapes to the same frame. */
+const FIT_MARGIN = 1.13;
 const CLEARANCE = 9;
 const Y_PAD = 1.6;
+const X_PAD = 2.5;
 
-function fitDistance(camera, projection, timeScale, halfHeight) {
-  const halfTime = HALF_TIME * timeScale;
+function fitDistance(camera, projection, timeScale, halfHeight, halfTimeRaw) {
+  const halfTime = halfTimeRaw * timeScale;
   // What faces the camera, and what recedes from it, swap over the arc.
   const halfAcross = THREE.MathUtils.lerp(halfTime, HALF_DEPTH, projection);
   const halfAlong = THREE.MathUtils.lerp(HALF_DEPTH, halfTime, projection);
@@ -88,6 +98,12 @@ export default function CameraRig({ projection, focusId, reduced, timeScale, bou
        being drawn, and the visible spans sat high in an empty frame. */
     const midY = (bounds.minY + bounds.maxY) / 2;
     const halfHeight = (bounds.maxY - bounds.minY) / 2 + Y_PAD;
+    const midX = (bounds.minX + bounds.maxX) / 2;
+    /* A floor under the measured width. With one span selected and its
+       children collapsed the occupied range can be a couple of units
+       wide, and fitting that exactly puts the camera close enough to
+       clip through the field. */
+    const halfTimeRaw = Math.max(6, (bounds.maxX - bounds.minX) / 2 + X_PAD);
 
     // The field is scaled along X as time collapses, so the camera has to
     // aim at where a span actually is, not where it would be unscaled.
@@ -95,12 +111,12 @@ export default function CameraRig({ projection, focusId, reduced, timeScale, bou
       const { position } = boxOf(focusId);
       goalTarget.set(position[0] * timeScale, position[1], position[2]);
     } else {
-      goalTarget.set(center.x * timeScale, midY, center.z);
+      goalTarget.set(midX * timeScale, midY, center.z);
     }
 
     const radius = focusId
       ? FOCUS_RADIUS
-      : fitDistance(camera, projection, timeScale, halfHeight);
+      : fitDistance(camera, projection, timeScale, halfHeight, halfTimeRaw);
     const lift = radius * Math.sin(THREE.MathUtils.degToRad(PITCH_DEG));
     goalPos.set(
       goalTarget.x + Math.sin(angle) * radius,

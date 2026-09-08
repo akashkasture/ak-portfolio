@@ -134,7 +134,13 @@ export default function SpatialTrace() {
           <div
             ref={dragRef}
             className="relative w-full rounded-lg overflow-hidden cursor-grab active:cursor-grabbing touch-none"
-            style={{ height: 'clamp(340px, 44vh, 500px)', border: '1px solid var(--surface-border)' }}
+            /* Wide on purpose. The waterfall is 46 units of time by ten
+               of depth, so the camera distance is solved from the width
+               every time — which means extra canvas height buys dead
+               space above and below the field rather than a bigger
+               field. A little taller than it was, because the service
+               map at the other end of the arc is the opposite shape. */
+            style={{ height: 'clamp(380px, 50vh, 560px)', border: '1px solid var(--surface-border)' }}
           >
             <Suspense
               fallback={
